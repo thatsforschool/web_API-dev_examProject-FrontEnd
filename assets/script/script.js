@@ -4,10 +4,18 @@ const logInSect = document.createElement("form");
 const signUnSect = document.createElement("form");
 const borderLogIn = document.createElement("div");
 const signUpBtn = document.createElement("a");
+let baseUrl;
 
-getUrl = () => {
+window.addEventListener("load", () => {
   const currentUrl = window.location.href;
   console.log(currentUrl);
+
+  if (currentUrl.indexOf("?")) {
+    const currentUrlSplit = currentUrl.split("?");
+    baseUrl = currentUrlSplit[0];
+  } else {
+    baseUrl = window.location.href;
+  }
 
   if (currentUrl.indexOf("page") == -1) {
     console.log("there is no page");
@@ -36,7 +44,7 @@ getUrl = () => {
       }
     }
   }
-};
+});
 
 loadLogInPage = () => {
   // create main
@@ -74,7 +82,7 @@ loadLogInPage = () => {
   signInBtn.classList.add("btn");
   signInBtn.innerText = "sign in";
   signInBtn.id = "signInBtn";
-  signInBtn.href = "http://127.0.0.1:5501/index.html?page=profile";
+  signInBtn.href = `${baseUrl}?page=profile`;
   logInSect.appendChild(signInBtn);
 
   // style border
@@ -99,7 +107,7 @@ loadLogInPage = () => {
   signUpBtn.classList.add("btn");
   signUpBtn.innerText = "sign up";
   signUpBtn.id = "signUpBtn";
-  signUpBtn.href = "http://127.0.0.1:5501/index.html?page=signUp";
+  signUpBtn.href = `${baseUrl}?page=signUp`;
   signUnSect.appendChild(signUpBtn);
 };
 loadSignUpPage = () => {
@@ -112,7 +120,7 @@ loadSignUpPage = () => {
 
   const exitIconLink = document.createElement("a");
   exitIconLink.id = "exitIcon";
-  exitIconLink.href = "http://127.0.0.1:5501/index.html";
+  exitIconLink.href = baseUrl;
   mainSignUp.appendChild(exitIconLink);
 
   const exitIcon = document.createElement("img");
