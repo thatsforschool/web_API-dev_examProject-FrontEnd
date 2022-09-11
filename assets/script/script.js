@@ -5,11 +5,16 @@ const logInSect = document.createElement("form");
 const signUnSect = document.createElement("form");
 const borderLogIn = document.createElement("div");
 const signUpBtn = document.createElement("a");
+const ls = window.localStorage;
 let baseUrl;
+const fetchUrl = `http://127.0.0.1:8746`;
 
 window.addEventListener("load", () => {
     const currentUrl = window.location.href;
     console.log(currentUrl);
+window.addEventListener("DOMContentLoaded", (e) => {
+  const currentUrl = window.location.href;
+  console.log(currentUrl);
 
     if (currentUrl.indexOf("?")) {
         const currentUrlSplit = currentUrl.split("?");
@@ -87,6 +92,46 @@ loadGroupPage = () => {
 
     //    Grouppage main
     body.appendChild(main);
+  const signInBtn = document.createElement("a");
+  signInBtn.classList.add("btn");
+  signInBtn.innerText = "log in";
+  signInBtn.id = "signInBtn";
+  logInSect.appendChild(signInBtn);
+
+  signInBtn.addEventListener("click", (e) => {
+    const payload = {
+      email: userNameInp.value,
+      password: passwordInp.value,
+    };
+
+    const fetchOpt = {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    };
+
+    fetch(`${fetchUrl}/api/accounts/login`, fetchOpt)
+      .then((res) => {
+        const token = res.headers.get("x-authToken");
+        ls.setItem("token", token);
+        console.log(`this is token: ${ls.getItem("token")}`);
+        return res.json();
+      })
+      .then((data) => {
+        ls.setItem("account", JSON.stringify(data));
+        console.log(ls.getItem("account"));
+        window.location.reload();
+        console.log(`this is the account ${account}`);
+      });
+
+    if (ls.getItem("account")) {
+        window.location.href = `${baseUrl}?page=profile`;
+    }
+  });
+
+  // style border
 
     //    GroupDescription section
     const myGroup = document.createElement("section");
@@ -280,4 +325,4 @@ loadGroupPage = () => {
     operatingBtnsSect.appendChild(showAllDone);
 };
 
-getUrl();
+
