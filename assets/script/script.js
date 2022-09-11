@@ -9,9 +9,6 @@ const ls = window.localStorage;
 let baseUrl;
 const fetchUrl = `http://127.0.0.1:8746`;
 
-window.addEventListener("load", () => {
-    const currentUrl = window.location.href;
-    console.log(currentUrl);
 window.addEventListener("DOMContentLoaded", (e) => {
   const currentUrl = window.location.href;
   console.log(currentUrl);
@@ -325,4 +322,4 @@ loadGroupPage = () => {
     operatingBtnsSect.appendChild(showAllDone);
 };
 
-
+// getUrl();
