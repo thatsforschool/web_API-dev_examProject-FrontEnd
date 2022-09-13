@@ -67,14 +67,26 @@ a {
 }
 
 .btn {
+  box-sizing: border-box;
+  width: 250px;
+  text-align: center;
+  padding: 10px;
   font-size: 14px;
   width: 200px;
-  height: 30px;
-  border-radius: 5px;
-  border: none;
+  border-radius: 4px;
+  border: 4px solid var(--blue);
   background-color: var(--blue);
   color: var(--white);
   margin: 30px 50px;
+  transition: all ease 0.3s;
+  -webkit-transition: all ease 0.3s;
+  -moz-transition: all ease 0.3s;
+  -ms-transition: all ease 0.3s;
+  -o-transition: all ease 0.3s;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
 }
 
 .btn:hover {
@@ -215,8 +227,13 @@ nav > a {
   margin-left: 200px;
 
 }
+#myGroup {
+  grid-row: 1/2;
+  grid-column: 1/3;
+  margin-left: 200px;
+}
 
-#recentGroups {
+#groupTasks {
   grid-row: 1/2;
   grid-column: 3/4;
   background-color: var(--yellow);
@@ -244,6 +261,16 @@ nav > a {
 
 #myBoardDiv {
   width: 600px;
+}
+
+#allGroupTasks {
+  grid-row: 2/3;
+  grid-column: 1/3;
+  margin-left: 200px;
+}
+
+#myGroupDiv {
+  width: 500px;
   height: 300px;
   border: solid 4px var(--blue);
 }
@@ -258,6 +285,11 @@ nav > a {
   color: var(--blue);
   margin: 20px 50px;
   padding: 5px;
+  transition: all ease 0.3s;
+  -webkit-transition: all ease 0.3s;
+  -moz-transition: all ease 0.3s;
+  -ms-transition: all ease 0.3s;
+  -o-transition: all ease 0.3s;
 }
 
 .btnREVERSE:hover {
@@ -281,6 +313,37 @@ nav > a {
 
 #borderRecGroupBottom, #borderRecGroupTop{
     margin: 0 30px;
+}
+
+#myGroupDivDescription{
+    border: none;
+    display: block;
+}
+
+#myGroupDivAdmin, #myGroupDivDescription, #myGroupDivMember {
+  margin:20px 10px;
+}
+
+#groupTasksUpcShow {
+  width: 70%;
+  border-collapse: collapse;
+}
+
+#groupTasksUpcShow td, #allGroupTasksTable th {
+  padding: 20px 10px;
+  text-align: center;
+}
+
+#groupTasksUpcomingHeadline {
+    margin: 20px 30px;
+}
+
+#borderGroupTasksUpcTopBottom, #borderGroupTasksUpcTop {
+    margin: 0 30px;
+}
+
+#allGroupsTasksTable {
+  width: 100%;
 }
 
 /* aside */
@@ -318,6 +381,24 @@ nav > a {
 .operBtns:hover{
     cursor: pointer;
     padding: 6px;
+  box-sizing: border-box;
+  width: 250px;
+  text-align: center;
+  margin-top: 30px;
+  padding: 10px;
+  transition: all ease 0.3s;
+  -webkit-transition: all ease 0.3s;
+  -moz-transition: all ease 0.3s;
+  -ms-transition: all ease 0.3s;
+  -o-transition: all ease 0.3s;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+}
+.operBtns:hover{
+    cursor: pointer;
 }
 
 #homeworkBtn {
@@ -325,6 +406,9 @@ nav > a {
 }
 #homeworkBtn:hover{
     border: 4px solid var(--red);
+  border: 4px solid var(--red);
+}
+#homeworkBtn:hover{
     background-color: var(--yellow);
 }
 
@@ -333,6 +417,9 @@ nav > a {
 }
 #projectsBtn:hover{
     border: 4px solid var(--ohra);
+  border: 4px solid var(--ohra);
+}
+#projectsBtn:hover{
     background-color: var(--yellow);
 }
 
@@ -341,6 +428,8 @@ nav > a {
 }
 #assigmentsBtn:hover{
     border: 4px solid var(--lightBlue);
+}
+#assigmentsBtn:hover{
     background-color: var(--yellow);
 }
 
@@ -350,6 +439,8 @@ nav > a {
   width: 270px;
   padding: 6px;
 }
+
+
 #showAllDone:hover{
     background-color: var(--green);
 }
