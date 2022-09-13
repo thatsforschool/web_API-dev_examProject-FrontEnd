@@ -424,6 +424,10 @@ window.addEventListener("load", () => {
                     console.log("you are on a group page");
                     loadGroupPage();
                     break;
+                case "HomeworkPage":
+                    console.log("you are on a homework page");
+                    loadHomeworkPage();
+                    break;
 
                 default:
                     break;
@@ -661,3 +665,4 @@ loadGroupPage = () => {
 };
 
 getUrl();
+
