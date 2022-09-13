@@ -357,6 +357,7 @@ loadProfilePage = () => {
   operatingBtnsSect.classList.add("flex_column");
   aside.appendChild(operatingBtnsSect);
 
+  //Homework
   const homeworkBtn = document.createElement("a");
   homeworkBtn.id = "homeworkBtn";
   homeworkBtn.innerText = "My Homework";
@@ -383,3 +384,4 @@ loadProfilePage = () => {
 };
 
 // getUrl();
+
