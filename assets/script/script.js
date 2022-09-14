@@ -12,12 +12,18 @@ window.addEventListener("DOMContentLoaded", (e) => {
   const currentUrl = window.location.href;
   console.log(currentUrl);
 
+  
+
   if (currentUrl.indexOf("?")) {
     const currentUrlSplit = currentUrl.split("?");
     baseUrl = currentUrlSplit[0];
   } else {
     baseUrl = window.location.href;
   }
+
+//   if (ls.getItem("token") && ls.getItem("token") !== null) {
+//     window.location.href = `${baseUrl}?page=profile`;
+//   }
 
   if (currentUrl.indexOf("page") == -1) {
     console.log("there is no page");
@@ -84,6 +90,7 @@ loadLogInPage = () => {
   signInBtn.classList.add("btn");
   signInBtn.innerText = "log in";
   signInBtn.id = "signInBtn";
+  //   signInBtn.href = baseUrl
   logInSect.appendChild(signInBtn);
 
   signInBtn.addEventListener("click", (e) => {
@@ -110,12 +117,15 @@ loadLogInPage = () => {
       .then((data) => {
         ls.setItem("account", JSON.stringify(data));
         console.log(ls.getItem("account"));
-        window.location.reload();
-        console.log(`this is the account ${account}`);
+        console.log(`this is the account ${ls.getItem("account")}`);
       });
 
-    if (ls.getItem("account")) {
-        window.location.href = `${baseUrl}?page=profile`;
+    console.log(`account in the ls: ${ls.getItem("account")}`);
+
+    if (ls.getItem("token") !== null) {
+      console.log("executing the ls code snippet");
+      window.location.reload();
+      console.log(`account in the ls: ${ls.getItem("account")}`);
     }
   });
 
@@ -205,6 +215,10 @@ loadSignUpPage = () => {
   mainSignUp.appendChild(creatAccountBtn);
 };
 loadProfilePage = () => {
+  let account;
+  account = JSON.parse(ls.getItem("account"));
+  console.log(ls.getItem("account"));
+
   body.innerHTML = "";
   body.classList.add("profileBody");
 
@@ -240,16 +254,24 @@ loadProfilePage = () => {
   userAccountIcon.src = "./assets/svg/logIn.svg";
   nav.appendChild(userAccountIcon);
 
-  //   main
-  body.appendChild(main);
+  userAccountIcon.addEventListener("click", (e) => {
+    ls.removeItem("account");
+    ls.removeItem("token");
+    window.location.href = baseUrl;
+  });
 
+  //   main
+
+  //   const accountInfo = ls.getItem('account')
+  console.log(account.displayName);
+  body.appendChild(main);
   const myBoard = document.createElement("section");
   myBoard.id = "myBoard";
   main.appendChild(myBoard);
 
   const myBoardHeadline = document.createElement("h3");
   myBoardHeadline.id = "myBoardHeadline";
-  myBoardHeadline.innerText = "My Board";
+  myBoardHeadline.innerText = `Hello ${account.displayName}`;
   myBoard.appendChild(myBoardHeadline);
 
   const myBoardDiv = document.createElement("div");
@@ -258,7 +280,7 @@ loadProfilePage = () => {
 
   const myBoardDivTXT = document.createElement("input");
   myBoardDivTXT.id = "myBoardDivTXT";
-  myBoardDivTXT.type = "text";
+  myBoardDivTXT.type = "text ";
   myBoardDivTXT.placeholder = "Your board is empty";
   myBoardDiv.appendChild(myBoardDivTXT);
 
