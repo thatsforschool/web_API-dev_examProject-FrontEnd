@@ -8,17 +8,25 @@ const signUpBtn = document.createElement("a");
 const ls = window.localStorage;
 let baseUrl;
 const fetchUrl = `http://127.0.0.1:8746`;
+const errMes = document.createElement("div");
 
-window.addEventListener("DOMContentLoaded", (e) => {
-  const currentUrl = window.location.href;
-  console.log(currentUrl);
+// checkToken = () => {
+//   let token;
+//   token = JSON.parse(ls.getItem("token"));
 
-  if (currentUrl.indexOf("?")) {
-    const currentUrlSplit = currentUrl.split("?");
-    baseUrl = currentUrlSplit[0];
-  } else {
-    baseUrl = window.location.href;
-  }
+//   switch () {
+//     case !token:
+//       console.log("no token provided");
+//       break;
+//     case (token = null):
+//       console.log("invalid username or password");
+//       errMes.id = "InvalUseOrPasMes";
+//       errMes.innerText = "Invalid user name or password";
+//       logInSect.appendChild(errMes);
+//       break;
+//     case token != null:
+//       window.location.href = `${baseUrl}?page=profile`;
+//       break;
 
   if (currentUrl.indexOf("page") == -1) {
     console.log("there is no page");
@@ -67,7 +75,9 @@ window.addEventListener("DOMContentLoaded", (e) => {
       }
     }
   }
-});
+//     default:
+//       break;
+//   }
 
 loadLogInPage = () => {
   // create main
@@ -108,6 +118,7 @@ loadLogInPage = () => {
   logInSect.appendChild(signInBtn);
 
   signInBtn.addEventListener("click", (e) => {
+    errMes.innerText = "";
     const payload = {
       email: userNameInp.value,
       password: passwordInp.value,
@@ -123,21 +134,24 @@ loadLogInPage = () => {
 
     fetch(`${fetchUrl}/api/accounts/login`, fetchOpt)
       .then((res) => {
-        const token = res.headers.get("x-authToken");
-        ls.setItem("token", token);
-        console.log(`this is token: ${ls.getItem("token")}`);
+        if (res.status == 200) {
+          const token = res.headers.get("x-authToken");
+          ls.setItem("token", token);
+          console.log(`this is token: ${ls.getItem("token")}`);
+        }
         return res.json();
       })
+
       .then((data) => {
-        ls.setItem("account", JSON.stringify(data));
-        console.log(ls.getItem("account"));
-        window.location.reload();
-        console.log(`this is the account ${account}`);
+        if (!data.statusCode && Object.keys(data).length != 0) {
+          ls.setItem("account", JSON.stringify(data));
+          console.log(ls.getItem("account"));
+          console.log(`this is the account ${ls.getItem("account")}`);
+          window.location.href = `${baseUrl}?page=profile`;
+        }
       });
 
-    if (ls.getItem("account")) {
-        window.location.href = `${baseUrl}?page=profile`;
-    }
+    console.log(`account in the ls: ${ls.getItem("account")}`);
   });
 
   // style border
@@ -165,6 +179,7 @@ loadLogInPage = () => {
   signUpBtn.href = `${baseUrl}?page=signUp`;
   signUnSect.appendChild(signUpBtn);
 };
+
 loadSignUpPage = () => {
   body.innerHTML = "";
 
@@ -226,6 +241,10 @@ loadSignUpPage = () => {
   mainSignUp.appendChild(creatAccountBtn);
 };
 loadProfilePage = () => {
+  let account;
+  account = JSON.parse(ls.getItem("account"));
+  console.log(ls.getItem("account"));
+
   body.innerHTML = "";
   body.classList.add("profileBody");
 
@@ -261,16 +280,24 @@ loadProfilePage = () => {
   userAccountIcon.src = "./assets/svg/logIn.svg";
   nav.appendChild(userAccountIcon);
 
-  //   main
-  body.appendChild(main);
+  userAccountIcon.addEventListener("click", (e) => {
+    ls.removeItem("account");
+    ls.removeItem("token");
+    window.location.href = baseUrl;
+  });
 
+  //   main
+
+  //   const accountInfo = ls.getItem('account')
+  console.log(account.displayName);
+  body.appendChild(main);
   const myBoard = document.createElement("section");
   myBoard.id = "myBoard";
   main.appendChild(myBoard);
 
   const myBoardHeadline = document.createElement("h3");
   myBoardHeadline.id = "myBoardHeadline";
-  myBoardHeadline.innerText = "My Board";
+  myBoardHeadline.innerText = `Hello ${account.displayName}`;
   myBoard.appendChild(myBoardHeadline);
 
   const myBoardDiv = document.createElement("div");
@@ -279,7 +306,7 @@ loadProfilePage = () => {
 
   const myBoardDivTXT = document.createElement("input");
   myBoardDivTXT.id = "myBoardDivTXT";
-  myBoardDivTXT.type = "text";
+  myBoardDivTXT.type = "text ";
   myBoardDivTXT.placeholder = "Your board is empty";
   myBoardDiv.appendChild(myBoardDivTXT);
 
@@ -404,6 +431,46 @@ loadProfilePage = () => {
   operatingBtnsSect.appendChild(showAllDone);
 };
 
+window.addEventListener("DOMContentLoaded", (e) => {
+  const currentUrl = window.location.href;
+  console.log(currentUrl);
+
+  if (currentUrl.indexOf("?")) {
+    const currentUrlSplit = currentUrl.split("?");
+    baseUrl = currentUrlSplit[0];
+  } else {
+    baseUrl = window.location.href;
+  }
+
+  if (currentUrl.indexOf("page") == -1) {
+    console.log("there is no page");
+    loadLogInPage();
+  } else {
+    const currentUrlSplit = currentUrl.split("?");
+    console.log(currentUrlSplit);
+    console.log("there is a page");
+    if (currentUrlSplit[1].indexOf("&") == -1) {
+      const nameSplit = currentUrlSplit[1].split("=");
+      const pageName = (pageId = nameSplit[1]);
+      console.log(pageName);
+
+      switch (true) {
+        case pageName == "signUp":
+          loadSignUpPage();
+          break;
+
+        case pageName == "profile" && ls.getItem("token") != "":
+          console.log("you are on profile page");
+          loadProfilePage();
+          console.log(`this is token ${ls.getItem("token")}`);
+          break;
+
+        default:
+          break;
+      }
+    }
+  }
+});
 // getUrl();
 
 
