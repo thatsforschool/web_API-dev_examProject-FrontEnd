@@ -9,28 +9,6 @@ let baseUrl;
 const fetchUrl = `http://127.0.0.1:8746`;
 const errMes = document.createElement("div");
 
-// checkToken = () => {
-//   let token;
-//   token = JSON.parse(ls.getItem("token"));
-
-//   switch () {
-//     case !token:
-//       console.log("no token provided");
-//       break;
-//     case (token = null):
-//       console.log("invalid username or password");
-//       errMes.id = "InvalUseOrPasMes";
-//       errMes.innerText = "Invalid user name or password";
-//       logInSect.appendChild(errMes);
-//       break;
-//     case token != null:
-//       window.location.href = `${baseUrl}?page=profile`;
-//       break;
-
-//     default:
-//       break;
-//   }
-
 loadLogInPage = () => {
   // create main
   body.appendChild(main);
@@ -200,6 +178,9 @@ loadProfilePage = () => {
   body.innerHTML = "";
   body.classList.add("profileBody");
 
+  
+
+
   //   header
   const header = document.createElement("header");
   header.id = "header";
@@ -223,20 +204,29 @@ loadProfilePage = () => {
   help.classList.add("navLink");
   nav.appendChild(help);
 
-  //   const userAccount = document.createElement("a");
-  //   userAccount.id = "userAccountBtn";
-  //   nav.appendChild(userAccount);
+  const userAccSet = document.createElement("div");
+  userAccSet.id = 'userAccSet'
+  userAccSet.classList.add("navLink");
+  nav.appendChild(userAccSet)
 
   const userAccountIcon = document.createElement("img");
   userAccountIcon.id = "userAccountIcon";
   userAccountIcon.src = "./assets/svg/logIn.svg";
-  nav.appendChild(userAccountIcon);
+  userAccSet.appendChild(userAccountIcon);
+
+    //   account settings
+
+    const accSideBar = document.createElement("div");
+    accSideBar.classList.add("hidden");
+    accSideBar.id = "accountSet";
+    userAccSet.appendChild(accSideBar)
 
   userAccountIcon.addEventListener("click", (e) => {
     ls.removeItem("account");
     ls.removeItem("token");
     window.location.href = baseUrl;
   });
+
 
   //   main
 
