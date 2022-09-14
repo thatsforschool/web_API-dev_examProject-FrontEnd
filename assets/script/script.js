@@ -86,7 +86,7 @@ loadLogInPage = () => {
 
   const signInIcon = document.createElement("img");
   signInIcon.id = "signInIcon";
-  signInIcon.src = "./web_API-dev_examProject-FrontEnd/assets/svg/signUp.svg ";
+  signInIcon.src = "./assets/svg/signUp.svg ";
   logInSect.appendChild(signInIcon);
 
   const userNameInp = document.createElement("input");
@@ -152,7 +152,7 @@ loadLogInPage = () => {
 
   const signUpIcon = document.createElement("img");
   signUpIcon.id = "signUpIcon";
-  signUpIcon.src = "./web_API-dev_examProject-FrontEnd/assets/svg/signUp.svg";
+  signUpIcon.src = "./assets/svg/signUp.svg";
   signUnSect.appendChild(signUpIcon);
 
   const signUpInvTxt = document.createElement("h2");
@@ -668,7 +668,7 @@ loadHomeworkPage = () => {
 
   const userAccountIcon = document.createElement("img");
   userAccountIcon.id = "userAccountIcon";
-  userAccountIcon.src = "./web_API-dev_examProject-FrontEnd/assets/svg/signUp.svg";
+  userAccountIcon.src = "./assets/svg/signUp.svg";
   nav.appendChild(userAccountIcon);
 
   //    Homeworkpage main
