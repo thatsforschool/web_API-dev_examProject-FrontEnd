@@ -178,9 +178,6 @@ loadProfilePage = () => {
   body.innerHTML = "";
   body.classList.add("profileBody");
 
-  
-
-
   //   header
   const header = document.createElement("header");
   header.id = "header";
@@ -205,28 +202,121 @@ loadProfilePage = () => {
   nav.appendChild(help);
 
   const userAccSet = document.createElement("div");
-  userAccSet.id = 'userAccSet'
+  userAccSet.id = "userAccSet";
   userAccSet.classList.add("navLink");
-  nav.appendChild(userAccSet)
+  nav.appendChild(userAccSet);
 
   const userAccountIcon = document.createElement("img");
   userAccountIcon.id = "userAccountIcon";
   userAccountIcon.src = "./assets/svg/logIn.svg";
   userAccSet.appendChild(userAccountIcon);
 
-    //   account settings
+  //   account settings
 
-    const accSideBar = document.createElement("div");
-    accSideBar.classList.add("hidden");
-    accSideBar.id = "accountSet";
-    userAccSet.appendChild(accSideBar)
+  const accSideBar = document.createElement("div");
+  accSideBar.classList.add("hidden");
+  accSideBar.id = "accountSet";
+  body.appendChild(accSideBar);
 
-  userAccountIcon.addEventListener("click", (e) => {
-    ls.removeItem("account");
-    ls.removeItem("token");
-    window.location.href = baseUrl;
+  userAccSet.addEventListener("click", (e) => {
+    accSideBar.classList.remove("hidden");
+
+    const exitIconLink = document.createElement("a");
+    const exitIcon = document.createElement("img");
+
+    exitIcon.src = "./assets/svg/exitIcon.svg";
+    exitIcon.id = "exitIconSet";
+    accSideBar.appendChild(exitIconLink);
+    exitIconLink.appendChild(exitIcon);
+
+    exitIconLink.addEventListener("click", (e) => {
+      accSideBar.classList.add("hidden");
+      accSideBar.innerHTML = "";
+    });
+    const pDivAccSet = document.createElement("section");
+    pDivAccSet.id = "pDivAccSet";
+    accSideBar.appendChild(pDivAccSet);
+
+    const userNamep = document.createElement("p");
+    userNamep.innerText = `username: ${account.displayName}`;
+    pDivAccSet.appendChild(userNamep);
+
+    const emailp = document.createElement("p");
+    emailp.innerText = `email: ${account.email}`;
+    pDivAccSet.appendChild(emailp);
+
+    const descriptionp = document.createElement("p");
+    descriptionp.innerText = `bio: ${account.accountDescription}`;
+    pDivAccSet.appendChild(descriptionp);
+
+    // buttons
+
+    const btnAccSet = document.createElement("section");
+    pDivAccSet.id = "btnAccSet";
+    accSideBar.appendChild(btnAccSet);
+
+    const changeUsername = document.createElement("button");
+    changeUsername.innerText = `Change Username`;
+    changeUsername.classList.add("btn");
+    btnAccSet.appendChild(changeUsername);
+
+    changeUsername.addEventListener("click", () => {
+      accSideBar.innerHTML = "";
+      const changeUserNameDiv = document.createElement("div");
+      changeUserNameDiv.id = "changeUserNameDiv";
+      accSideBar.appendChild(changeUserNameDiv);
+
+      const changeUserNameInpDiv = document.createElement("div");
+      changeUserNameInpDiv.id = "changeUserNameCur";
+      changeUserNameDiv.appendChild(changeUserNameInpDiv);
+
+      const changeUserNameCur = document.createElement("p");
+      changeUserNameCur.id = "changeUserNameCur";
+      changeUserNameCur.innerText = `current username: ${account.displayName}`;
+      changeUserNameInpDiv.appendChild(changeUserNameCur);
+
+      const changeUserNameInp = document.createElement("input");
+      changeUserNameInp.id = "changeUserNameInp";
+      changeUserNameInp.type = "text";
+      changeUserNameInp.placeholder = "new username";
+      changeUserNameInpDiv.appendChild(changeUserNameInp);
+
+      const changeUserCancel = document.createElement("button");
+      changeUserCancel.id = "changeUserCancel";
+      changeUserCancel.innerText = "cancel";
+      changeUserCancel.classList.add("btn");
+      changeUserNameDiv.appendChild(changeUserCancel);
+
+      changeUserCancel.addEventListener("click", () => {
+        window.location.reload();
+      });
+
+      const changeUserSubmit = document.createElement("button");
+      changeUserSubmit.id = "changeUserSubmit";
+      changeUserSubmit.innerText = "submit";
+      changeUserSubmit.classList.add("btn");
+      changeUserNameDiv.appendChild(changeUserSubmit);
+
+      changeUserSubmit.addEventListener('click', ()=>{
+        
+      })
+    });
+
+    const logOff = document.createElement("button");
+    logOff.innerText = `Log Off`;
+    logOff.classList.add("btn");
+    btnAccSet.appendChild(logOff);
+
+    logOff.addEventListener("click", () => {
+      ls.clear();
+      window.location.href = baseUrl;
+    });
+
+    const deletaAcc = document.createElement("button");
+    deletaAcc.innerText = `Delate Account`;
+    deletaAcc.classList.add("btn");
+    btnAccSet.appendChild(deletaAcc);
   });
-
 
   //   main
 
