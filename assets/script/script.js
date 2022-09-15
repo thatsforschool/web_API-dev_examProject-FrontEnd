@@ -8,6 +8,7 @@ const ls = window.localStorage;
 let baseUrl;
 const fetchUrl = `http://127.0.0.1:8746`;
 const errMes = document.createElement("div");
+const mainToken = ls.getItem("token");
 
 loadLogInPage = () => {
   // create main
@@ -297,9 +298,47 @@ loadProfilePage = () => {
       changeUserSubmit.classList.add("btn");
       changeUserNameDiv.appendChild(changeUserSubmit);
 
-      changeUserSubmit.addEventListener('click', ()=>{
-        
-      })
+      changeUserSubmit.addEventListener("click", () => {
+        const payload = {
+          displayName: changeUserNameInp.value,
+        };
+
+        const fetchOpt = {
+          method: "PUT",
+          headers: {
+            "Content-type": "application/json",
+            "x-authToken": mainToken,
+          },
+          body: JSON.stringify(payload),
+        };
+
+        fetch(`${fetchUrl}/api/accounts/${account.accountId}`, fetchOpt)
+          .then((res) => {
+            if (res.status == 200) {
+              console.log("succes");
+            } else {
+              console.log("not a succes");
+            }
+            return res.json();
+          })
+
+          .then((data) => {
+            if (!data.statusCode && Object.keys(data).length != 0) {
+              ls.setItem("account", JSON.stringify(data));
+              console.log(ls.getItem("account"));
+              console.log(`this is the account ${ls.getItem("account")}`);
+            }
+
+            changeUserNameDiv.innerHTML = "";
+            changeUserNameDiv.innerText = `Your username has been updated`;
+
+            reloadWINDOW = () => {
+              window.location.reload();
+            };
+
+            setTimeout(reloadWINDOW, 1500);
+          });
+      });
     });
 
     const logOff = document.createElement("button");
