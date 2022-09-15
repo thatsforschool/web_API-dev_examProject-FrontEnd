@@ -1,4 +1,3 @@
-//attempting to follow Zuza's approach here.. Not sure if i have succeeded but i hope so
 const body = document.querySelector("body");
 const main = document.createElement("main");
 const logInSect = document.createElement("form");
@@ -9,27 +8,7 @@ const ls = window.localStorage;
 let baseUrl;
 const fetchUrl = `http://127.0.0.1:8746`;
 const errMes = document.createElement("div");
-
-// checkToken = () => {
-//   let token;
-//   token = JSON.parse(ls.getItem("token"));
-
-//   switch () {
-//     case !token:
-//       console.log("no token provided");
-//       break;
-//     case (token = null):
-//       console.log("invalid username or password");
-//       errMes.id = "InvalUseOrPasMes";
-//       errMes.innerText = "Invalid user name or password";
-//       logInSect.appendChild(errMes);
-//       break;
-//     case token != null:
-//       window.location.href = `${baseUrl}?page=profile`;
-//       break;
-//     default:
-//       break;
-//}
+const mainToken = ls.getItem("token");
 
 loadLogInPage = () => {
   // create main
@@ -48,7 +27,7 @@ loadLogInPage = () => {
 
   const signInIcon = document.createElement("img");
   signInIcon.id = "signInIcon";
-  signInIcon.src = "./assets/svg/signUp.svg ";
+  signInIcon.src = "./assets/svg/logIn.svg";
   logInSect.appendChild(signInIcon);
 
   const userNameInp = document.createElement("input");
@@ -75,7 +54,6 @@ loadLogInPage = () => {
       email: userNameInp.value,
       password: passwordInp.value,
     };
-  
 
     const fetchOpt = {
       method: "POST",
@@ -101,388 +79,469 @@ loadLogInPage = () => {
           console.log(ls.getItem("account"));
           console.log(`this is the account ${ls.getItem("account")}`);
           window.location.href = `${baseUrl}?page=profile`;
-          if (currentUrl.indexOf("page") == -1) {
-            console.log("there is no page");
-            loadHomeworkPage();
-          }else 
-          {
-            const currentUrlSplit = currentUrl.split("?");
-            console.log(currentUrlSplit);
-            console.log("there is a page");
-            if (currentUrlSplit[1].indexOf("&") == -1) {
-              const nameSplit = currentUrlSplit[1].split("=");
-              const pageName = (pageId = nameSplit[1]);
-              console.log(pageName);
-
-              switch (pageName) {
-                case "signUp":
-                  loadSignUpPage();
-                  break;
-
-                case "profile":
-                  console.log("you are on profile page");
-                  loadProfilePage();
-                  break;
-
-                case "GroupPage":
-                  console.log("you are on a group page");
-                  loadGroupPage();
-                  break;
-                case "HomeworkPage":
-                  console.log("you are on a homework page");
-                  loadHomeworkPage();
-                  break;
-
-                default:
-                  break;
-              }
-            }
-          }
-
-          console.log(`account in the ls: ${ls.getItem("account")}`);
-
-          // style border
-
-          borderLogIn.classList.add("border_perpendicular");
-          borderLogIn.id = "borderLogIn";
-
-          //   create sign un section
-          signUnSect.classList.add("logIn");
-          signUnSect.classList.add("flex_column");
-          signUnSect.id = "signUpSect";
-
-          const signUpIcon = document.createElement("img");
-          signUpIcon.id = "signUpIcon";
-          signUpIcon.src = "./assets/svg/signUp.svg";
-          signUnSect.appendChild(signUpIcon);
-
-          const signUpInvTxt = document.createElement("h2");
-          signUpInvTxt.innerText = "Become a member today !";
-          signUnSect.appendChild(signUpInvTxt);
-
-          signUpBtn.classList.add("btn");
-          signUpBtn.innerText = "sign up";
-          signUpBtn.id = "signUpBtn";
-          signUpBtn.href = `${baseUrl}?page=signUp`;
-          signUnSect.appendChild(signUpBtn);
         }
-      })
-    })
-  }
-
-
-
-    loadSignUpPage = () => {
-      body.innerHTML = "";
-
-      const mainSignUp = document.createElement("form");
-      mainSignUp.id = "mainSignUp";
-      mainSignUp.classList.add("flex_column");
-      body.appendChild(mainSignUp);
-
-      const exitIconLink = document.createElement("a");
-      exitIconLink.id = "exitIcon";
-      exitIconLink.href = baseUrl;
-      mainSignUp.appendChild(exitIconLink);
-
-      const exitIcon = document.createElement("img");
-      exitIcon.src = "./assets/svg/exitIcon.svg";
-      exitIconLink.appendChild(exitIcon);
-
-      const creatAccountIcon = document.createElement("img");
-      creatAccountIcon.id = "creatAccountIcon";
-      creatAccountIcon.src = "./assets/svg/logIn.svg";
-      mainSignUp.appendChild(creatAccountIcon);
-
-      const creatAccountTxt = document.createElement("h2");
-      creatAccountTxt.innerText = "Create account";
-      mainSignUp.appendChild(creatAccountTxt);
-
-      const emailInput = document.createElement("input");
-      emailInput.id = "emailSignUp";
-      emailInput.type = "email";
-      emailInput.placeholder = "email";
-      emailInput.classList.add("signUpInput");
-      mainSignUp.appendChild(emailInput);
-
-      const userNameInput = document.createElement("input");
-      userNameInput.id = "usernameSignUp";
-      userNameInput.type = "text";
-      userNameInput.placeholder = "username";
-      userNameInput.classList.add("signUpInput");
-      mainSignUp.appendChild(userNameInput);
-
-      const passwordInput = document.createElement("input");
-      passwordInput.id = "pasSignUp";
-      passwordInput.type = "password";
-      passwordInput.placeholder = "password";
-      passwordInput.classList.add("signUpInput");
-      mainSignUp.appendChild(passwordInput);
-
-      const repeatInput = document.createElement("input");
-      repeatInput.id = "pasSignUpRepeat";
-      repeatInput.type = "password";
-      repeatInput.placeholder = "repeat password";
-      repeatInput.classList.add("signUpInput");
-      mainSignUp.appendChild(repeatInput);
-
-      const creatAccountBtn = document.createElement("button");
-      creatAccountBtn.id = "creatAccountBtn";
-      creatAccountBtn.innerText = "create account";
-      creatAccountBtn.classList.add("btn");
-      mainSignUp.appendChild(creatAccountBtn);
-    };
-
-
-
-
-
-
-
-
-
-    loadProfilePage = () => {
-      let account;
-      account = JSON.parse(ls.getItem("account"));
-      console.log(ls.getItem("account"));
-
-      body.innerHTML = "";
-      body.classList.add("profileBody");
-
-      //   header
-      const header = document.createElement("header");
-      header.id = "header";
-      body.appendChild(header);
-
-      const nav = document.createElement("nav");
-      header.appendChild(nav);
-
-      const AbTheApp = document.createElement("a");
-      AbTheApp.innerText = "about the app";
-      AbTheApp.classList.add("navLink");
-      nav.appendChild(AbTheApp);
-
-      const userGuide = document.createElement("a");
-      userGuide.innerText = "user guide";
-      userGuide.classList.add("navLink");
-      nav.appendChild(userGuide);
-
-      const help = document.createElement("a");
-      help.innerText = "help";
-      help.classList.add("navLink");
-      nav.appendChild(help);
-
-      //   const userAccount = document.createElement("a");
-      //   userAccount.id = "userAccountBtn";
-      //   nav.appendChild(userAccount);
-
-      const userAccountIcon = document.createElement("img");
-      userAccountIcon.id = "userAccountIcon";
-      userAccountIcon.src = "./assets/svg/logIn.svg";
-      nav.appendChild(userAccountIcon);
-
-      userAccountIcon.addEventListener("click", (e) => {
-        ls.removeItem("account");
-        ls.removeItem("token");
-        window.location.href = baseUrl;
       });
 
-      //   main
+    console.log(`account in the ls: ${ls.getItem("account")}`);
+  });
 
-      //   const accountInfo = ls.getItem('account')
-      console.log(account.displayName);
-      body.appendChild(main);
-      const myBoard = document.createElement("section");
-      myBoard.id = "myBoard";
-      main.appendChild(myBoard);
+  // style border
 
-      const myBoardHeadline = document.createElement("h3");
-      myBoardHeadline.id = "myBoardHeadline";
-      myBoardHeadline.innerText = `Hello ${account.displayName}`;
-      myBoard.appendChild(myBoardHeadline);
+  borderLogIn.classList.add("border_perpendicular");
+  borderLogIn.id = "borderLogIn";
 
-      const myBoardDiv = document.createElement("div");
-      myBoardDiv.id = "myBoardDiv";
-      myBoard.appendChild(myBoardDiv);
+  //   create sign un section
+  signUnSect.classList.add("logIn");
+  signUnSect.classList.add("flex_column");
+  signUnSect.id = "signUpSect";
 
-      const myBoardDivTXT = document.createElement("input");
-      myBoardDivTXT.id = "myBoardDivTXT";
-      myBoardDivTXT.type = "text ";
-      myBoardDivTXT.placeholder = "Your board is empty";
-      myBoardDiv.appendChild(myBoardDivTXT);
+  const signUpIcon = document.createElement("img");
+  signUpIcon.id = "signUpIcon";
+  signUpIcon.src = "./assets/svg/signUp.svg";
+  signUnSect.appendChild(signUpIcon);
 
-      const recentGroups = document.createElement("section");
-      recentGroups.id = "recentGroups";
-      main.appendChild(recentGroups);
+  const signUpInvTxt = document.createElement("h2");
+  signUpInvTxt.innerText = "Become a member today !";
+  signUnSect.appendChild(signUpInvTxt);
 
-      const recentGroupsHeadline = document.createElement("h4");
-      recentGroupsHeadline.id = "recentGroupsHeadline";
-      recentGroupsHeadline.innerText = "My Groups";
-      recentGroups.appendChild(recentGroupsHeadline);
+  signUpBtn.classList.add("btn");
+  signUpBtn.innerText = "sign up";
+  signUpBtn.id = "signUpBtn";
+  signUpBtn.href = `${baseUrl}?page=signUp`;
+  signUnSect.appendChild(signUpBtn);
+};
 
-      const borderRecGroupTop = document.createElement("div");
-      borderRecGroupTop.id = "borderRecGroupTop";
-      borderRecGroupTop.classList.add("borderHorizontal");
-      recentGroups.appendChild(borderRecGroupTop);
+loadSignUpPage = () => {
+  body.innerHTML = "";
 
-      const recentGroupsShow = document.createElement("section");
-      recentGroupsShow.id = "recentGroupsShow";
-      recentGroups.appendChild(recentGroupsShow);
+  const mainSignUp = document.createElement("form");
+  mainSignUp.id = "mainSignUp";
+  mainSignUp.classList.add("flex_column");
+  body.appendChild(mainSignUp);
 
-      const borderRecGroupBottom = document.createElement("div");
-      borderRecGroupBottom.id = "borderRecGroupBottom";
-      borderRecGroupBottom.classList.add("borderHorizontal");
-      recentGroups.appendChild(borderRecGroupBottom);
+  const exitIconLink = document.createElement("a");
+  exitIconLink.id = "exitIcon";
+  exitIconLink.href = baseUrl;
+  mainSignUp.appendChild(exitIconLink);
 
-      const createBtns = document.createElement("section");
-      createBtns.id = "createBtnSect";
-      createBtns.classList.add("flex_column");
-      main.appendChild(createBtns);
+  const exitIcon = document.createElement("img");
+  exitIcon.src = "./assets/svg/exitIcon.svg";
+  exitIconLink.appendChild(exitIcon);
 
-      const createTask = document.createElement("button");
-      createTask.id = "createTaskBtn";
-      createTask.innerText = "create task";
-      createTask.classList.add("btn");
-      createBtns.appendChild(createTask);
+  const creatAccountIcon = document.createElement("img");
+  creatAccountIcon.id = "creatAccountIcon";
+  creatAccountIcon.src = "./assets/svg/logIn.svg";
+  mainSignUp.appendChild(creatAccountIcon);
 
-      const createGroup = document.createElement("button");
-      createGroup.id = "createGroupBtn";
-      createGroup.innerText = "create group";
-      createGroup.classList.add("btn");
-      createBtns.appendChild(createGroup);
+  const creatAccountTxt = document.createElement("h2");
+  creatAccountTxt.innerText = "Create account";
+  mainSignUp.appendChild(creatAccountTxt);
 
-      const showAllBtns = document.createElement("section");
-      showAllBtns.id = "showAllBtns";
-      showAllBtns.classList.add("flex_column");
-      main.appendChild(showAllBtns);
+  const emailInput = document.createElement("input");
+  emailInput.id = "emailSignUp";
+  emailInput.type = "email";
+  emailInput.placeholder = "email";
+  emailInput.classList.add("signUpInput");
+  mainSignUp.appendChild(emailInput);
 
-      const showAllTasks = document.createElement("a");
-      showAllTasks.id = "showAllTasksBtn";
-      showAllTasks.innerText = "show all tasks";
-      showAllTasks.classList.add("btnREVERSE");
-      showAllBtns.appendChild(showAllTasks);
+  const userNameInput = document.createElement("input");
+  userNameInput.id = "usernameSignUp";
+  userNameInput.type = "text";
+  userNameInput.placeholder = "username";
+  userNameInput.classList.add("signUpInput");
+  mainSignUp.appendChild(userNameInput);
 
-      const showAllGroups = document.createElement("a");
-      showAllGroups.id = "showAllGroupsBtn";
-      showAllGroups.innerText = "show all groups";
-      showAllGroups.classList.add("btnREVERSE");
-      showAllBtns.appendChild(showAllGroups);
+  const passwordInput = document.createElement("input");
+  passwordInput.id = "pasSignUp";
+  passwordInput.type = "password";
+  passwordInput.placeholder = "password";
+  passwordInput.classList.add("signUpInput");
+  mainSignUp.appendChild(passwordInput);
 
-      // aside
-      const aside = document.createElement("aside");
-      aside.id = "aside";
-      body.appendChild(aside);
+  const repeatInput = document.createElement("input");
+  repeatInput.id = "pasSignUpRepeat";
+  repeatInput.type = "password";
+  repeatInput.placeholder = "repeat password";
+  repeatInput.classList.add("signUpInput");
+  mainSignUp.appendChild(repeatInput);
 
-      const headlineAside = document.createElement("h2");
-      headlineAside.id = "operatingBtnsSect";
-      headlineAside.innerText = "My Tasks";
-      aside.appendChild(headlineAside);
+  const creatAccountBtn = document.createElement("button");
+  creatAccountBtn.id = "creatAccountBtn";
+  creatAccountBtn.innerText = "create account";
+  creatAccountBtn.classList.add("btn");
+  mainSignUp.appendChild(creatAccountBtn);
+};
+loadProfilePage = () => {
+  let account;
+  account = JSON.parse(ls.getItem("account"));
+  console.log(ls.getItem("account"));
 
-      const upcomTaskSect = document.createElement("section");
-      upcomTaskSect.id = "upcomTaskSect";
-      aside.appendChild(upcomTaskSect);
+  body.innerHTML = "";
+  body.classList.add("profileBody");
 
-      const upComHeadline = document.createElement("h4");
-      upComHeadline.id = "upComHeadline";
-      upComHeadline.innerText = "Upcoming";
-      upcomTaskSect.appendChild(upComHeadline);
+  //   header
+  const header = document.createElement("header");
+  header.id = "header";
+  body.appendChild(header);
 
-      const borderUpComTop = document.createElement("div");
-      borderUpComTop.id = "borderUpComTop";
-      borderUpComTop.classList.add("borderHorizontal");
-      upcomTaskSect.appendChild(borderUpComTop);
+  const nav = document.createElement("nav");
+  header.appendChild(nav);
 
-      const upComTasks = document.createElement("section");
-      upComTasks.id = "upComTasks";
-      upcomTaskSect.appendChild(upComTasks);
+  const AbTheApp = document.createElement("a");
+  AbTheApp.innerText = "about the app";
+  AbTheApp.classList.add("navLink");
+  nav.appendChild(AbTheApp);
 
-      const borderUpComBottom = document.createElement("div");
-      borderUpComBottom.id = "borderUpComBottom";
-      borderUpComBottom.classList.add("borderHorizontal");
-      upcomTaskSect.appendChild(borderUpComBottom);
+  const userGuide = document.createElement("a");
+  userGuide.innerText = "user guide";
+  userGuide.classList.add("navLink");
+  nav.appendChild(userGuide);
 
-      const operatingBtnsSect = document.createElement("section");
-      operatingBtnsSect.id = "operatingBtnsSect";
-      operatingBtnsSect.classList.add("flex_column");
-      aside.appendChild(operatingBtnsSect);
+  const help = document.createElement("a");
+  help.innerText = "help";
+  help.classList.add("navLink");
+  nav.appendChild(help);
 
-      //Homework
-      const homeworkBtn = document.createElement("a");
-      homeworkBtn.id = "homeworkBtn";
-      homeworkBtn.innerText = "My Homework";
-      homeworkBtn.classList.add("operBtns");
-      operatingBtnsSect.appendChild(homeworkBtn);
+  const userAccSet = document.createElement("div");
+  userAccSet.id = "userAccSet";
+  userAccSet.classList.add("navLink");
+  nav.appendChild(userAccSet);
 
-      const projectsBtn = document.createElement("a");
-      projectsBtn.id = "projectsBtn";
-      projectsBtn.innerText = "My Projects";
-      projectsBtn.classList.add("operBtns");
-      operatingBtnsSect.appendChild(projectsBtn);
+  const userAccountIcon = document.createElement("img");
+  userAccountIcon.id = "userAccountIcon";
+  userAccountIcon.src = "./assets/svg/logIn.svg";
+  userAccSet.appendChild(userAccountIcon);
 
-      const assigmentsBtn = document.createElement("a");
-      assigmentsBtn.id = "assigmentsBtn";
-      assigmentsBtn.innerText = "My Assigments";
-      assigmentsBtn.classList.add("operBtns");
-      operatingBtnsSect.appendChild(assigmentsBtn);
+  //   account settings
 
-      const showAllDone = document.createElement("a");
-      showAllDone.id = "showAllDone";
-      showAllDone.innerText = "Show All Finished Tasks";
-      showAllDone.classList.add("operBtns");
-      operatingBtnsSect.appendChild(showAllDone);
-    };
+  const accSideBar = document.createElement("div");
+  accSideBar.classList.add("hidden");
+  accSideBar.id = "accountSet";
+  body.appendChild(accSideBar);
 
-    window.addEventListener("DOMContentLoaded", (e) => {
-      const currentUrl = window.location.href;
-      console.log(currentUrl);
+  userAccSet.addEventListener("click", (e) => {
+    accSideBar.classList.remove("hidden");
 
-      if (currentUrl.indexOf("?")) {
-        const currentUrlSplit = currentUrl.split("?");
-        baseUrl = currentUrlSplit[0];
-      } else {
-        baseUrl = window.location.href;
-      }
+    const exitIconLink = document.createElement("a");
+    const exitIcon = document.createElement("img");
 
-      if (currentUrl.indexOf("page") == -1) {
-        console.log("there is no page");
-        loadLogInPage();
-      } else {
-        const currentUrlSplit = currentUrl.split("?");
-        console.log(currentUrlSplit);
-        console.log("there is a page");
-        if (currentUrlSplit[1].indexOf("&") == -1) {
-          const nameSplit = currentUrlSplit[1].split("=");
-          const pageName = (pageId = nameSplit[1]);
-          console.log(pageName);
+    exitIcon.src = "./assets/svg/exitIcon.svg";
+    exitIcon.id = "exitIconSet";
+    accSideBar.appendChild(exitIconLink);
+    exitIconLink.appendChild(exitIcon);
 
-          switch (true) {
-            case pageName == "signUp":
-              loadSignUpPage();
-              break;
+    exitIconLink.addEventListener("click", (e) => {
+      accSideBar.classList.add("hidden");
+      accSideBar.innerHTML = "";
+    });
+    const pDivAccSet = document.createElement("section");
+    pDivAccSet.id = "pDivAccSet";
+    accSideBar.appendChild(pDivAccSet);
 
-            case pageName == "profile" && ls.getItem("token") != "":
-              console.log("you are on profile page");
-              loadProfilePage();
-              console.log(`this is token ${ls.getItem("token")}`);
-              break;
+    const userNamep = document.createElement("p");
+    userNamep.innerText = `username: ${account.displayName}`;
+    pDivAccSet.appendChild(userNamep);
 
-            case pageName == "homework" && ls.getItem("token") != "":
-              loadHomeworkPage();
-              console.log(`this is token ${ls.getItem("token")}`);
-              break;
+    const emailp = document.createElement("p");
+    emailp.innerText = `email: ${account.email}`;
+    pDivAccSet.appendChild(emailp);
 
-            default:
-              break;
-          }
-        }
-      }
+    const descriptionp = document.createElement("p");
+    descriptionp.innerText = `bio: ${account.accountDescription}`;
+    pDivAccSet.appendChild(descriptionp);
+
+    // buttons
+
+    const btnAccSet = document.createElement("section");
+    pDivAccSet.id = "btnAccSet";
+    accSideBar.appendChild(btnAccSet);
+
+    const changeUsername = document.createElement("button");
+    changeUsername.innerText = `Change Username`;
+    changeUsername.classList.add("btn");
+    btnAccSet.appendChild(changeUsername);
+
+    changeUsername.addEventListener("click", () => {
+      accSideBar.innerHTML = "";
+      const changeUserNameDiv = document.createElement("div");
+      changeUserNameDiv.id = "changeUserNameDiv";
+      accSideBar.appendChild(changeUserNameDiv);
+
+      const changeUserNameInpDiv = document.createElement("div");
+      changeUserNameInpDiv.id = "changeUserNameCur";
+      changeUserNameDiv.appendChild(changeUserNameInpDiv);
+
+      const changeUserNameCur = document.createElement("p");
+      changeUserNameCur.id = "changeUserNameCur";
+      changeUserNameCur.innerText = `current username: ${account.displayName}`;
+      changeUserNameInpDiv.appendChild(changeUserNameCur);
+
+      const changeUserNameInp = document.createElement("input");
+      changeUserNameInp.id = "changeUserNameInp";
+      changeUserNameInp.type = "text";
+      changeUserNameInp.placeholder = "new username";
+      changeUserNameInpDiv.appendChild(changeUserNameInp);
+
+      const changeUserCancel = document.createElement("button");
+      changeUserCancel.id = "changeUserCancel";
+      changeUserCancel.innerText = "cancel";
+      changeUserCancel.classList.add("btn");
+      changeUserNameDiv.appendChild(changeUserCancel);
+
+      changeUserCancel.addEventListener("click", () => {
+        window.location.reload();
+      });
+
+      const changeUserSubmit = document.createElement("button");
+      changeUserSubmit.id = "changeUserSubmit";
+      changeUserSubmit.innerText = "submit";
+      changeUserSubmit.classList.add("btn");
+      changeUserNameDiv.appendChild(changeUserSubmit);
+
+      changeUserSubmit.addEventListener("click", () => {
+        const payload = {
+          displayName: changeUserNameInp.value,
+        };
+
+        const fetchOpt = {
+          method: "PUT",
+          headers: {
+            "Content-type": "application/json",
+            "x-authToken": mainToken,
+          },
+          body: JSON.stringify(payload),
+        };
+
+        fetch(`${fetchUrl}/api/accounts/${account.accountId}`, fetchOpt)
+          .then((res) => {
+            if (res.status == 200) {
+              console.log("succes");
+            } else {
+              console.log("not a succes");
+            }
+          })
+
+          .then((data) => {
+            if (!data.statusCode && Object.keys(data).length != 0) {
+              ls.setItem("account", JSON.stringify(data));
+              console.log(ls.getItem("account"));
+              console.log(`this is the account ${ls.getItem("account")}`);
+              window.location.href = `${baseUrl}?page=profile`;
+            }
+            let account;
+          account = JSON.parse(ls.getItem("account"));
+          console.log(ls.getItem("account"));
+
+          console.log(`new usernam ${account.displayName}`)
+          });
+          
+      });
     });
 
-    // getUrl();
+    const logOff = document.createElement("button");
+    logOff.innerText = `Log Off`;
+    logOff.classList.add("btn");
+    btnAccSet.appendChild(logOff);
+
+    logOff.addEventListener("click", () => {
+      ls.clear();
+      window.location.href = baseUrl;
+    });
+
+    const deletaAcc = document.createElement("button");
+    deletaAcc.innerText = `Delate Account`;
+    deletaAcc.classList.add("btn");
+    btnAccSet.appendChild(deletaAcc);
+  });
+
+  //   main
+
+  //   const accountInfo = ls.getItem('account')
+  console.log(account.displayName);
+  body.appendChild(main);
+  const myBoard = document.createElement("section");
+  myBoard.id = "myBoard";
+  main.appendChild(myBoard);
+
+  const myBoardHeadline = document.createElement("h3");
+  myBoardHeadline.id = "myBoardHeadline";
+  myBoardHeadline.innerText = `Hello ${account.displayName}`;
+  myBoard.appendChild(myBoardHeadline);
+
+  const myBoardDiv = document.createElement("div");
+  myBoardDiv.id = "myBoardDiv";
+  myBoard.appendChild(myBoardDiv);
+
+  const myBoardDivTXT = document.createElement("input");
+  myBoardDivTXT.id = "myBoardDivTXT";
+  myBoardDivTXT.type = "text ";
+  myBoardDivTXT.placeholder = "Your board is empty";
+  myBoardDiv.appendChild(myBoardDivTXT);
+
+  const recentGroups = document.createElement("section");
+  recentGroups.id = "recentGroups";
+  main.appendChild(recentGroups);
+
+  const recentGroupsHeadline = document.createElement("h4");
+  recentGroupsHeadline.id = "recentGroupsHeadline";
+  recentGroupsHeadline.innerText = "My Groups";
+  recentGroups.appendChild(recentGroupsHeadline);
+
+  const borderRecGroupTop = document.createElement("div");
+  borderRecGroupTop.id = "borderRecGroupTop";
+  borderRecGroupTop.classList.add("borderHorizontal");
+  recentGroups.appendChild(borderRecGroupTop);
+
+  const recentGroupsShow = document.createElement("section");
+  recentGroupsShow.id = "recentGroupsShow";
+  recentGroups.appendChild(recentGroupsShow);
+
+  const borderRecGroupBottom = document.createElement("div");
+  borderRecGroupBottom.id = "borderRecGroupBottom";
+  borderRecGroupBottom.classList.add("borderHorizontal");
+  recentGroups.appendChild(borderRecGroupBottom);
+
+  const createBtns = document.createElement("section");
+  createBtns.id = "createBtnSect";
+  createBtns.classList.add("flex_column");
+  main.appendChild(createBtns);
+
+  const createTask = document.createElement("button");
+  createTask.id = "createTaskBtn";
+  createTask.innerText = "create task";
+  createTask.classList.add("btn");
+  createBtns.appendChild(createTask);
+
+  const createGroup = document.createElement("button");
+  createGroup.id = "createGroupBtn";
+  createGroup.innerText = "create group";
+  createGroup.classList.add("btn");
+  createBtns.appendChild(createGroup);
+
+  const showAllBtns = document.createElement("section");
+  showAllBtns.id = "showAllBtns";
+  showAllBtns.classList.add("flex_column");
+  main.appendChild(showAllBtns);
+
+  const showAllTasks = document.createElement("a");
+  showAllTasks.id = "showAllTasksBtn";
+  showAllTasks.innerText = "show all tasks";
+  showAllTasks.classList.add("btnREVERSE");
+  showAllBtns.appendChild(showAllTasks);
+
+  const showAllGroups = document.createElement("a");
+  showAllGroups.id = "showAllGroupsBtn";
+  showAllGroups.innerText = "show all groups";
+  showAllGroups.classList.add("btnREVERSE");
+  showAllBtns.appendChild(showAllGroups);
+
+  // aside
+  const aside = document.createElement("aside");
+  aside.id = "aside";
+  body.appendChild(aside);
+
+  const headlineAside = document.createElement("h2");
+  headlineAside.id = "operatingBtnsSect";
+  headlineAside.innerText = "My Tasks";
+  aside.appendChild(headlineAside);
+
+  const upcomTaskSect = document.createElement("section");
+  upcomTaskSect.id = "upcomTaskSect";
+  aside.appendChild(upcomTaskSect);
+
+  const upComHeadline = document.createElement("h4");
+  upComHeadline.id = "upComHeadline";
+  upComHeadline.innerText = "Upcoming";
+  upcomTaskSect.appendChild(upComHeadline);
+
+  const borderUpComTop = document.createElement("div");
+  borderUpComTop.id = "borderUpComTop";
+  borderUpComTop.classList.add("borderHorizontal");
+  upcomTaskSect.appendChild(borderUpComTop);
+
+  const upComTasks = document.createElement("section");
+  upComTasks.id = "upComTasks";
+  upcomTaskSect.appendChild(upComTasks);
+
+  const borderUpComBottom = document.createElement("div");
+  borderUpComBottom.id = "borderUpComBottom";
+  borderUpComBottom.classList.add("borderHorizontal");
+  upcomTaskSect.appendChild(borderUpComBottom);
+
+  const operatingBtnsSect = document.createElement("section");
+  operatingBtnsSect.id = "operatingBtnsSect";
+  operatingBtnsSect.classList.add("flex_column");
+  aside.appendChild(operatingBtnsSect);
+
+  const homeworkBtn = document.createElement("a");
+  homeworkBtn.id = "homeworkBtn";
+  homeworkBtn.innerText = "My Homework";
+  homeworkBtn.classList.add("operBtns");
+  operatingBtnsSect.appendChild(homeworkBtn);
+
+  const projectsBtn = document.createElement("a");
+  projectsBtn.id = "projectsBtn";
+  projectsBtn.innerText = "My Projects";
+  projectsBtn.classList.add("operBtns");
+  operatingBtnsSect.appendChild(projectsBtn);
+
+  const assigmentsBtn = document.createElement("a");
+  assigmentsBtn.id = "assigmentsBtn";
+  assigmentsBtn.innerText = "My Assigments";
+  assigmentsBtn.classList.add("operBtns");
+  operatingBtnsSect.appendChild(assigmentsBtn);
+
+  const showAllDone = document.createElement("a");
+  showAllDone.id = "showAllDone";
+  showAllDone.innerText = "Show All Finished Tasks";
+  showAllDone.classList.add("operBtns");
+  operatingBtnsSect.appendChild(showAllDone);
+};
+
+window.addEventListener("DOMContentLoaded", (e) => {
+  const currentUrl = window.location.href;
+  console.log(currentUrl);
+
+  if (currentUrl.indexOf("?")) {
+    const currentUrlSplit = currentUrl.split("?");
+    baseUrl = currentUrlSplit[0];
+  } else {
+    baseUrl = window.location.href;
+  }
+
+  if (currentUrl.indexOf("page") == -1) {
+    console.log("there is no page");
+    loadLogInPage();
+  } else {
+    const currentUrlSplit = currentUrl.split("?");
+    console.log(currentUrlSplit);
+    console.log("there is a page");
+    if (currentUrlSplit[1].indexOf("&") == -1) {
+      const nameSplit = currentUrlSplit[1].split("=");
+      const pageName = (pageId = nameSplit[1]);
+      console.log(pageName);
+
+      switch (true) {
+        case pageName == "signUp":
+          loadSignUpPage();
+          break;
+
+        case pageName == "profile" && ls.getItem("token") != "":
+          console.log("you are on profile page");
+          loadProfilePage();
+          console.log(`this is token ${ls.getItem("token")}`);
+          break;
+
+        default:
+          break;
+      }
+    }
+  }
+});
 
 
-    //    GroupPage setup - based on loadProfilePage()
-    loadGroupPage = () => {
+        //    GroupPage setup - based on loadProfilePage()
+        loadGroupPage = () => {
       body.innerHTML = "";
       body.classList.add("profileBody");//intentional to add profileBody class here.
 
@@ -710,681 +769,681 @@ loadLogInPage = () => {
       operatingBtnsSect.appendChild(showAllDone);
     };
 
-    //getUrl();
+  //getUrl();
 
+
+  //Homework
+  loadHomeworkPage = () => {
+    let account;
+    account = JSON.parse(ls.getItem("account"));
+    console.log(ls.getItem("account"));
+
+    body.innerHTML = "";
+    body.classList.add("HomeworkBody");
+
+    //   header on the Homework page
+    const header = document.createElement("header");
+    header.id = "header";
+    body.appendChild(header);
+
+    const nav = document.createElement("nav");
+    header.appendChild(nav);
+
+    const AbTheApp = document.createElement("a");
+    AbTheApp.innerText = "about the app";
+    AbTheApp.classList.add("navLink");
+    nav.appendChild(AbTheApp);
+
+    const userGuide = document.createElement("a");
+    userGuide.innerText = "user guide";
+    userGuide.classList.add("navLink");
+    nav.appendChild(userGuide);
+
+    const help = document.createElement("a");
+    help.innerText = "help";
+    help.classList.add("navLink");
+    nav.appendChild(help);
+
+    const userAccountIcon = document.createElement("img");
+    userAccountIcon.id = "userAccountIcon";
+    userAccountIcon.src = "./assets/svg/signUp.svg";
+    nav.appendChild(userAccountIcon);
+
+    //    Homeworkpage main
+    console.log(account.displayName);
+    body.appendChild(main);
+
+    //    Homework section
+    const myHomework = document.createElement("section");
+    myHomework.id = "myHomework";
+    main.appendChild(myHomework);
+
+    const myHomeworkHeadline = document.createElement("h3");
+    myHomeworkHeadline.id = "myHomeworkHeadline";
+    myHomeworkHeadline.innerText = `${account.displayName}'s Homework`;
+    myHomework.appendChild(myHomeworkHeadline);
+
+    const myHomeworkDiv = document.createElement("div");
+    myHomeworkDiv.id = "myHomeworkDiv";
+    myHomework.appendChild(myHomeworkDiv);
+
+    const myHomeworkDivMembers = document.createElement("ul");
+    myHomeworkDivMembers.id = "myHomeworkList";
+    myHomeworkDiv.appendChild(myHomeworkDivMembers);
+
+    const myHomeworkDivMember = document.createElement("li");
+    myHomeworkDivMember.id = "myHomeworkDivMember";
+    myHomeworkDivMember.innerText = "Homework List";
+    myHomeworkDivMembers.appendChild(myHomeworkDivMember);
+
+    //    HomeworkTask section (on the right side of the screen)
+    const homeworkTasks = document.createElement("section");
+    homeworkTasks.id = "homeworkTasks";
+    main.appendChild(homeworkTasks);
+
+    //    Homework tasks - Create a task button
+    const homeworkTasksCreateTaskBtn = document.createElement("button");
+    homeworkTasksCreateTaskBtn.id = "homeworkTasksCreateTaskBtn";
+    homeworkTasksCreateTaskBtn.innerText = "Create Homework";
+    homeworkTasksCreateTaskBtn.classList.add("btn");
+    homeworkTasks.appendChild(homeworkTasksCreateTaskBtn);
+
+    //    Homework tasks - upcoming tasks 
+    const homeworkTasksUpcoming = document.createElement("div");
+    homeworkTasksUpcoming.id = "homeworkTasksUpcoming";
+    homeworkTasks.appendChild(homeworkTasksUpcoming);
+
+    const homeworkTasksUpcomingHeadline = document.createElement("h4");
+    homeworkTasksUpcomingHeadline.id = "homeworkTasksUpcomingHeadline";
+    homeworkTasksUpcomingHeadline.innerText = "Upcoming Homework";
+    homeworkTasksUpcoming.appendChild(homeworkTasksUpcomingHeadline);
+
+    const borderHomeworkTasksUpcTop = document.createElement("div");
+    borderHomeworkTasksUpcTop.id = "borderHomeworkTasksUpcTop";
+    borderHomeworkTasksUpcTop.classList.add("borderHorizontal");
+    homeworkTasksUpcoming.appendChild(borderHomeworkTasksUpcTop);
+
+
+    //   Table to store upcoming tasks
+    const homeworkTasksUpcShow = document.createElement("table");
+    homeworkTasksUpcShow.id = "homeworkTasksUpcShow";
+    homeworkTasksUpcoming.appendChild(homeworkTasksUpcShow);
+
+    const homeworkTasksUpcShowTr = document.createElement("tr");
+    homeworkTasksUpcShowTr.id = "homeworkTasksUpcShowTr";
+    homeworkTasksUpcShow.appendChild(homeworkTasksUpcShowTr);
+
+    const homeworkTasksUpcShowTaskName = document.createElement("td");
+    homeworkTasksUpcShowTaskName.id = "homeworkTasksUpcShowTaskName";
+    homeworkTasksUpcShowTaskName.innerText = "Task Name";
+    homeworkTasksUpcShowTr.appendChild(homeworkTasksUpcShowTaskName);
+
+    const homeworkTasksUpcShowTaskColor = document.createElement("td");
+    homeworkTasksUpcShowTaskColor.id = "homeworkTasksUpcShowTaskColor";
+    homeworkTasksUpcShowTaskColor.innerText = "Task Type";
+    homeworkTasksUpcShowTr.appendChild(homeworkTasksUpcShowTaskColor);
+
+    const borderHomeworkTasksUpcBottom = document.createElement("div");
+    borderHomeworkTasksUpcBottom.id = "borderHomeworkTasksUpcBottom";
+    borderHomeworkTasksUpcBottom.classList.add("borderHorizontal");
+    homeworkTasksUpcoming.appendChild(borderHomeworkTasksUpcBottom);
+
+
+    //    Section to store all the homework's tasks
+    const allHomeworkTasks = document.createElement("section");
+    allHomeworkTasks.id = "allHomeworkTasks";
+    main.appendChild(allHomeworkTasks);
+
+    const allHomeworkTasksHeadline = document.createElement("h3");
+    allHomeworkTasksHeadline.id = "allHomeworkTasksHeadline";
+    allHomeworkTasks.appendChild(allHomeworkTasksHeadline);
+
+    const allHomeworkTasksTable = document.createElement("table");
+    allHomeworkTasksTable.id = "allHomeworkTasksTable";
+    allHomeworkTasks.appendChild(allHomeworkTasksTable);
+
+    const allHomeworkTasksTableTr = document.createElement("tr");
+    allHomeworkTasksTableTr.id = "allHomeworkTasksTableTr";
+    allHomeworkTasksTable.appendChild(allHomeworkTasksTableTr);
+
+    const allHomeworkTasksTableTaskName = document.createElement("th");
+    allHomeworkTasksTableTaskName.id = "allHomeworkTasksTableTaskName";
+    allHomeworkTasksTableTaskName.innerText = "Task Name";
+    allHomeworkTasksTableTr.appendChild(allHomeworkTasksTableTaskName);
+
+    const allHomeworkTasksTableTaskAssignedTo = document.createElement("th");
+    allHomeworkTasksTableTaskAssignedTo.id = "allHomeworkTasksTableTaskAssignedTo";
+    allHomeworkTasksTableTaskAssignedTo.innerText = "Assigned To";
+    allHomeworkTasksTableTr.appendChild(allHomeworkTasksTableTaskAssignedTo);
+
+    const allHomeworkTasksTableTaskDueDate = document.createElement("th");
+    allHomeworkTasksTableTaskDueDate.id = "allHomeworkTasksTableTaskDueDate";
+    allHomeworkTasksTableTaskDueDate.innerText = "Due Date";
+    allHomeworkTasksTableTr.appendChild(allHomeworkTasksTableTaskDueDate);
+
+    const allHomeworkTasksTableTaskStatus = document.createElement("th");
+    allHomeworkTasksTableTaskStatus.id = "allHomeworkTasksTableTaskStatus";
+    allHomeworkTasksTableTaskStatus.innerText = "Status";
+    allHomeworkTasksTableTr.appendChild(allHomeworkTasksTableTaskStatus);
+
+    const allHomeworkTasksTableTaskLabel = document.createElement("th");
+    allHomeworkTasksTableTaskLabel.id = "allHomeworkTasksTableTaskLabel";
+    allHomeworkTasksTableTaskLabel.innerText = "Task Label";
+    allHomeworkTasksTableTr.appendChild(allHomeworkTasksTableTaskLabel);
+
+    //  aside on the Homework page
+    const aside = document.createElement("aside");
+    aside.id = "aside";
+    body.appendChild(aside);
+
+    const headlineAside = document.createElement("h2");
+    headlineAside.id = "operatingBtnsSect";
+    headlineAside.innerText = "My Tasks";
+    aside.appendChild(headlineAside);
+
+    const upcomTaskSect = document.createElement("section");
+    upcomTaskSect.id = "upcomTaskSect";
+    aside.appendChild(upcomTaskSect);
+
+    const upComHeadline = document.createElement("h4");
+    upComHeadline.id = "upComHeadline";
+    upComHeadline.innerText = "Upcoming";
+    upcomTaskSect.appendChild(upComHeadline);
+
+    const borderUpComTop = document.createElement("div");
+    borderUpComTop.id = "borderUpComTop";
+    borderUpComTop.classList.add("borderHorizontal");
+    upcomTaskSect.appendChild(borderUpComTop);
+
+    const upComTasks = document.createElement("section");
+    upComTasks.id = "upComTasks";
+    upcomTaskSect.appendChild(upComTasks);
+
+    const upComTaskList = document.createElement("li");
+    console.log(task.displayName)
+    upComTaskList.id = "upComTaskList";
+    upComTasks.appendChild(upComTaskList);
+
+    const borderUpComBottom = document.createElement("div");
+    borderUpComBottom.id = "borderUpComBottom";
+    borderUpComBottom.classList.add("borderHorizontal");
+    upcomTaskSect.appendChild(borderUpComBottom);
+
+    const operatingBtnsSect = document.createElement("section");
+    operatingBtnsSect.id = "operatingBtnsSect";
+    operatingBtnsSect.classList.add("flex_column");
+    aside.appendChild(operatingBtnsSect);
 
     //Homework
-    loadHomeworkPage = () => {
-      let account;
-      account = JSON.parse(ls.getItem("account"));
-      console.log(ls.getItem("account"));
-
-      body.innerHTML = "";
-      body.classList.add("HomeworkBody");
-
-      //   header on the Homework page
-      const header = document.createElement("header");
-      header.id = "header";
-      body.appendChild(header);
-
-      const nav = document.createElement("nav");
-      header.appendChild(nav);
-
-      const AbTheApp = document.createElement("a");
-      AbTheApp.innerText = "about the app";
-      AbTheApp.classList.add("navLink");
-      nav.appendChild(AbTheApp);
-
-      const userGuide = document.createElement("a");
-      userGuide.innerText = "user guide";
-      userGuide.classList.add("navLink");
-      nav.appendChild(userGuide);
-
-      const help = document.createElement("a");
-      help.innerText = "help";
-      help.classList.add("navLink");
-      nav.appendChild(help);
-
-      const userAccountIcon = document.createElement("img");
-      userAccountIcon.id = "userAccountIcon";
-      userAccountIcon.src = "./assets/svg/signUp.svg";
-      nav.appendChild(userAccountIcon);
-
-      //    Homeworkpage main
-      console.log(account.displayName);
-      body.appendChild(main);
-
-      //    Homework section
-      const myHomework = document.createElement("section");
-      myHomework.id = "myHomework";
-      main.appendChild(myHomework);
-
-      const myHomeworkHeadline = document.createElement("h3");
-      myHomeworkHeadline.id = "myHomeworkHeadline";
-      myHomeworkHeadline.innerText = `${account.displayName}'s Homework`;
-      myHomework.appendChild(myHomeworkHeadline);
-
-      const myHomeworkDiv = document.createElement("div");
-      myHomeworkDiv.id = "myHomeworkDiv";
-      myHomework.appendChild(myHomeworkDiv);
-
-      const myHomeworkDivMembers = document.createElement("ul");
-      myHomeworkDivMembers.id = "myHomeworkList";
-      myHomeworkDiv.appendChild(myHomeworkDivMembers);
-
-      const myHomeworkDivMember = document.createElement("li");
-      myHomeworkDivMember.id = "myHomeworkDivMember";
-      myHomeworkDivMember.innerText = "Homework List";
-      myHomeworkDivMembers.appendChild(myHomeworkDivMember);
-
-      //    HomeworkTask section (on the right side of the screen)
-      const homeworkTasks = document.createElement("section");
-      homeworkTasks.id = "homeworkTasks";
-      main.appendChild(homeworkTasks);
-
-      //    Homework tasks - Create a task button
-      const homeworkTasksCreateTaskBtn = document.createElement("button");
-      homeworkTasksCreateTaskBtn.id = "homeworkTasksCreateTaskBtn";
-      homeworkTasksCreateTaskBtn.innerText = "Create Homework";
-      homeworkTasksCreateTaskBtn.classList.add("btn");
-      homeworkTasks.appendChild(homeworkTasksCreateTaskBtn);
-
-      //    Homework tasks - upcoming tasks 
-      const homeworkTasksUpcoming = document.createElement("div");
-      homeworkTasksUpcoming.id = "homeworkTasksUpcoming";
-      homeworkTasks.appendChild(homeworkTasksUpcoming);
-
-      const homeworkTasksUpcomingHeadline = document.createElement("h4");
-      homeworkTasksUpcomingHeadline.id = "homeworkTasksUpcomingHeadline";
-      homeworkTasksUpcomingHeadline.innerText = "Upcoming Homework";
-      homeworkTasksUpcoming.appendChild(homeworkTasksUpcomingHeadline);
-
-      const borderHomeworkTasksUpcTop = document.createElement("div");
-      borderHomeworkTasksUpcTop.id = "borderHomeworkTasksUpcTop";
-      borderHomeworkTasksUpcTop.classList.add("borderHorizontal");
-      homeworkTasksUpcoming.appendChild(borderHomeworkTasksUpcTop);
-
-
-      //   Table to store upcoming tasks
-      const homeworkTasksUpcShow = document.createElement("table");
-      homeworkTasksUpcShow.id = "homeworkTasksUpcShow";
-      homeworkTasksUpcoming.appendChild(homeworkTasksUpcShow);
-
-      const homeworkTasksUpcShowTr = document.createElement("tr");
-      homeworkTasksUpcShowTr.id = "homeworkTasksUpcShowTr";
-      homeworkTasksUpcShow.appendChild(homeworkTasksUpcShowTr);
-
-      const homeworkTasksUpcShowTaskName = document.createElement("td");
-      homeworkTasksUpcShowTaskName.id = "homeworkTasksUpcShowTaskName";
-      homeworkTasksUpcShowTaskName.innerText = "Task Name";
-      homeworkTasksUpcShowTr.appendChild(homeworkTasksUpcShowTaskName);
-
-      const homeworkTasksUpcShowTaskColor = document.createElement("td");
-      homeworkTasksUpcShowTaskColor.id = "homeworkTasksUpcShowTaskColor";
-      homeworkTasksUpcShowTaskColor.innerText = "Task Type";
-      homeworkTasksUpcShowTr.appendChild(homeworkTasksUpcShowTaskColor);
-
-      const borderHomeworkTasksUpcBottom = document.createElement("div");
-      borderHomeworkTasksUpcBottom.id = "borderHomeworkTasksUpcBottom";
-      borderHomeworkTasksUpcBottom.classList.add("borderHorizontal");
-      homeworkTasksUpcoming.appendChild(borderHomeworkTasksUpcBottom);
-
-
-      //    Section to store all the homework's tasks
-      const allHomeworkTasks = document.createElement("section");
-      allHomeworkTasks.id = "allHomeworkTasks";
-      main.appendChild(allHomeworkTasks);
-
-      const allHomeworkTasksHeadline = document.createElement("h3");
-      allHomeworkTasksHeadline.id = "allHomeworkTasksHeadline";
-      allHomeworkTasks.appendChild(allHomeworkTasksHeadline);
-
-      const allHomeworkTasksTable = document.createElement("table");
-      allHomeworkTasksTable.id = "allHomeworkTasksTable";
-      allHomeworkTasks.appendChild(allHomeworkTasksTable);
-
-      const allHomeworkTasksTableTr = document.createElement("tr");
-      allHomeworkTasksTableTr.id = "allHomeworkTasksTableTr";
-      allHomeworkTasksTable.appendChild(allHomeworkTasksTableTr);
-
-      const allHomeworkTasksTableTaskName = document.createElement("th");
-      allHomeworkTasksTableTaskName.id = "allHomeworkTasksTableTaskName";
-      allHomeworkTasksTableTaskName.innerText = "Task Name";
-      allHomeworkTasksTableTr.appendChild(allHomeworkTasksTableTaskName);
-
-      const allHomeworkTasksTableTaskAssignedTo = document.createElement("th");
-      allHomeworkTasksTableTaskAssignedTo.id = "allHomeworkTasksTableTaskAssignedTo";
-      allHomeworkTasksTableTaskAssignedTo.innerText = "Assigned To";
-      allHomeworkTasksTableTr.appendChild(allHomeworkTasksTableTaskAssignedTo);
-
-      const allHomeworkTasksTableTaskDueDate = document.createElement("th");
-      allHomeworkTasksTableTaskDueDate.id = "allHomeworkTasksTableTaskDueDate";
-      allHomeworkTasksTableTaskDueDate.innerText = "Due Date";
-      allHomeworkTasksTableTr.appendChild(allHomeworkTasksTableTaskDueDate);
-
-      const allHomeworkTasksTableTaskStatus = document.createElement("th");
-      allHomeworkTasksTableTaskStatus.id = "allHomeworkTasksTableTaskStatus";
-      allHomeworkTasksTableTaskStatus.innerText = "Status";
-      allHomeworkTasksTableTr.appendChild(allHomeworkTasksTableTaskStatus);
-
-      const allHomeworkTasksTableTaskLabel = document.createElement("th");
-      allHomeworkTasksTableTaskLabel.id = "allHomeworkTasksTableTaskLabel";
-      allHomeworkTasksTableTaskLabel.innerText = "Task Label";
-      allHomeworkTasksTableTr.appendChild(allHomeworkTasksTableTaskLabel);
-
-      //  aside on the Homework page
-      const aside = document.createElement("aside");
-      aside.id = "aside";
-      body.appendChild(aside);
-
-      const headlineAside = document.createElement("h2");
-      headlineAside.id = "operatingBtnsSect";
-      headlineAside.innerText = "My Tasks";
-      aside.appendChild(headlineAside);
-
-      const upcomTaskSect = document.createElement("section");
-      upcomTaskSect.id = "upcomTaskSect";
-      aside.appendChild(upcomTaskSect);
-
-      const upComHeadline = document.createElement("h4");
-      upComHeadline.id = "upComHeadline";
-      upComHeadline.innerText = "Upcoming";
-      upcomTaskSect.appendChild(upComHeadline);
-
-      const borderUpComTop = document.createElement("div");
-      borderUpComTop.id = "borderUpComTop";
-      borderUpComTop.classList.add("borderHorizontal");
-      upcomTaskSect.appendChild(borderUpComTop);
-
-      const upComTasks = document.createElement("section");
-      upComTasks.id = "upComTasks";
-      upcomTaskSect.appendChild(upComTasks);
-
-      const upComTaskList = document.createElement("li");
-      console.log(task.displayName)
-      upComTaskList.id = "upComTaskList";
-      upComTasks.appendChild(upComTaskList);
-
-      const borderUpComBottom = document.createElement("div");
-      borderUpComBottom.id = "borderUpComBottom";
-      borderUpComBottom.classList.add("borderHorizontal");
-      upcomTaskSect.appendChild(borderUpComBottom);
-
-      const operatingBtnsSect = document.createElement("section");
-      operatingBtnsSect.id = "operatingBtnsSect";
-      operatingBtnsSect.classList.add("flex_column");
-      aside.appendChild(operatingBtnsSect);
-
-      //Homework
-      const homeworkBtn = document.createElement("a");
-      homeworkBtn.id = "homeworkBtn";
-      homeworkBtn.innerText = "My Homework";
-      homeworkBtn.classList.add("operBtns");
-      operatingBtnsSect.appendChild(homeworkBtn);
-
-      const projectsBtn = document.createElement("a");
-      projectsBtn.id = "projectsBtn";
-      projectsBtn.innerText = "My Projects";
-      projectsBtn.classList.add("operBtns");
-      operatingBtnsSect.appendChild(projectsBtn);
-
-      const assigmentsBtn = document.createElement("a");
-      assigmentsBtn.id = "assigmentsBtn";
-      assigmentsBtn.innerText = "My Assigments";
-      assigmentsBtn.classList.add("operBtns");
-      operatingBtnsSect.appendChild(assigmentsBtn);
-
-      const showAllDone = document.createElement("a");
-      showAllDone.id = "showAllDone";
-      showAllDone.innerText = "Show All Finished Tasks";
-      showAllDone.classList.add("operBtns");
-      operatingBtnsSect.appendChild(showAllDone);
-    };
-    //My Projects
-    loadMyProjects = () => {
-
-      body.innerHTML = "";
-      body.classList.add("myProjectBody");
-
-      //HEADER
-      //   header on the My project page
-      const header = document.createElement("header");
-      header.id = "header";
-      body.appendChild(header);
-
-      const nav = document.createElement("nav");
-      header.appendChild(nav);
-
-      const AbTheApp = document.createElement("a");
-      AbTheApp.innerText = "about the app";
-      AbTheApp.classList.add("navLink");
-      nav.appendChild(AbTheApp);
-
-      const userGuide = document.createElement("a");
-      userGuide.innerText = "user guide";
-      userGuide.classList.add("navLink");
-      nav.appendChild(userGuide);
-
-      const help = document.createElement("a");
-      help.innerText = "help";
-      help.classList.add("navLink");
-      nav.appendChild(help);
-
-      const userAccountIcon = document.createElement("img");
-      userAccountIcon.id = "userAccountIcon";
-      userAccountIcon.src = "./web_API-dev_examProject-FrontEnd/assets/svg/signUp.svg";
-      nav.appendChild(userAccountIcon);
-
-
-      body.appendChild(main);
-
-      //    Projects section
-      const myProject = document.createElement("section");
-      myProject.id = "myProject";
-      main.appendChild(myProject);
-
-      const myProjectHeadline = document.createElement("h3");
-      myProjectHeadline.id = "myProjectHeadline";
-      myProjectHeadline.innerText = "My Project";
-      myProject.appendChild(myProjectHeadline);
-
-      const myProjectDiv = document.createElement("div");
-      myProjectDiv.id = "myProjectDiv";
-      myProject.appendChild(myProjectDiv);
-
-      const myProjectDivMembers = document.createElement("ul");
-      myProjectDivMembers.id = "myProjectList";
-      myProjectDiv.appendChild(myProjectDivMembers);
-
-      const myProjectDivMember = document.createElement("li");
-      myProjectDivMember.innerText = "Project List";
-      myProjectDivMember.id = "myProjectDivMember";
-      myProjectDivMembers.appendChild(myProjectDivMember);
-
-      //    HomeworkTask section (on the right side of the screen)
-      const projectTasks = document.createElement("section");
-      projectTasks.id = "projectTasks";
-      main.appendChild(projectTasks);
-
-      //    Homework tasks - Create a task button
-      const projectTasksCreateTaskBtn = document.createElement("button");
-      projectTasksCreateTaskBtn.id = "projectTasksCreateTaskBtn";
-      projectTasksCreateTaskBtn.innerText = "Create Project";
-      projectTasksCreateTaskBtn.classList.add("btn");
-      projectTasks.appendChild(projectTasksCreateTaskBtn);
-
-      //    Homework tasks - upcoming tasks 
-      const projectTasksUpcoming = document.createElement("div");
-      projectTasksUpcoming.id = "projectTasksUpcoming";
-      projectTasks.appendChild(projectTasksUpcoming);
-
-      const projectTasksUpcomingHeadline = document.createElement("h4");
-      projectTasksUpcomingHeadline.id = "projectTasksUpcomingHeadline";
-      projectTasksUpcomingHeadline.innerText = "Upcoming Homework";
-      projectTasksUpcoming.appendChild(projectTasksUpcomingHeadline);
-
-      const borderProjectTasksUpcTop = document.createElement("div");
-      borderProjectTasksUpcTop.id = "borderProjectTasksUpcTop";
-      borderProjectTasksUpcTop.classList.add("borderHorizontal");
-      projectTasksUpcoming.appendChild(borderProjectTasksUpcTop);
-
-
-      //   Table to store upcoming tasks
-      const projectTasksUpcShow = document.createElement("table");
-      projectTasksUpcShow.id = "projectTasksUpcShow";
-      projectTasksUpcoming.appendChild(projectTasksUpcShow);
-
-      const projectTasksUpcShowTr = document.createElement("tr");
-      projectTasksUpcShowTr.id = "projectTasksUpcShowTr";
-      projectTasksUpcShow.appendChild(projectTasksUpcShowTr);
-
-      const projectTasksUpcShowTaskName = document.createElement("td");
-      projectTasksUpcShowTaskName.id = "projectTasksUpcShowTaskName";
-      projectTasksUpcShowTaskName.innerText = "Task Name";
-      projectTasksUpcShowTr.appendChild(projectTasksUpcShowTaskName);
-
-      const projectTasksUpcShowTaskColor = document.createElement("td");
-      projectTasksUpcShowTaskColor.id = "projectTasksUpcShowTaskColor";
-      projectTasksUpcShowTaskColor.innerText = "Task Type";
-      projectTasksUpcShowTr.appendChild(projectTasksUpcShowTaskColor);
-
-      const borderProjectTasksUpcBottom = document.createElement("div");
-      borderProjectTasksUpcBottom.id = "borderProjectTasksUpcBottom";
-      borderProjectTasksUpcBottom.classList.add("borderHorizontal");
-      projectTasksUpcoming.appendChild(borderProjectTasksUpcBottom);
-
-
-      //    Section to store all the homework's tasks
-      const allProjectTasks = document.createElement("section");
-      allProjectTasks.id = "allProjectTasks";
-      main.appendChild(allProjectTasks);
-
-      const allProjectTasksHeadline = document.createElement("h3");
-      allProjectTasksHeadline.id = "allProjectTasksHeadline";
-      allProjectTasks.appendChild(allProjectTasksHeadline);
-
-      const allProjectTasksTable = document.createElement("table");
-      allProjectTasksTable.id = "allProjectTasksTable";
-      allProjectTasks.appendChild(allProjectTasksTable);
-
-      const allProjectTasksTableTr = document.createElement("tr");
-      allProjectTasksTableTr.id = "allProjectTasksTableTr";
-      allProjectTasksTable.appendChild(allProjectTasksTableTr);
-
-      const allProjectTasksTableTaskName = document.createElement("th");
-      allProjectTasksTableTaskName.id = "allProjectTasksTableTaskName";
-      allProjectTasksTableTaskName.innerText = "Task Name";
-      allProjectTasksTableTr.appendChild(allProjectTasksTableTaskName);
-
-      const allProjectTasksTableTaskAssignedTo = document.createElement("th");
-      allProjectTasksTableTaskAssignedTo.id = "allProjectTasksTableTaskAssignedTo";
-      allProjectTasksTableTaskAssignedTo.innerText = "Assigned To";
-      allProjectTasksTableTr.appendChild(allProjectTasksTableTaskAssignedTo);
-
-      const allProjectTasksTableTaskDueDate = document.createElement("th");
-      allProjectTasksTableTaskDueDate.id = "allProjectTasksTableTaskDueDate";
-      allProjectTasksTableTaskDueDate.innerText = "Due Date";
-      allProjectTasksTableTr.appendChild(allProjectTasksTableTaskDueDate);
-
-      const allProjectTasksTableTaskStatus = document.createElement("th");
-      allProjectTasksTableTaskStatus.id = "allProjectTasksTableTaskStatus";
-      allProjectTasksTableTaskStatus.innerText = "Status";
-      allProjectTasksTableTr.appendChild(allProjectTasksTableTaskStatus);
-
-      const allProjectTasksTableTaskLabel = document.createElement("th");
-      allProjectTasksTableTaskLabel.id = "allProjectTasksTableTaskLabel";
-      allProjectTasksTableTaskLabel.innerText = "Task Label";
-      allProjectTasksTableTr.appendChild(allProjectTasksTableTaskLabel);
-
-
-
-
-
-      //  aside on the Homework page
-      const aside = document.createElement("aside");
-      aside.id = "aside";
-      body.appendChild(aside);
-
-      const headlineAside = document.createElement("h2");
-      headlineAside.id = "operatingBtnsSect";
-      headlineAside.innerText = "My Tasks";
-      aside.appendChild(headlineAside);
-
-      const upcomTaskSect = document.createElement("section");
-      upcomTaskSect.id = "upcomTaskSect";
-      aside.appendChild(upcomTaskSect);
-
-      const upComHeadline = document.createElement("h4");
-      upComHeadline.id = "upComHeadline";
-      upComHeadline.innerText = "Upcoming";
-      upcomTaskSect.appendChild(upComHeadline);
-
-      const borderUpComTop = document.createElement("div");
-      borderUpComTop.id = "borderUpComTop";
-      borderUpComTop.classList.add("borderHorizontal");
-      upcomTaskSect.appendChild(borderUpComTop);
-
-      const upComTasks = document.createElement("section");
-      upComTasks.id = "upComTasks";
-      upcomTaskSect.appendChild(upComTasks);
-
-      const borderUpComBottom = document.createElement("div");
-      borderUpComBottom.id = "borderUpComBottom";
-      borderUpComBottom.classList.add("borderHorizontal");
-      upcomTaskSect.appendChild(borderUpComBottom);
-
-      const operatingBtnsSect = document.createElement("section");
-      operatingBtnsSect.id = "operatingBtnsSect";
-      operatingBtnsSect.classList.add("flex_column");
-      aside.appendChild(operatingBtnsSect);
-
-      //Homework
-      const homeworkBtn = document.createElement("a");
-      homeworkBtn.id = "homeworkBtn";
-      homeworkBtn.innerText = "My Homework";
-      homeworkBtn.classList.add("operBtns");
-      operatingBtnsSect.appendChild(homeworkBtn);
-
-      const projectsBtn = document.createElement("a");
-      projectsBtn.id = "projectsBtn";
-      projectsBtn.innerText = "My Projects";
-      projectsBtn.classList.add("operBtns");
-      operatingBtnsSect.appendChild(projectsBtn);
-
-      const assigmentsBtn = document.createElement("a");
-      assigmentsBtn.id = "assigmentsBtn";
-      assigmentsBtn.innerText = "My Assigments";
-      assigmentsBtn.classList.add("operBtns");
-      operatingBtnsSect.appendChild(assigmentsBtn);
-
-      const showAllDone = document.createElement("a");
-      showAllDone.id = "showAllDone";
-      showAllDone.innerText = "Show All Finished Tasks";
-      showAllDone.classList.add("operBtns");
-      operatingBtnsSect.appendChild(showAllDone);
-
-
-    };
-
-    //Assignemts
-    loadAssigments = () => {
-
-      body.innerHTML = "";
-      body.classList.add("assigmentsBody");
-
-      //HEADER
-      //   header on the Assigment page
-      const header = document.createElement("header");
-      header.id = "header";
-      body.appendChild(header);
-
-      const nav = document.createElement("nav");
-      header.appendChild(nav);
-
-      const AbTheApp = document.createElement("a");
-      AbTheApp.innerText = "about the app";
-      AbTheApp.classList.add("navLink");
-      nav.appendChild(AbTheApp);
-
-      const userGuide = document.createElement("a");
-      userGuide.innerText = "user guide";
-      userGuide.classList.add("navLink");
-      nav.appendChild(userGuide);
-
-      const help = document.createElement("a");
-      help.innerText = "help";
-      help.classList.add("navLink");
-      nav.appendChild(help);
-
-      const userAccountIcon = document.createElement("img");
-      userAccountIcon.id = "userAccountIcon";
-      userAccountIcon.src = "./assets/svg/signUp.svg";
-      nav.appendChild(userAccountIcon);
-
-
-      body.appendChild(main);
-
-      //    Assigment section
-      const myAssigment = document.createElement("section");
-      myAssigment.id = "myAssigment";
-      main.appendChild(myAssigment);
-
-      const myAssigmentHeadline = document.createElement("h3");
-      myAssigmentHeadline.id = "myAssigmentHeadline";
-      myAssigmentHeadline.innerText = "My Assigment";
-      myAssigment.appendChild(myAssigmentHeadline);
-
-      const myAssigmentDiv = document.createElement("div");
-      myAssigmentDiv.id = "myAssigmentDiv";
-      myAssigment.appendChild(myAssigmentDiv);
-
-      const myAssigmentDivMembers = document.createElement("ul");
-      myAssigmentDivMembers.id = "myAssigmentList";
-      myAssigmentDiv.appendChild(myAssigmentDivMembers);
-
-      const myAssigmentDivMember = document.createElement("li");
-      myAssigmentDivMember.id = "myAssigmentDivMember";
-      myAssigmentDivMember.innerText = "Assigment List";
-      myAssigmentDivMembers.appendChild(myAssigmentDivMember);
-
-      //     section (on the right side of the screen)
-      const assigmentTasks = document.createElement("section");
-      assigmentTasks.id = "assigmentTasks";
-      main.appendChild(assigmentTasks);
-
-      //    Create a task button
-      const assigmentTasksCreateTaskBtn = document.createElement("button");
-      assigmentTasksCreateTaskBtn.id = "assigmentTasksCreateTaskBtn";
-      assigmentTasksCreateTaskBtn.innerText = "Create Assign";
-      assigmentTasksCreateTaskBtn.classList.add("btn");
-      assigmentTasks.appendChild(assigmentTasksCreateTaskBtn);
-
-      //   tasks - upcoming tasks 
-      const assigmentTasksUpcoming = document.createElement("div");
-      assigmentTasksUpcoming.id = "assigmentTasksUpcoming";
-      assigmentTasks.appendChild(assigmentTasksUpcoming);
-
-      const assigmentTasksUpcomingHeadline = document.createElement("h4");
-      assigmentTasksUpcomingHeadline.id = "assigmentTasksUpcomingHeadline";
-      assigmentTasksUpcomingHeadline.innerText = "Upcoming Homework";
-      assigmentTasksUpcoming.appendChild(assigmentTasksUpcomingHeadline);
-
-      const borderAssigmentTasksUpcTop = document.createElement("div");
-      borderAssigmentTasksUpcTop.id = "borderAssigmentTasksUpcTop";
-      borderAssigmentTasksUpcTop.classList.add("borderHorizontal");
-      assigmentTasksUpcoming.appendChild(borderAssigmentTasksUpcTop);
-
-
-      //   Table to store upcoming tasks
-      const assigmentTasksUpcShow = document.createElement("table");
-      assigmentTasksUpcShow.id = "assigmentTasksUpcShow";
-      assigmentTasksUpcoming.appendChild(assigmentTasksUpcShow);
-
-      const assigmentTasksUpcShowTr = document.createElement("tr");
-      assigmentTasksUpcShowTr.id = "assigmentTasksUpcShowTr";
-      assigmentTasksUpcShow.appendChild(assigmentTasksUpcShowTr);
-
-      const assigmentTasksUpcShowTaskName = document.createElement("td");
-      assigmentTasksUpcShowTaskName.id = "assigmentTasksUpcShowTaskName";
-      assigmentTasksUpcShowTaskName.innerText = "Task Name";
-      assigmentTasksUpcShowTr.appendChild(assigmentTasksUpcShowTaskName);
-
-      const assigmentTasksUpcShowTaskColor = document.createElement("td");
-      assigmentTasksUpcShowTaskColor.id = "assigmentTasksUpcShowTaskColor";
-      assigmentTasksUpcShowTaskColor.innerText = "Task Type";
-      assigmentTasksUpcShowTr.appendChild(assigmentTasksUpcShowTaskColor);
-
-      const borderAssigmentTasksUpcBottom = document.createElement("div");
-      borderAssigmentTasksUpcBottom.id = "borderAssigmentTasksUpcBottom";
-      borderAssigmentTasksUpcBottom.classList.add("borderHorizontal");
-      assigmentTasksUpcoming.appendChild(borderAssigmentTasksUpcBottom);
-
-
-      //    Section to store all the homework's tasks
-      const allAssigmentTasks = document.createElement("section");
-      allAssigmentTasks.id = "allAssigmentTasks";
-      main.appendChild(allHomeworkTasks);
-
-      const allAssigmentTasksHeadline = document.createElement("h3");
-      allAssigmentTasksHeadline.id = "allAssigmentTasksHeadline";
-      allAssigmentTasks.appendChild(allAssigmentTasksHeadline);
-
-      const allAssigmentTasksTable = document.createElement("table");
-      allAssigmentTasksTable.id = "allAssigmentTasksTable";
-      allAssigmentTasks.appendChild(allAssigmentTasksTable);
-
-      const allAssigmentTasksTableTr = document.createElement("tr");
-      allAssigmentTasksTableTr.id = "allAssigmentTasksTableTr";
-      allAssigmentTasksTable.appendChild(allAssigmentTasksTableTr);
-
-      const allAssigmentTasksTableTaskName = document.createElement("th");
-      allAssigmentTasksTableTaskName.id = "allAssigmentTasksTableTaskName";
-      allAssigmentTasksTableTaskName.innerText = "Task Name";
-      allAssigmentTasksTableTr.appendChild(allAssigmentTasksTableTaskName);
-
-      const allAssigmentTasksTableTaskAssignedTo = document.createElement("th");
-      allAssigmentTasksTableTaskAssignedTo.id = "allAssigmentTasksTableTaskAssignedTo";
-      allAssigmentTasksTableTaskAssignedTo.innerText = "Assigned To";
-      allAssigmentTasksTableTr.appendChild(allAssigmentTasksTableTaskAssignedTo);
-
-      const allAssigmentTasksTableTaskDueDate = document.createElement("th");
-      allAssigmentTasksTableTaskDueDate.id = "allAssigmentTasksTableTaskDueDate";
-      allAssigmentTasksTableTaskDueDate.innerText = "Due Date";
-      allAssigmentTasksTableTr.appendChild(allAssigmentTasksTableTaskDueDate);
-
-      const allAssigmentTasksTableTaskStatus = document.createElement("th");
-      allAssigmentTasksTableTaskStatus.id = "allAssigmentTasksTableTaskStatus";
-      allAssigmentTasksTableTaskStatus.innerText = "Status";
-      allAssigmentTasksTableTr.appendChild(allAssigmentTasksTableTaskStatus);
-
-      const allAssigmentTasksTableTaskLabel = document.createElement("th");
-      allAssigmentTasksTableTaskLabel.id = "allAssigmentTasksTableTaskLabel";
-      allAssigmentTasksTableTaskLabel.innerText = "Task Label";
-      allAssigmentTasksTableTr.appendChild(allAssigmentTasksTableTaskLabel);
-
-
-
-      //  aside on the Homework page
-      const aside = document.createElement("aside");
-      aside.id = "aside";
-      body.appendChild(aside);
-
-      const headlineAside = document.createElement("h2");
-      headlineAside.id = "operatingBtnsSect";
-      headlineAside.innerText = "My Tasks";
-      aside.appendChild(headlineAside);
-
-      const upcomTaskSect = document.createElement("section");
-      upcomTaskSect.id = "upcomTaskSect";
-      aside.appendChild(upcomTaskSect);
-
-      const upComHeadline = document.createElement("h4");
-      upComHeadline.id = "upComHeadline";
-      upComHeadline.innerText = "Upcoming";
-      upcomTaskSect.appendChild(upComHeadline);
-
-      const borderUpComTop = document.createElement("div");
-      borderUpComTop.id = "borderUpComTop";
-      borderUpComTop.classList.add("borderHorizontal");
-      upcomTaskSect.appendChild(borderUpComTop);
-
-      const upComTasks = document.createElement("section");
-      upComTasks.id = "upComTasks";
-      upcomTaskSect.appendChild(upComTasks);
-
-      const borderUpComBottom = document.createElement("div");
-      borderUpComBottom.id = "borderUpComBottom";
-      borderUpComBottom.classList.add("borderHorizontal");
-      upcomTaskSect.appendChild(borderUpComBottom);
-
-      const operatingBtnsSect = document.createElement("section");
-      operatingBtnsSect.id = "operatingBtnsSect";
-      operatingBtnsSect.classList.add("flex_column");
-      aside.appendChild(operatingBtnsSect);
-
-      //Homework
-      const homeworkBtn = document.createElement("a");
-      homeworkBtn.id = "homeworkBtn";
-      homeworkBtn.innerText = "My Homework";
-      homeworkBtn.classList.add("operBtns");
-      operatingBtnsSect.appendChild(homeworkBtn);
-
-      const projectsBtn = document.createElement("a");
-      projectsBtn.id = "projectsBtn";
-      projectsBtn.innerText = "My Projects";
-      projectsBtn.classList.add("operBtns");
-      operatingBtnsSect.appendChild(projectsBtn);
-
-      const assigmentsBtn = document.createElement("a");
-      assigmentsBtn.id = "assigmentsBtn";
-      assigmentsBtn.innerText = "My Assigments";
-      assigmentsBtn.classList.add("operBtns");
-      operatingBtnsSect.appendChild(assigmentsBtn);
-
-      const showAllDone = document.createElement("a");
-      showAllDone.id = "showAllDone";
-      showAllDone.innerText = "Show All Finished Tasks";
-      showAllDone.classList.add("operBtns");
-      operatingBtnsSect.appendChild(showAllDone);
-
-    };
+    const homeworkBtn = document.createElement("a");
+    homeworkBtn.id = "homeworkBtn";
+    homeworkBtn.innerText = "My Homework";
+    homeworkBtn.classList.add("operBtns");
+    operatingBtnsSect.appendChild(homeworkBtn);
+
+    const projectsBtn = document.createElement("a");
+    projectsBtn.id = "projectsBtn";
+    projectsBtn.innerText = "My Projects";
+    projectsBtn.classList.add("operBtns");
+    operatingBtnsSect.appendChild(projectsBtn);
+
+    const assigmentsBtn = document.createElement("a");
+    assigmentsBtn.id = "assigmentsBtn";
+    assigmentsBtn.innerText = "My Assigments";
+    assigmentsBtn.classList.add("operBtns");
+    operatingBtnsSect.appendChild(assigmentsBtn);
+
+    const showAllDone = document.createElement("a");
+    showAllDone.id = "showAllDone";
+    showAllDone.innerText = "Show All Finished Tasks";
+    showAllDone.classList.add("operBtns");
+    operatingBtnsSect.appendChild(showAllDone);
+  };
+  //My Projects
+  loadMyProjects = () => {
+
+    body.innerHTML = "";
+    body.classList.add("myProjectBody");
+
+    //HEADER
+    //   header on the My project page
+    const header = document.createElement("header");
+    header.id = "header";
+    body.appendChild(header);
+
+    const nav = document.createElement("nav");
+    header.appendChild(nav);
+
+    const AbTheApp = document.createElement("a");
+    AbTheApp.innerText = "about the app";
+    AbTheApp.classList.add("navLink");
+    nav.appendChild(AbTheApp);
+
+    const userGuide = document.createElement("a");
+    userGuide.innerText = "user guide";
+    userGuide.classList.add("navLink");
+    nav.appendChild(userGuide);
+
+    const help = document.createElement("a");
+    help.innerText = "help";
+    help.classList.add("navLink");
+    nav.appendChild(help);
+
+    const userAccountIcon = document.createElement("img");
+    userAccountIcon.id = "userAccountIcon";
+    userAccountIcon.src = "./web_API-dev_examProject-FrontEnd/assets/svg/signUp.svg";
+    nav.appendChild(userAccountIcon);
+
+
+    body.appendChild(main);
+
+    //    Projects section
+    const myProject = document.createElement("section");
+    myProject.id = "myProject";
+    main.appendChild(myProject);
+
+    const myProjectHeadline = document.createElement("h3");
+    myProjectHeadline.id = "myProjectHeadline";
+    myProjectHeadline.innerText = "My Project";
+    myProject.appendChild(myProjectHeadline);
+
+    const myProjectDiv = document.createElement("div");
+    myProjectDiv.id = "myProjectDiv";
+    myProject.appendChild(myProjectDiv);
+
+    const myProjectDivMembers = document.createElement("ul");
+    myProjectDivMembers.id = "myProjectList";
+    myProjectDiv.appendChild(myProjectDivMembers);
+
+    const myProjectDivMember = document.createElement("li");
+    myProjectDivMember.innerText = "Project List";
+    myProjectDivMember.id = "myProjectDivMember";
+    myProjectDivMembers.appendChild(myProjectDivMember);
+
+    //    HomeworkTask section (on the right side of the screen)
+    const projectTasks = document.createElement("section");
+    projectTasks.id = "projectTasks";
+    main.appendChild(projectTasks);
+
+    //    Homework tasks - Create a task button
+    const projectTasksCreateTaskBtn = document.createElement("button");
+    projectTasksCreateTaskBtn.id = "projectTasksCreateTaskBtn";
+    projectTasksCreateTaskBtn.innerText = "Create Project";
+    projectTasksCreateTaskBtn.classList.add("btn");
+    projectTasks.appendChild(projectTasksCreateTaskBtn);
+
+    //    Homework tasks - upcoming tasks 
+    const projectTasksUpcoming = document.createElement("div");
+    projectTasksUpcoming.id = "projectTasksUpcoming";
+    projectTasks.appendChild(projectTasksUpcoming);
+
+    const projectTasksUpcomingHeadline = document.createElement("h4");
+    projectTasksUpcomingHeadline.id = "projectTasksUpcomingHeadline";
+    projectTasksUpcomingHeadline.innerText = "Upcoming Homework";
+    projectTasksUpcoming.appendChild(projectTasksUpcomingHeadline);
+
+    const borderProjectTasksUpcTop = document.createElement("div");
+    borderProjectTasksUpcTop.id = "borderProjectTasksUpcTop";
+    borderProjectTasksUpcTop.classList.add("borderHorizontal");
+    projectTasksUpcoming.appendChild(borderProjectTasksUpcTop);
+
+
+    //   Table to store upcoming tasks
+    const projectTasksUpcShow = document.createElement("table");
+    projectTasksUpcShow.id = "projectTasksUpcShow";
+    projectTasksUpcoming.appendChild(projectTasksUpcShow);
+
+    const projectTasksUpcShowTr = document.createElement("tr");
+    projectTasksUpcShowTr.id = "projectTasksUpcShowTr";
+    projectTasksUpcShow.appendChild(projectTasksUpcShowTr);
+
+    const projectTasksUpcShowTaskName = document.createElement("td");
+    projectTasksUpcShowTaskName.id = "projectTasksUpcShowTaskName";
+    projectTasksUpcShowTaskName.innerText = "Task Name";
+    projectTasksUpcShowTr.appendChild(projectTasksUpcShowTaskName);
+
+    const projectTasksUpcShowTaskColor = document.createElement("td");
+    projectTasksUpcShowTaskColor.id = "projectTasksUpcShowTaskColor";
+    projectTasksUpcShowTaskColor.innerText = "Task Type";
+    projectTasksUpcShowTr.appendChild(projectTasksUpcShowTaskColor);
+
+    const borderProjectTasksUpcBottom = document.createElement("div");
+    borderProjectTasksUpcBottom.id = "borderProjectTasksUpcBottom";
+    borderProjectTasksUpcBottom.classList.add("borderHorizontal");
+    projectTasksUpcoming.appendChild(borderProjectTasksUpcBottom);
+
+
+    //    Section to store all the homework's tasks
+    const allProjectTasks = document.createElement("section");
+    allProjectTasks.id = "allProjectTasks";
+    main.appendChild(allProjectTasks);
+
+    const allProjectTasksHeadline = document.createElement("h3");
+    allProjectTasksHeadline.id = "allProjectTasksHeadline";
+    allProjectTasks.appendChild(allProjectTasksHeadline);
+
+    const allProjectTasksTable = document.createElement("table");
+    allProjectTasksTable.id = "allProjectTasksTable";
+    allProjectTasks.appendChild(allProjectTasksTable);
+
+    const allProjectTasksTableTr = document.createElement("tr");
+    allProjectTasksTableTr.id = "allProjectTasksTableTr";
+    allProjectTasksTable.appendChild(allProjectTasksTableTr);
+
+    const allProjectTasksTableTaskName = document.createElement("th");
+    allProjectTasksTableTaskName.id = "allProjectTasksTableTaskName";
+    allProjectTasksTableTaskName.innerText = "Task Name";
+    allProjectTasksTableTr.appendChild(allProjectTasksTableTaskName);
+
+    const allProjectTasksTableTaskAssignedTo = document.createElement("th");
+    allProjectTasksTableTaskAssignedTo.id = "allProjectTasksTableTaskAssignedTo";
+    allProjectTasksTableTaskAssignedTo.innerText = "Assigned To";
+    allProjectTasksTableTr.appendChild(allProjectTasksTableTaskAssignedTo);
+
+    const allProjectTasksTableTaskDueDate = document.createElement("th");
+    allProjectTasksTableTaskDueDate.id = "allProjectTasksTableTaskDueDate";
+    allProjectTasksTableTaskDueDate.innerText = "Due Date";
+    allProjectTasksTableTr.appendChild(allProjectTasksTableTaskDueDate);
+
+    const allProjectTasksTableTaskStatus = document.createElement("th");
+    allProjectTasksTableTaskStatus.id = "allProjectTasksTableTaskStatus";
+    allProjectTasksTableTaskStatus.innerText = "Status";
+    allProjectTasksTableTr.appendChild(allProjectTasksTableTaskStatus);
+
+    const allProjectTasksTableTaskLabel = document.createElement("th");
+    allProjectTasksTableTaskLabel.id = "allProjectTasksTableTaskLabel";
+    allProjectTasksTableTaskLabel.innerText = "Task Label";
+    allProjectTasksTableTr.appendChild(allProjectTasksTableTaskLabel);
+
+
+
+
+
+    //  aside on the Homework page
+    const aside = document.createElement("aside");
+    aside.id = "aside";
+    body.appendChild(aside);
+
+    const headlineAside = document.createElement("h2");
+    headlineAside.id = "operatingBtnsSect";
+    headlineAside.innerText = "My Tasks";
+    aside.appendChild(headlineAside);
+
+    const upcomTaskSect = document.createElement("section");
+    upcomTaskSect.id = "upcomTaskSect";
+    aside.appendChild(upcomTaskSect);
+
+    const upComHeadline = document.createElement("h4");
+    upComHeadline.id = "upComHeadline";
+    upComHeadline.innerText = "Upcoming";
+    upcomTaskSect.appendChild(upComHeadline);
+
+    const borderUpComTop = document.createElement("div");
+    borderUpComTop.id = "borderUpComTop";
+    borderUpComTop.classList.add("borderHorizontal");
+    upcomTaskSect.appendChild(borderUpComTop);
+
+    const upComTasks = document.createElement("section");
+    upComTasks.id = "upComTasks";
+    upcomTaskSect.appendChild(upComTasks);
+
+    const borderUpComBottom = document.createElement("div");
+    borderUpComBottom.id = "borderUpComBottom";
+    borderUpComBottom.classList.add("borderHorizontal");
+    upcomTaskSect.appendChild(borderUpComBottom);
+
+    const operatingBtnsSect = document.createElement("section");
+    operatingBtnsSect.id = "operatingBtnsSect";
+    operatingBtnsSect.classList.add("flex_column");
+    aside.appendChild(operatingBtnsSect);
+
+    //Homework
+    const homeworkBtn = document.createElement("a");
+    homeworkBtn.id = "homeworkBtn";
+    homeworkBtn.innerText = "My Homework";
+    homeworkBtn.classList.add("operBtns");
+    operatingBtnsSect.appendChild(homeworkBtn);
+
+    const projectsBtn = document.createElement("a");
+    projectsBtn.id = "projectsBtn";
+    projectsBtn.innerText = "My Projects";
+    projectsBtn.classList.add("operBtns");
+    operatingBtnsSect.appendChild(projectsBtn);
+
+    const assigmentsBtn = document.createElement("a");
+    assigmentsBtn.id = "assigmentsBtn";
+    assigmentsBtn.innerText = "My Assigments";
+    assigmentsBtn.classList.add("operBtns");
+    operatingBtnsSect.appendChild(assigmentsBtn);
+
+    const showAllDone = document.createElement("a");
+    showAllDone.id = "showAllDone";
+    showAllDone.innerText = "Show All Finished Tasks";
+    showAllDone.classList.add("operBtns");
+    operatingBtnsSect.appendChild(showAllDone);
+
+
+  };
+
+  //Assignemts
+  loadAssigments = () => {
+
+    body.innerHTML = "";
+    body.classList.add("assigmentsBody");
+
+    //HEADER
+    //   header on the Assigment page
+    const header = document.createElement("header");
+    header.id = "header";
+    body.appendChild(header);
+
+    const nav = document.createElement("nav");
+    header.appendChild(nav);
+
+    const AbTheApp = document.createElement("a");
+    AbTheApp.innerText = "about the app";
+    AbTheApp.classList.add("navLink");
+    nav.appendChild(AbTheApp);
+
+    const userGuide = document.createElement("a");
+    userGuide.innerText = "user guide";
+    userGuide.classList.add("navLink");
+    nav.appendChild(userGuide);
+
+    const help = document.createElement("a");
+    help.innerText = "help";
+    help.classList.add("navLink");
+    nav.appendChild(help);
+
+    const userAccountIcon = document.createElement("img");
+    userAccountIcon.id = "userAccountIcon";
+    userAccountIcon.src = "./assets/svg/signUp.svg";
+    nav.appendChild(userAccountIcon);
+
+
+    body.appendChild(main);
+
+    //    Assigment section
+    const myAssigment = document.createElement("section");
+    myAssigment.id = "myAssigment";
+    main.appendChild(myAssigment);
+
+    const myAssigmentHeadline = document.createElement("h3");
+    myAssigmentHeadline.id = "myAssigmentHeadline";
+    myAssigmentHeadline.innerText = "My Assigment";
+    myAssigment.appendChild(myAssigmentHeadline);
+
+    const myAssigmentDiv = document.createElement("div");
+    myAssigmentDiv.id = "myAssigmentDiv";
+    myAssigment.appendChild(myAssigmentDiv);
+
+    const myAssigmentDivMembers = document.createElement("ul");
+    myAssigmentDivMembers.id = "myAssigmentList";
+    myAssigmentDiv.appendChild(myAssigmentDivMembers);
+
+    const myAssigmentDivMember = document.createElement("li");
+    myAssigmentDivMember.id = "myAssigmentDivMember";
+    myAssigmentDivMember.innerText = "Assigment List";
+    myAssigmentDivMembers.appendChild(myAssigmentDivMember);
+
+    //     section (on the right side of the screen)
+    const assigmentTasks = document.createElement("section");
+    assigmentTasks.id = "assigmentTasks";
+    main.appendChild(assigmentTasks);
+
+    //    Create a task button
+    const assigmentTasksCreateTaskBtn = document.createElement("button");
+    assigmentTasksCreateTaskBtn.id = "assigmentTasksCreateTaskBtn";
+    assigmentTasksCreateTaskBtn.innerText = "Create Assign";
+    assigmentTasksCreateTaskBtn.classList.add("btn");
+    assigmentTasks.appendChild(assigmentTasksCreateTaskBtn);
+
+    //   tasks - upcoming tasks 
+    const assigmentTasksUpcoming = document.createElement("div");
+    assigmentTasksUpcoming.id = "assigmentTasksUpcoming";
+    assigmentTasks.appendChild(assigmentTasksUpcoming);
+
+    const assigmentTasksUpcomingHeadline = document.createElement("h4");
+    assigmentTasksUpcomingHeadline.id = "assigmentTasksUpcomingHeadline";
+    assigmentTasksUpcomingHeadline.innerText = "Upcoming Homework";
+    assigmentTasksUpcoming.appendChild(assigmentTasksUpcomingHeadline);
+
+    const borderAssigmentTasksUpcTop = document.createElement("div");
+    borderAssigmentTasksUpcTop.id = "borderAssigmentTasksUpcTop";
+    borderAssigmentTasksUpcTop.classList.add("borderHorizontal");
+    assigmentTasksUpcoming.appendChild(borderAssigmentTasksUpcTop);
+
+
+    //   Table to store upcoming tasks
+    const assigmentTasksUpcShow = document.createElement("table");
+    assigmentTasksUpcShow.id = "assigmentTasksUpcShow";
+    assigmentTasksUpcoming.appendChild(assigmentTasksUpcShow);
+
+    const assigmentTasksUpcShowTr = document.createElement("tr");
+    assigmentTasksUpcShowTr.id = "assigmentTasksUpcShowTr";
+    assigmentTasksUpcShow.appendChild(assigmentTasksUpcShowTr);
+
+    const assigmentTasksUpcShowTaskName = document.createElement("td");
+    assigmentTasksUpcShowTaskName.id = "assigmentTasksUpcShowTaskName";
+    assigmentTasksUpcShowTaskName.innerText = "Task Name";
+    assigmentTasksUpcShowTr.appendChild(assigmentTasksUpcShowTaskName);
+
+    const assigmentTasksUpcShowTaskColor = document.createElement("td");
+    assigmentTasksUpcShowTaskColor.id = "assigmentTasksUpcShowTaskColor";
+    assigmentTasksUpcShowTaskColor.innerText = "Task Type";
+    assigmentTasksUpcShowTr.appendChild(assigmentTasksUpcShowTaskColor);
+
+    const borderAssigmentTasksUpcBottom = document.createElement("div");
+    borderAssigmentTasksUpcBottom.id = "borderAssigmentTasksUpcBottom";
+    borderAssigmentTasksUpcBottom.classList.add("borderHorizontal");
+    assigmentTasksUpcoming.appendChild(borderAssigmentTasksUpcBottom);
+
+
+    //    Section to store all the homework's tasks
+    const allAssigmentTasks = document.createElement("section");
+    allAssigmentTasks.id = "allAssigmentTasks";
+    main.appendChild(allHomeworkTasks);
+
+    const allAssigmentTasksHeadline = document.createElement("h3");
+    allAssigmentTasksHeadline.id = "allAssigmentTasksHeadline";
+    allAssigmentTasks.appendChild(allAssigmentTasksHeadline);
+
+    const allAssigmentTasksTable = document.createElement("table");
+    allAssigmentTasksTable.id = "allAssigmentTasksTable";
+    allAssigmentTasks.appendChild(allAssigmentTasksTable);
+
+    const allAssigmentTasksTableTr = document.createElement("tr");
+    allAssigmentTasksTableTr.id = "allAssigmentTasksTableTr";
+    allAssigmentTasksTable.appendChild(allAssigmentTasksTableTr);
+
+    const allAssigmentTasksTableTaskName = document.createElement("th");
+    allAssigmentTasksTableTaskName.id = "allAssigmentTasksTableTaskName";
+    allAssigmentTasksTableTaskName.innerText = "Task Name";
+    allAssigmentTasksTableTr.appendChild(allAssigmentTasksTableTaskName);
+
+    const allAssigmentTasksTableTaskAssignedTo = document.createElement("th");
+    allAssigmentTasksTableTaskAssignedTo.id = "allAssigmentTasksTableTaskAssignedTo";
+    allAssigmentTasksTableTaskAssignedTo.innerText = "Assigned To";
+    allAssigmentTasksTableTr.appendChild(allAssigmentTasksTableTaskAssignedTo);
+
+    const allAssigmentTasksTableTaskDueDate = document.createElement("th");
+    allAssigmentTasksTableTaskDueDate.id = "allAssigmentTasksTableTaskDueDate";
+    allAssigmentTasksTableTaskDueDate.innerText = "Due Date";
+    allAssigmentTasksTableTr.appendChild(allAssigmentTasksTableTaskDueDate);
+
+    const allAssigmentTasksTableTaskStatus = document.createElement("th");
+    allAssigmentTasksTableTaskStatus.id = "allAssigmentTasksTableTaskStatus";
+    allAssigmentTasksTableTaskStatus.innerText = "Status";
+    allAssigmentTasksTableTr.appendChild(allAssigmentTasksTableTaskStatus);
+
+    const allAssigmentTasksTableTaskLabel = document.createElement("th");
+    allAssigmentTasksTableTaskLabel.id = "allAssigmentTasksTableTaskLabel";
+    allAssigmentTasksTableTaskLabel.innerText = "Task Label";
+    allAssigmentTasksTableTr.appendChild(allAssigmentTasksTableTaskLabel);
+
+
+
+    //  aside on the Homework page
+    const aside = document.createElement("aside");
+    aside.id = "aside";
+    body.appendChild(aside);
+
+    const headlineAside = document.createElement("h2");
+    headlineAside.id = "operatingBtnsSect";
+    headlineAside.innerText = "My Tasks";
+    aside.appendChild(headlineAside);
+
+    const upcomTaskSect = document.createElement("section");
+    upcomTaskSect.id = "upcomTaskSect";
+    aside.appendChild(upcomTaskSect);
+
+    const upComHeadline = document.createElement("h4");
+    upComHeadline.id = "upComHeadline";
+    upComHeadline.innerText = "Upcoming";
+    upcomTaskSect.appendChild(upComHeadline);
+
+    const borderUpComTop = document.createElement("div");
+    borderUpComTop.id = "borderUpComTop";
+    borderUpComTop.classList.add("borderHorizontal");
+    upcomTaskSect.appendChild(borderUpComTop);
+
+    const upComTasks = document.createElement("section");
+    upComTasks.id = "upComTasks";
+    upcomTaskSect.appendChild(upComTasks);
+
+    const borderUpComBottom = document.createElement("div");
+    borderUpComBottom.id = "borderUpComBottom";
+    borderUpComBottom.classList.add("borderHorizontal");
+    upcomTaskSect.appendChild(borderUpComBottom);
+
+    const operatingBtnsSect = document.createElement("section");
+    operatingBtnsSect.id = "operatingBtnsSect";
+    operatingBtnsSect.classList.add("flex_column");
+    aside.appendChild(operatingBtnsSect);
+
+    //Homework
+    const homeworkBtn = document.createElement("a");
+    homeworkBtn.id = "homeworkBtn";
+    homeworkBtn.innerText = "My Homework";
+    homeworkBtn.classList.add("operBtns");
+    operatingBtnsSect.appendChild(homeworkBtn);
+
+    const projectsBtn = document.createElement("a");
+    projectsBtn.id = "projectsBtn";
+    projectsBtn.innerText = "My Projects";
+    projectsBtn.classList.add("operBtns");
+    operatingBtnsSect.appendChild(projectsBtn);
+
+    const assigmentsBtn = document.createElement("a");
+    assigmentsBtn.id = "assigmentsBtn";
+    assigmentsBtn.innerText = "My Assigments";
+    assigmentsBtn.classList.add("operBtns");
+    operatingBtnsSect.appendChild(assigmentsBtn);
+
+    const showAllDone = document.createElement("a");
+    showAllDone.id = "showAllDone";
+    showAllDone.innerText = "Show All Finished Tasks";
+    showAllDone.classList.add("operBtns");
+    operatingBtnsSect.appendChild(showAllDone);
+
+  };
