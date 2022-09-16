@@ -471,7 +471,7 @@ nav > a {
 }
 
 .hidden {
-display: none;
+  display: none;
 }
 
 #userAccSet {
@@ -487,15 +487,30 @@ display: none;
   padding: 40px;
 }
 
-#changeUserNameInp{
+#changeUserNameInp {
   border: none;
   padding: 10px;
   border-radius: 5px;
   width: 180px;
   margin: 30px 0;
-
 }
 
-#changeUserCancel, #changeUserSubmit{
-margin: 20px 0;
+#changeUserCancel,
+#changeUserSubmit {
+  margin: 20px 0;
+}
+
+.deleteConfirm {
+  padding: 20px;
+  z-index: 20;
+  background-color: var(--yellow);
+  position: absolute;
+  width: 360px;
+  height: 300px;
+  margin: calc(50vh - 150px) calc(50vw - 200px);
+}
+
+.deleteConfirm > p {
+  text-align: center;
+  margin-top: 100px ;
 }

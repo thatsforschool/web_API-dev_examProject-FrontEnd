@@ -79,6 +79,10 @@ loadLogInPage = () => {
           console.log(ls.getItem("account"));
           console.log(`this is the account ${ls.getItem("account")}`);
           window.location.href = `${baseUrl}?page=profile`;
+        } else {
+          const errorMes = document.createElement("p");
+          errorMes.innerText = "Invalid username or password";
+          logInSect.appendChild(errorMes);
         }
       });
 
@@ -319,6 +323,7 @@ loadProfilePage = () => {
             } else {
               console.log("not a succes");
             }
+            return res.json();
           })
 
           .then((data) => {
@@ -326,15 +331,17 @@ loadProfilePage = () => {
               ls.setItem("account", JSON.stringify(data));
               console.log(ls.getItem("account"));
               console.log(`this is the account ${ls.getItem("account")}`);
-              window.location.href = `${baseUrl}?page=profile`;
             }
-            let account;
-          account = JSON.parse(ls.getItem("account"));
-          console.log(ls.getItem("account"));
 
-          console.log(`new usernam ${account.displayName}`)
+            changeUserNameDiv.innerHTML = "";
+            changeUserNameDiv.innerText = `Your username has been updated`;
+
+            reloadWINDOW = () => {
+              window.location.reload();
+            };
+
+            setTimeout(reloadWINDOW, 1500);
           });
-          
       });
     });
 
@@ -352,6 +359,63 @@ loadProfilePage = () => {
     deletaAcc.innerText = `Delate Account`;
     deletaAcc.classList.add("btn");
     btnAccSet.appendChild(deletaAcc);
+
+    deletaAcc.addEventListener("click", (e) => {
+      body.innerHTML = "";
+      const deleteConfirm = document.createElement("div");
+      deleteConfirm.id = "deleteConfirm";
+      deleteConfirm.classList.add("deleteConfirm");
+      body.appendChild(deleteConfirm);
+
+      const deleteConfirmText = document.createElement("p");
+      deleteConfirm.id = "deleteConfirmText";
+      deleteConfirmText.innerText =
+        "Are you sure you want to delete your account?";
+      deleteConfirm.appendChild(deleteConfirmText);
+
+      const deleteConfirmBtnDiv = document.createElement("div");
+      deleteConfirmBtnDiv.id = "deleteConfirmBtnDiv";
+      deleteConfirmBtnDiv.classList.add("flex");
+      deleteConfirm.appendChild(deleteConfirmBtnDiv);
+
+      const deleteConfirmCancelBtn = document.createElement("button");
+      deleteConfirm.id = "deleteConfirmCancelBtn";
+      deleteConfirmCancelBtn.innerText = "cancel";
+      deleteConfirmCancelBtn.classList.add("btn");
+      deleteConfirmBtnDiv.appendChild(deleteConfirmCancelBtn);
+      deleteConfirmCancelBtn.addEventListener("click", () => {
+        window.location.reload();
+      });
+
+      const deleteConfirmBtn = document.createElement("button");
+      deleteConfirmBtn.id = "deleteConfirmCancelBtn";
+      deleteConfirmBtn.innerText = "delete";
+      deleteConfirmBtn.classList.add("btn");
+      deleteConfirmBtnDiv.appendChild(deleteConfirmBtn);
+      deleteConfirmBtn.addEventListener("click", () => {
+        const fetchOpt = {
+          method: "DELETE",
+          headers: {
+            "Content-type": "application/json",
+            "x-authToken": mainToken,
+          },
+        };
+
+        fetch(`${fetchUrl}/api/accounts/${account.accountId}`, fetchOpt).then(
+          (res) => {
+            if (res.status == 200) {
+              console.log("succes");
+            } else {
+              console.log("not a succes");
+            }
+            return res.json();
+          }
+        );
+
+        ls.clear();
+        window.location.href = baseUrl;
+      });
+    });
   });
 
   //   main
