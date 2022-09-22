@@ -9,6 +9,7 @@ let baseUrl;
 const fetchUrl = `http://127.0.0.1:8746`;
 const errMes = document.createElement("div");
 const mainToken = ls.getItem("token");
+const createBtns = document.createElement("section");
 
 loadLogInPage = () => {
   // create main
@@ -18,6 +19,7 @@ loadLogInPage = () => {
   main.appendChild(signUnSect);
   main.classList.add("flex");
   main.id = "main";
+  const errorMes = document.createElement("p");
 
   //   create log in section
 
@@ -80,7 +82,6 @@ loadLogInPage = () => {
           console.log(`this is the account ${ls.getItem("account")}`);
           window.location.href = `${baseUrl}?page=profile`;
         } else {
-          const errorMes = document.createElement("p");
           errorMes.innerText = "Invalid username or password";
           logInSect.appendChild(errorMes);
         }
@@ -155,6 +156,77 @@ loadSignUpPage = () => {
   userNameInput.classList.add("signUpInput");
   mainSignUp.appendChild(userNameInput);
 
+  const creatUserBtn = document.createElement("button");
+  creatUserBtn.id = "creatUserBtn";
+  creatUserBtn.innerText = "create user";
+  creatUserBtn.classList.add("btn");
+  mainSignUp.appendChild(creatUserBtn);
+
+  creatUserBtn.addEventListener("click", (e) => {
+    // errMes.innerText = "";
+    e.preventDefault();
+    const payload = {
+      email: emailInput.value,
+      userName: userNameInput.value,
+    };
+
+    const fetchOpt = {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    };
+
+    fetch(`${fetchUrl}/api/users`, fetchOpt)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        }
+      })
+
+      .then((data) => {
+        if (!data.statusCode && Object.keys(data).length != 0) {
+          ls.setItem("userObj", JSON.stringify(data));
+          console.log(`this is the account ${ls.getItem("userObj")}`);
+          //   window.location.href = `${baseUrl}?page=crateAccount`;
+        } else {
+          const errorMes = document.createElement("p");
+          errorMes.innerText = "Invalid username or password";
+          mainSignUp.appendChild(errorMes);
+        }
+      });
+
+    console.log(`account in the ls: ${ls.getItem("userObj")}`);
+  });
+};
+
+loadCreateAccountPage = () => {
+  body.innerHTML = "";
+
+  const mainSignUp = document.createElement("form");
+  mainSignUp.id = "mainSignUp";
+  mainSignUp.classList.add("flex_column");
+  body.appendChild(mainSignUp);
+
+  const exitIconLink = document.createElement("a");
+  exitIconLink.id = "exitIcon";
+  exitIconLink.href = baseUrl;
+  mainSignUp.appendChild(exitIconLink);
+
+  const exitIcon = document.createElement("img");
+  exitIcon.src = "./assets/svg/exitIcon.svg";
+  exitIconLink.appendChild(exitIcon);
+
+  const creatAccountIcon = document.createElement("img");
+  creatAccountIcon.id = "creatAccountIcon";
+  creatAccountIcon.src = "./assets/svg/logIn.svg";
+  mainSignUp.appendChild(creatAccountIcon);
+
+  const creatAccountTxt = document.createElement("h2");
+  creatAccountTxt.innerText = "Create account";
+  mainSignUp.appendChild(creatAccountTxt);
+
   const passwordInput = document.createElement("input");
   passwordInput.id = "pasSignUp";
   passwordInput.type = "password";
@@ -174,7 +246,54 @@ loadSignUpPage = () => {
   creatAccountBtn.innerText = "create account";
   creatAccountBtn.classList.add("btn");
   mainSignUp.appendChild(creatAccountBtn);
+
+  let user;
+  user = JSON.parse(ls.getItem("userObj"));
+  console.log(user);
+
+  creatAccountBtn.addEventListener("click", (e) => {
+    errMes.innerText = "";
+    e.preventDefault();
+
+    if (passwordInput.value == repeatInput.value) {
+      const payload = {
+        password: passwordInput.value,
+        userId: user.userId,
+        userName: user.userName,
+      };
+
+      const fetchOpt = {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      };
+
+      fetch(`${fetchUrl}/api/accounts`, fetchOpt)
+        .then((res) => {
+          if (res.status == 200) {
+            return res.json();
+          }
+        })
+
+        .then((data) => {
+          if (!data.statusCode && Object.keys(data).length != 0) {
+            console.log(`account created`);
+            ls.removeItem("userObj");
+            window.location.href = `${baseUrl}`;
+          } else {
+            const errorMes = document.createElement("p");
+            errorMes.innerText = "Invalid username or password";
+            mainSignUp.appendChild(errorMes);
+          }
+        });
+
+      console.log(`account in the ls: ${ls.getItem("userObj")}`);
+    }
+  });
 };
+
 loadProfilePage = () => {
   let account;
   account = JSON.parse(ls.getItem("account"));
@@ -316,7 +435,7 @@ loadProfilePage = () => {
           body: JSON.stringify(payload),
         };
 
-        fetch(`${fetchUrl}/api/accounts/${account.accountId}`, fetchOpt)
+        fetch(`${fetchUrl}/api/accounts/own`, fetchOpt)
           .then((res) => {
             if (res.status == 200) {
               console.log("succes");
@@ -448,7 +567,7 @@ loadProfilePage = () => {
 
   const recentGroupsHeadline = document.createElement("h4");
   recentGroupsHeadline.id = "recentGroupsHeadline";
-  recentGroupsHeadline.innerText = "My Groups";
+  recentGroupsHeadline.innerText = "All Groups";
   recentGroups.appendChild(recentGroupsHeadline);
 
   const borderRecGroupTop = document.createElement("div");
@@ -460,12 +579,44 @@ loadProfilePage = () => {
   recentGroupsShow.id = "recentGroupsShow";
   recentGroups.appendChild(recentGroupsShow);
 
+  const fetchOpt = {
+    headers: {
+      "Content-type": "application/json",
+      "x-authToken": mainToken,
+    },
+  };
+
+  fetch(`${fetchUrl}/api/groupmembers/membership`, fetchOpt)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      }
+    })
+    .then((data) => {
+      console.log(data);
+      data.forEach((group) => {
+        if (group.FK_userId != account.userId) {
+          console.log("group");
+          console.log(group);
+          const groupMembershipLink = document.createElement("a");
+          groupMembershipLink.id = "groupMembershipLink";
+          groupMembershipLink.innerText = group.groupName;
+          recentGroupsShow.appendChild(groupMembershipLink);
+          groupMembershipLink.addEventListener("click", () => {
+            ls.setItem("currentOwnGroup", JSON.stringify(group));
+            console.log("currentOwnGroup");
+            console.log(ls.getItem("currentOwnGroup"));
+            window.location.href = `${baseUrl}?page=group`;
+          });
+        }
+      });
+    });
+
   const borderRecGroupBottom = document.createElement("div");
   borderRecGroupBottom.id = "borderRecGroupBottom";
   borderRecGroupBottom.classList.add("borderHorizontal");
   recentGroups.appendChild(borderRecGroupBottom);
 
-  const createBtns = document.createElement("section");
   createBtns.id = "createBtnSect";
   createBtns.classList.add("flex_column");
   main.appendChild(createBtns);
@@ -482,6 +633,10 @@ loadProfilePage = () => {
   createGroup.classList.add("btn");
   createBtns.appendChild(createGroup);
 
+  createGroup.addEventListener("click", (e) => {
+    createGroupFunction();
+  });
+
   const showAllBtns = document.createElement("section");
   showAllBtns.id = "showAllBtns";
   showAllBtns.classList.add("flex_column");
@@ -493,11 +648,63 @@ loadProfilePage = () => {
   showAllTasks.classList.add("btnREVERSE");
   showAllBtns.appendChild(showAllTasks);
 
+  // Generate all own tasks here
+  showAllTasks.addEventListener("click", (e) => {
+    myBoardDiv.classList.add("hideMyBoardDiv");
+    myBoardHeadline.innerText = `Hello ${account.displayName}. These are all your tasks`;
+    const fetchOpt = {
+      headers: {
+        "Content-type": "application/json",
+        "x-authToken": ls.getItem("token"),
+      },
+    };
+
+    fetch(`${fetchUrl}/api/tasks/own`, fetchOpt)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        }
+      })
+      .then((data) => {
+        console.log(data);
+        myBoardDiv.classList.remove("hideMyBoardDiv");
+        myBoardDiv.innerHTML = "";
+
+        const showAllTasksList = document.createElement("ul");
+        showAllTasksList.id = "showAllTasksList";
+        myBoardDiv.appendChild(showAllTasksList);
+
+        data.forEach((task) => {
+          const showAllTasksListItem = document.createElement("li");
+          showAllTasksListItem.id = "showAllTasksList";
+          showAllTasksListItem.innerText = task.tasksubject;
+          switch (task.FK_labelId) {
+            case 1:
+              showAllTasksListItem.classList.add("labelId1");
+              break;
+            case 2:
+              showAllTasksListItem.classList.add("labelId2");
+              break;
+            case 3:
+              showAllTasksListItem.classList.add("labelId3");
+              break;
+            default:
+              break;
+          }
+          showAllTasksList.appendChild(showAllTasksListItem);
+        });
+      });
+  });
+
   const showAllGroups = document.createElement("a");
   showAllGroups.id = "showAllGroupsBtn";
-  showAllGroups.innerText = "show all groups";
+  showAllGroups.innerText = "show my groups";
   showAllGroups.classList.add("btnREVERSE");
   showAllBtns.appendChild(showAllGroups);
+
+  showAllGroups.addEventListener("click", (e) => {
+    getAllGroupsFunction(showAllBtns);
+  });
 
   // aside
   const aside = document.createElement("aside");
@@ -543,11 +750,75 @@ loadProfilePage = () => {
   homeworkBtn.classList.add("operBtns");
   operatingBtnsSect.appendChild(homeworkBtn);
 
+  //  Generate all own tasks with labelId = 1 (homework) here
+  homeworkBtn.addEventListener("click", (e) => {
+    myBoardDiv.classList.add("hideMyBoardDiv");
+    myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your homework`;
+    const fetchOpt = {
+      headers: {
+        "Content-type": "application/json",
+        "x-authToken": ls.getItem("token"),
+      },
+    };
+    fetch(`${fetchUrl}/api/tasks/own/1`, fetchOpt)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        }
+      })
+      .then((data) => {
+        myBoardDiv.classList.remove("hideMyBoardDiv");
+        myBoardDiv.innerHTML = "";
+        const showAllHomework = document.createElement("ul");
+        showAllHomework.id = "showAllHomework";
+        myBoardDiv.appendChild(showAllHomework);
+        data.forEach((task) => {
+          const showAllHomeworkListItem = document.createElement("li");
+          showAllHomeworkListItem.id = "showAllHomeworkListItem";
+          showAllHomeworkListItem.innerText = task.tasksubject;
+          showAllHomeworkListItem.classList.add("labelId1");
+          showAllHomework.appendChild(showAllHomeworkListItem);
+        });
+      });
+  });
+
   const projectsBtn = document.createElement("a");
   projectsBtn.id = "projectsBtn";
   projectsBtn.innerText = "My Projects";
   projectsBtn.classList.add("operBtns");
   operatingBtnsSect.appendChild(projectsBtn);
+
+  //  Generate all own tasks with labelId = 2 (projects) here
+  projectsBtn.addEventListener("click", (e) => {
+    myBoardDiv.classList.add("hideMyBoardDiv");
+    myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your project tasks`;
+    const fetchOpt = {
+      headers: {
+        "Content-type": "application/json",
+        "x-authToken": ls.getItem("token"),
+      },
+    };
+    fetch(`${fetchUrl}/api/tasks/own/2`, fetchOpt)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        }
+      })
+      .then((data) => {
+        myBoardDiv.classList.remove("hideMyBoardDiv");
+        myBoardDiv.innerHTML = "";
+        const showAllProjects = document.createElement("ul");
+        showAllProjects.id = "showAllProjects";
+        myBoardDiv.appendChild(showAllProjects);
+        data.forEach((task) => {
+          const showAllProjectsListItem = document.createElement("li");
+          showAllProjectsListItem.id = "showAllProjectsListItem";
+          showAllProjectsListItem.innerText = task.tasksubject;
+          showAllProjectsListItem.classList.add("labelId2");
+          showAllProjects.appendChild(showAllProjectsListItem);
+        });
+      });
+  });
 
   const assigmentsBtn = document.createElement("a");
   assigmentsBtn.id = "assigmentsBtn";
@@ -555,11 +826,795 @@ loadProfilePage = () => {
   assigmentsBtn.classList.add("operBtns");
   operatingBtnsSect.appendChild(assigmentsBtn);
 
+  //  Generate all own tasks with labelId = 3 (assignments) here
+  assigmentsBtn.addEventListener("click", (e) => {
+    myBoardDiv.classList.add("hideMyBoardDiv");
+    myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your assignment tasks`;
+    const fetchOpt = {
+      headers: {
+        "Content-type": "application/json",
+        "x-authToken": ls.getItem("token"),
+      },
+    };
+    fetch(`${fetchUrl}/api/tasks/own/3`, fetchOpt)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        }
+      })
+      .then((data) => {
+        myBoardDiv.classList.remove("hideMyBoardDiv");
+        myBoardDiv.innerHTML = "";
+        const showAllAssignments = document.createElement("ul");
+        showAllAssignments.id = "showAllAssignments";
+        myBoardDiv.appendChild(showAllAssignments);
+        data.forEach((task) => {
+          const showAllAssignmentsListItem = document.createElement("li");
+          showAllAssignmentsListItem.id = "showAllAssignmentsListItem";
+          showAllAssignmentsListItem.innerText = task.tasksubject;
+          showAllAssignmentsListItem.classList.add("labelId3");
+          showAllAssignments.appendChild(showAllAssignmentsListItem);
+        });
+      });
+  });
+
   const showAllDone = document.createElement("a");
   showAllDone.id = "showAllDone";
   showAllDone.innerText = "Show All Finished Tasks";
   showAllDone.classList.add("operBtns");
   operatingBtnsSect.appendChild(showAllDone);
+};
+
+loadSinglelogPage = () => {
+  // create main
+  body.appendChild(main);
+  main.appendChild(logInSect);
+  main.appendChild(borderLogIn);
+  main.appendChild(signUnSect);
+  main.classList.add(".flex_column");
+  main.id = "mainLogIn";
+  const errorMes = document.createElement("p");
+
+  //   create log in section
+
+  logInSect.classList.add("logInSingle");
+  logInSect.classList.add("flex_column");
+  logInSect.id = "logInSect";
+
+  const signInIcon = document.createElement("img");
+  signInIcon.id = "signInIconSingle";
+  signInIcon.src = "./assets/svg/logIn.svg";
+  logInSect.appendChild(signInIcon);
+
+  const userNameInp = document.createElement("input");
+  userNameInp.type = "text";
+  userNameInp.placeholder = "username";
+  userNameInp.id = "userNameInp";
+  logInSect.appendChild(userNameInp);
+
+  const passwordInp = document.createElement("input");
+  passwordInp.type = "password";
+  passwordInp.placeholder = "password";
+  passwordInp.id = "passwordInp";
+  logInSect.appendChild(passwordInp);
+
+  const signInBtn = document.createElement("a");
+  signInBtn.classList.add("btn");
+  signInBtn.innerText = "log in";
+  signInBtn.id = "signInBtn";
+  logInSect.appendChild(signInBtn);
+
+  signInBtn.addEventListener("click", (e) => {
+    errMes.innerText = "";
+    const payload = {
+      email: userNameInp.value,
+      password: passwordInp.value,
+    };
+
+    const fetchOpt = {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    };
+
+    fetch(`${fetchUrl}/api/accounts/login`, fetchOpt)
+      .then((res) => {
+        if (res.status == 200) {
+          const token = res.headers.get("x-authToken");
+          ls.setItem("token", token);
+          console.log(`this is token: ${ls.getItem("token")}`);
+        }
+        return res.json();
+      })
+
+      .then((data) => {
+        if (!data.statusCode && Object.keys(data).length != 0) {
+          ls.setItem("account", JSON.stringify(data));
+          console.log(ls.getItem("account"));
+          console.log(`this is the account ${ls.getItem("account")}`);
+          window.location.href = `${baseUrl}?page=profile`;
+        } else {
+          errorMes.innerText = "Invalid username or password";
+          logInSect.appendChild(errorMes);
+        }
+      });
+
+    console.log(`account in the ls: ${ls.getItem("account")}`);
+  });
+};
+
+createGroupFunction = () => {
+  createBtns.innerHTML = "";
+  createBtns.id = "";
+  createBtns.classList.add("createGroupDiv");
+
+  const groupNameInp = document.createElement("input");
+  groupNameInp.type = "text";
+  groupNameInp.id = "groupNameInp";
+  groupNameInp.placeholder = "group name";
+  createBtns.appendChild(groupNameInp);
+
+  const groupDescriptionInp = document.createElement("input");
+  groupDescriptionInp.type = "text";
+  groupDescriptionInp.id = "groupDescription";
+  groupDescriptionInp.placeholder = "group description";
+  createBtns.appendChild(groupDescriptionInp);
+
+  const groupCreateBtn = document.createElement("button");
+  groupCreateBtn.innerText = "create group";
+  groupCreateBtn.id = "groupCreateBtn";
+  groupCreateBtn.classList.add("btn");
+  createBtns.appendChild(groupCreateBtn);
+
+  groupCreateBtn.addEventListener("click", (e) => {
+    errMes.innerText = "";
+    createBtns.innerHTML = "";
+
+    const payload = {
+      groupName: groupNameInp.value,
+      groupDescription: groupDescriptionInp.value,
+    };
+
+    const fetchOpt = {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        "x-authtoken": mainToken,
+      },
+      body: JSON.stringify(payload),
+    };
+
+    fetch(`${fetchUrl}/api/groups`, fetchOpt)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        }
+      })
+
+      .then((data) => {
+        if (!data.statusCode && Object.keys(data).length != 0) {
+          addGroupMembers(createBtns, data.groupName);
+        } else {
+          errorMes.innerText = "Invalid input";
+          logInSect.appendChild(errorMes);
+        }
+      });
+  });
+};
+
+getAllGroupsFunction = (div) => {
+  div.innerHTML = "";
+  div.id = "";
+  div.classList.add("showGroupsDiv");
+
+  const fetchOpt = {
+    headers: {
+      "Content-type": "application/json",
+      "x-authtoken": mainToken,
+    },
+  };
+
+  fetch(`${fetchUrl}/api/groups/own`, fetchOpt)
+    .then((res) => {
+      if (res.status == 200) {
+        console.log("status: 200");
+      }
+
+      return res.json();
+    })
+
+    .then((data) => {
+      if (!data.statusCode && Object.keys(data).length != 0) {
+        data.forEach((group) => {
+          const newGroup = document.createElement("a");
+          newGroup.innerText = group.groupName;
+          newGroup.id = "groupLink";
+          div.appendChild(newGroup);
+
+          newGroup.addEventListener("click", () => {
+            div.innerHTML = "";
+            const fetchOpt = {
+              headers: {
+                "Content-type": "application/json",
+                "x-authtoken": mainToken,
+              },
+            };
+
+            fetch(`${fetchUrl}/api/groupmembers/${group.groupId}`, fetchOpt)
+              .then((res) => {
+                if (res.status == 200) {
+                  console.log("status: 200");
+                }
+                return res.json();
+              })
+
+              .then((data) => {
+                ls.setItem("currentOwnGroup", JSON.stringify(data));
+
+                if (!data.statusCode && Object.keys(data).length != 0) {
+                  const exitIconLink = document.createElement("a");
+                  const exitIcon = document.createElement("img");
+                  exitIcon.src = "./assets/svg/exitIcon.svg";
+                  exitIcon.id = "exitIconSet";
+                  div.appendChild(exitIconLink);
+                  exitIconLink.appendChild(exitIcon);
+                  exitIconLink.addEventListener("click", (e) => {
+                    window.location.reload();
+                  });
+
+                  const groupTitle = document.createElement("a");
+                  groupTitle.href = `${baseUrl}?page=group`;
+                  groupTitle.innerText = data.groupName;
+                  div.appendChild(groupTitle);
+
+                  const groupMembers = document.createElement("div");
+                  groupMembers.id = "groupMembers";
+                  div.appendChild(groupMembers);
+
+                  data.groupMembers.forEach((member) => {
+                    const memberItem = document.createElement("p");
+                    memberItem.innerText = member.userName;
+                    groupMembers.appendChild(memberItem);
+                  });
+
+                  const addmemberBtn = document.createElement("button");
+                  addmemberBtn.classList.add("btn");
+                  addmemberBtn.innerText = "add member";
+                  div.appendChild(addmemberBtn);
+                  addmemberBtn.addEventListener("click", (e) => {
+                    div.innerHTML = "";
+                    addGroupMembers(div, data.groupName);
+                  });
+                } else {
+                  const exitIconLink = document.createElement("a");
+                  const exitIcon = document.createElement("img");
+
+                  exitIcon.src = "./assets/svg/exitIcon.svg";
+                  exitIcon.id = "exitIconSet";
+                  div.appendChild(exitIconLink);
+                  exitIconLink.appendChild(exitIcon);
+                  exitIconLink.addEventListener("click", (e) => {
+                    window.location.reload();
+                  });
+
+                  const message404 = document.createElement("p");
+                  message404.id = "message404";
+                  message404.innerText = "this group has no members";
+                  div.appendChild(message404);
+
+                  const addmemberBtn = document.createElement("button");
+                  addmemberBtn.classList.add("btn");
+                  addmemberBtn.innerText = "add member";
+                  div.appendChild(addmemberBtn);
+                  addmemberBtn.addEventListener("click", (e) => {
+                    div.innerHTML = "";
+                    addGroupMembers(div, group.groupName);
+                  });
+                }
+              });
+          });
+        });
+      } else {
+        errorMes.innerText = "Invalid input";
+        logInSect.appendChild(errorMes);
+      }
+    });
+};
+
+addGroupMembers = (div, name) => {
+  const exitIconLink = document.createElement("a");
+  const exitIcon = document.createElement("img");
+
+  exitIcon.src = "./assets/svg/exitIcon.svg";
+  exitIcon.id = "exitIconSet";
+  div.appendChild(exitIconLink);
+  exitIconLink.appendChild(exitIcon);
+
+  exitIconLink.addEventListener("click", (e) => {
+    window.location.reload();
+  });
+
+  const groupTitle = document.createElement("h4");
+  groupTitle.innerText = name;
+  div.appendChild(groupTitle);
+
+  const addMembersInp = document.createElement("input");
+  addMembersInp.type = "text";
+  addMembersInp.id = "addMembersInp";
+  addMembersInp.placeholder = "email";
+  div.appendChild(addMembersInp);
+
+  const addMembersBtn = document.createElement("button");
+  addMembersBtn.classList.add("btn");
+  addMembersBtn.id = "addMembersBtn";
+  addMembersBtn.innerText = "add";
+  div.appendChild(addMembersBtn);
+
+  addMembersBtn.addEventListener("click", () => {
+    errMes.innerText = "";
+    const memberEmail = addMembersInp.value;
+    const fetchOpt = {
+      headers: {
+        "Content-type": "application/json",
+        "x-authtoken": mainToken,
+      },
+    };
+
+    fetch(`${fetchUrl}/api/users/email/${memberEmail}`, fetchOpt)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        }
+      })
+
+      .then((data) => {
+        if (!data.statusCode && Object.keys(data).length != 0) {
+          const memberName = data.userName;
+          const memberPName = document.createElement("p");
+          memberPName.innerText = memberName;
+          div.appendChild(memberPName);
+        } else {
+          errorMes.innerText = "Invalid input";
+          logInSect.appendChild(errorMes);
+        }
+      });
+  });
+};
+
+loadGroupPage = () => {
+  body.innerHTML = "";
+  body.classList.add("profileBody"); //intentional to add profileBody class here.
+
+  const OwnGroup = JSON.parse(ls.getItem("currentOwnGroup"));
+  console.log("currentOwnGroup");
+  console.log(OwnGroup);
+  console.log(OwnGroup.FK_userId);
+
+  const account = JSON.parse(ls.getItem("account"));
+  console.log("account");
+  console.log(account);
+
+  const fetchOpt = {
+    headers: {
+      "Content-type": "application/json",
+      "x-authtoken": mainToken,
+    },
+  };
+
+  fetch(`${fetchUrl}/api/groups/${OwnGroup.groupId}`, fetchOpt)
+    .then((res) => {
+      if (res.status == 200) {
+        console.log("status: 200");
+        return res.json();
+      }
+    })
+
+    .then((data) => {
+      console.log(data);
+
+      //   header on the Group page
+      const header = document.createElement("header");
+      header.id = "header";
+      body.appendChild(header);
+
+      const nav = document.createElement("nav");
+      header.appendChild(nav);
+
+      const AbTheApp = document.createElement("a");
+      AbTheApp.innerText = "about the app";
+      AbTheApp.classList.add("navLink");
+      nav.appendChild(AbTheApp);
+
+      const userGuide = document.createElement("a");
+      userGuide.innerText = "user guide";
+      userGuide.classList.add("navLink");
+      nav.appendChild(userGuide);
+
+      const help = document.createElement("a");
+      help.innerText = "help";
+      help.classList.add("navLink");
+      nav.appendChild(help);
+
+      const userAccountIcon = document.createElement("img");
+      userAccountIcon.id = "userAccountIcon";
+      userAccountIcon.src = "./assets/svg/logIn.svg";
+      nav.appendChild(userAccountIcon);
+
+      //    Grouppage main
+      body.appendChild(main);
+
+      //    GroupDescription section
+      const myGroup = document.createElement("section");
+      myGroup.id = "myGroup";
+      main.appendChild(myGroup);
+
+      const goBack = document.createElement("a");
+      goBack.id = "goBack";
+      goBack.innerText = "goBack";
+      myGroup.appendChild(goBack);
+      goBack.addEventListener("click", () => {
+        ls.removeItem("currentOwnGroup");
+        window.location.href = `${baseUrl}?page=profile`;
+      });
+
+      const myGroupHeadline = document.createElement("h3");
+      myGroupHeadline.id = "myGroupHeadline";
+      myGroupHeadline.innerText = OwnGroup.groupName;
+      myGroup.appendChild(myGroupHeadline);
+
+      const myGroupDiv = document.createElement("div");
+      myGroupDiv.id = "myGroupDiv";
+      myGroup.appendChild(myGroupDiv);
+
+      const myGroupDivDescription = document.createElement("p");
+      myGroupDivDescription.id = "myGroupDivDescription";
+      myGroupDivDescription.innerText = data.groupDescription;
+      myGroupDiv.appendChild(myGroupDivDescription);
+
+      const myGroupDivAdmin = document.createElement("p");
+      myGroupDivAdmin.id = "myGroupDivAdmin";
+      myGroupDivAdmin.innerText = `admin: ${data.userName}`;
+      myGroupDiv.appendChild(myGroupDivAdmin);
+
+      const myGroupDivMembers = document.createElement("ul");
+      myGroupDivMembers.id = "myGroupDivMembers";
+      myGroupDiv.appendChild(myGroupDivMembers);
+
+      if (data.userId == account.userId) {
+        const fetchOpt = {
+          headers: {
+            "Content-type": "application/json",
+            "x-authtoken": mainToken,
+          },
+        };
+        fetch(`${fetchUrl}/api/groupmembers/${OwnGroup.groupId}`, fetchOpt)
+          .then((res) => {
+            if (res.status == 200) {
+              console.log("status: 200");
+              return res.json();
+            }
+          })
+          .then((data) => {
+            if (data.groupMembers) {
+              data.groupMembers.forEach((member) => {
+                const myGroupDivMember = document.createElement("li");
+                myGroupDivMember.id = "myGroupDivMember";
+                myGroupDivMembers.appendChild(myGroupDivMember);
+                const myGroupDivMemberLink = document.createElement("a");
+                myGroupDivMemberLink.id = "myGroupDivMemberLink";
+                myGroupDivMemberLink.innerText = member.userName;
+                myGroupDivMember.appendChild(myGroupDivMemberLink);
+
+                myGroupDivMemberLink.addEventListener("click", () => {
+                  myGroupDivMembers.innerHTML = "";
+                  const groupMemberElm = document.createElement("div");
+                  groupMemberElm.id = "groupMemberElm";
+                  myGroupDivMembers.appendChild(groupMemberElm);
+
+                  const groupMemberElmUsername = document.createElement("p");
+                  groupMemberElmUsername.id = "groupMemberElmUsername";
+                  groupMemberElmUsername.innerText = member.userName;
+                  groupMemberElm.appendChild(groupMemberElmUsername);
+
+                  const groupMemberEmail = document.createElement("p");
+                  groupMemberEmail.id = "groupMemberEmail";
+                  groupMemberEmail.innerText = member.email;
+                  groupMemberElm.appendChild(groupMemberEmail);
+
+                  const removeMemberBtn = document.createElement("button");
+                  removeMemberBtn.id = "groupMemberEmail";
+                  removeMemberBtn.innerText = "remove member";
+                  removeMemberBtn.classList.add("btn");
+                  groupMemberElm.appendChild(removeMemberBtn);
+
+                  removeMemberBtn.addEventListener("click", () => {
+                    groupMemberElm.innerHTML = "";
+
+                    const areYouSure = document.createElement("p");
+                    areYouSure.id = "areYouSure";
+                    areYouSure.innerText = `are you sured you want to remove ${member.userName} from the group ?`;
+                    groupMemberElm.appendChild(areYouSure);
+
+                    const cancelBtn = document.createElement("button");
+                    cancelBtn.id = "cancelBtn";
+                    cancelBtn.innerText = "cancel";
+                    cancelBtn.classList.add("btn");
+                    groupMemberElm.appendChild(cancelBtn);
+                    cancelBtn.addEventListener("click", () => {
+                      window.location.reload();
+                    });
+
+                    const removeBtn = document.createElement("button");
+                    removeBtn.id = "removeBtn";
+                    removeBtn.innerText = "confirm";
+                    removeBtn.classList.add("btn");
+                    groupMemberElm.appendChild(removeBtn);
+                    removeBtn.addEventListener("click", () => {
+                      const fetchOpt = {
+                        method: "DELETE",
+                        headers: {
+                          "Content-type": "application/json",
+                          "x-authtoken": mainToken,
+                        },
+                      };
+                      fetch(
+                        `${fetchUrl}/api/groupmembers/${OwnGroup.groupId}/${member.email}`,
+                        fetchOpt
+                      )
+                        .then((res) => {
+                          if (res.status == 200) {
+                            console.log("status: 200");
+                            return res.json();
+                          }
+                        })
+                        .then((data) => {
+                          groupMemberElm.innerHTML = "";
+                          const removedMemberCOn = document.createElement("p");
+                          removedMemberCOn.id = "removedMember";
+                          removedMemberCOn.innerText = `removed ${member.userName} from the group`;
+                          groupMemberElm.appendChild(removedMemberCOn);
+
+                          reloadWINDOW = () => {
+                            window.location.reload();
+                          };
+
+                          setTimeout(reloadWINDOW, 3000);
+                        });
+                    });
+                  });
+                });
+              });
+            }
+          });
+      }
+
+      if (data.userId != account.userId) {
+        console.log(data.FK_userId);
+        console.log("not an admin");
+        const leaveBtn = document.createElement("button");
+        leaveBtn.id = "leaveBtn";
+        leaveBtn.classList.add("btn");
+        leaveBtn.innerText = "leave the group";
+        myGroupDiv.appendChild(leaveBtn);
+
+        leaveBtn.addEventListener("click", () => {
+          const confirmLeaveDiv = document.createElement("div");
+          confirmLeaveDiv.id = "confirmLeaveDiv";
+          myGroupDiv.appendChild(confirmLeaveDiv);
+
+          const confirmLeaveP = document.createElement("p");
+          confirmLeaveP.id = "confirmLeaveP";
+          confirmLeaveP.innerText =
+            "Are you sure you want to leave this group?";
+          confirmLeaveDiv.appendChild(confirmLeaveP);
+
+          const cancelBtn = document.createElement("button");
+          cancelBtn.id = "cancelBtn";
+          cancelBtn.innerText = "cancel";
+          cancelBtn.classList.add("btn");
+          confirmLeaveDiv.appendChild(cancelBtn);
+          cancelBtn.addEventListener("click", () => {
+            window.location.reload();
+          });
+
+          const confirmBtn = document.createElement("button");
+          confirmBtn.id = "confirmBtn";
+          confirmBtn.innerText = "confirm";
+          confirmBtn.classList.add("btn");
+          confirmLeaveDiv.appendChild(confirmBtn);
+          goBackProfile = () => {
+            window.location.href = `${baseUrl}?page=profile`;
+          };
+          confirmBtn.addEventListener("click", () => {
+            const fetchOpt = {
+              method: "DELETE",
+              headers: {
+                "Content-type": "application/json",
+                "x-authtoken": mainToken,
+              },
+            };
+
+            fetch(
+              `${fetchUrl}/api/groupmembers/${OwnGroup.groupId}/${account.userId}`,
+              fetchOpt
+            )
+              .then((res) => {
+                if (res.status == 200) {
+                  console.log("status: 200");
+                  return res.json();
+                }
+              })
+
+              .then((data) => {
+                const confirmLeaveP = document.createElement("p");
+                confirmLeaveP.id = "confirmLeaveP";
+                confirmLeaveP.innerText = `Left ${data.groupName}`;
+                confirmLeaveDiv.appendChild(confirmLeaveP);
+
+                ls.removeItem("currentOwnGroup");
+                setTimeout(goBackProfile(), 1000);
+              });
+          });
+        });
+      }
+
+      //    GroupTasks section (on the right side of the screen)
+      const groupTasks = document.createElement("section");
+      groupTasks.id = "groupTasks";
+      main.appendChild(groupTasks);
+
+      //    Group tasks - Create a task button
+      const groupTasksCreateTaskBtn = document.createElement("button");
+      groupTasksCreateTaskBtn.id = "groupTasksCreateTaskBtn";
+      groupTasksCreateTaskBtn.innerText = "Create A Task";
+      groupTasksCreateTaskBtn.classList.add("btn");
+      groupTasks.appendChild(groupTasksCreateTaskBtn);
+
+      //    Group tasks - upcoming tasks
+      const groupTasksUpcoming = document.createElement("div");
+      groupTasksUpcoming.id = "groupTasksUpcoming";
+      groupTasks.appendChild(groupTasksUpcoming);
+
+      const groupTasksUpcomingHeadline = document.createElement("h4");
+      groupTasksUpcomingHeadline.id = "groupTasksUpcomingHeadline";
+      groupTasksUpcomingHeadline.innerText = "Upcoming Group Tasks";
+      groupTasksUpcoming.appendChild(groupTasksUpcomingHeadline);
+
+      const borderGroupTasksUpcTop = document.createElement("div");
+      borderGroupTasksUpcTop.id = "borderGroupTasksUpcTop";
+      borderGroupTasksUpcTop.classList.add("borderHorizontal");
+      groupTasksUpcoming.appendChild(borderGroupTasksUpcTop);
+
+      //   Table to store upcoming tasks
+      const groupTasksUpcShow = document.createElement("table");
+      groupTasksUpcShow.id = "groupTasksUpcShow";
+      groupTasksUpcoming.appendChild(groupTasksUpcShow);
+
+      const groupTasksUpcShowTr = document.createElement("tr");
+      groupTasksUpcShowTr.id = "groupTasksUpcShowTr";
+      groupTasksUpcShow.appendChild(groupTasksUpcShowTr);
+
+      const groupTasksUpcShowTaskName = document.createElement("td");
+      groupTasksUpcShowTaskName.id = "groupTasksUpcShowTaskName";
+      groupTasksUpcShowTaskName.innerText = "Task Name";
+      groupTasksUpcShowTr.appendChild(groupTasksUpcShowTaskName);
+
+      const groupTasksUpcShowTaskColor = document.createElement("td");
+      groupTasksUpcShowTaskColor.id = "groupTasksUpcShowTaskColor";
+      groupTasksUpcShowTaskColor.innerText = "Task Type";
+      groupTasksUpcShowTr.appendChild(groupTasksUpcShowTaskColor);
+
+      const borderGroupTasksUpcBottom = document.createElement("div");
+      borderGroupTasksUpcBottom.id = "borderGroupTasksUpcBottom";
+      borderGroupTasksUpcBottom.classList.add("borderHorizontal");
+      groupTasksUpcoming.appendChild(borderGroupTasksUpcBottom);
+
+      //    Section to store all the group's tasks
+      const allGroupTasks = document.createElement("section");
+      allGroupTasks.id = "allGroupTasks";
+      main.appendChild(allGroupTasks);
+
+      const allGroupTasksHeadline = document.createElement("h3");
+      allGroupTasksHeadline.id = "allGroupTasksHeadline";
+      allGroupTasks.appendChild(allGroupTasksHeadline);
+
+      const allGroupTasksTable = document.createElement("table");
+      allGroupTasksTable.id = "allGroupTasksTable";
+      allGroupTasks.appendChild(allGroupTasksTable);
+
+      const allGroupTasksTableTr = document.createElement("tr");
+      allGroupTasksTableTr.id = "allGroupTasksTableTr";
+      allGroupTasksTable.appendChild(allGroupTasksTableTr);
+
+      const allGroupTasksTableTaskName = document.createElement("th");
+      allGroupTasksTableTaskName.id = "allGroupTasksTableTaskName";
+      allGroupTasksTableTaskName.innerText = "Task Name";
+      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskName);
+
+      const allGroupTasksTableTaskAssignedTo = document.createElement("th");
+      allGroupTasksTableTaskAssignedTo.id = "allGroupTasksTableTaskAssignedTo";
+      allGroupTasksTableTaskAssignedTo.innerText = "Assigned To";
+      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskAssignedTo);
+
+      const allGroupTasksTableTaskDueDate = document.createElement("th");
+      allGroupTasksTableTaskDueDate.id = "allGroupTasksTableTaskDueDate";
+      allGroupTasksTableTaskDueDate.innerText = "Due Date";
+      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskDueDate);
+
+      const allGroupTasksTableTaskStatus = document.createElement("th");
+      allGroupTasksTableTaskStatus.id = "allGroupTasksTableTaskStatus";
+      allGroupTasksTableTaskStatus.innerText = "Status";
+      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskStatus);
+
+      const allGroupTasksTableTaskLabel = document.createElement("th");
+      allGroupTasksTableTaskLabel.id = "allGroupTasksTableTaskLabel";
+      allGroupTasksTableTaskLabel.innerText = "Task Label";
+      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskLabel);
+
+      //  aside on the group page
+      const aside = document.createElement("aside");
+      aside.id = "aside";
+      body.appendChild(aside);
+
+      const headlineAside = document.createElement("h2");
+      headlineAside.id = "operatingBtnsSect";
+      headlineAside.innerText = "My Tasks";
+      aside.appendChild(headlineAside);
+
+      const upcomTaskSect = document.createElement("section");
+      upcomTaskSect.id = "upcomTaskSect";
+      aside.appendChild(upcomTaskSect);
+
+      const upComHeadline = document.createElement("h4");
+      upComHeadline.id = "upComHeadline";
+      upComHeadline.innerText = "Upcoming";
+      upcomTaskSect.appendChild(upComHeadline);
+
+      const borderUpComTop = document.createElement("div");
+      borderUpComTop.id = "borderUpComTop";
+      borderUpComTop.classList.add("borderHorizontal");
+      upcomTaskSect.appendChild(borderUpComTop);
+
+      const upComTasks = document.createElement("section");
+      upComTasks.id = "upComTasks";
+      upcomTaskSect.appendChild(upComTasks);
+
+      const borderUpComBottom = document.createElement("div");
+      borderUpComBottom.id = "borderUpComBottom";
+      borderUpComBottom.classList.add("borderHorizontal");
+      upcomTaskSect.appendChild(borderUpComBottom);
+
+      const operatingBtnsSect = document.createElement("section");
+      operatingBtnsSect.id = "operatingBtnsSect";
+      operatingBtnsSect.classList.add("flex_column");
+      aside.appendChild(operatingBtnsSect);
+
+      const homeworkBtn = document.createElement("a");
+      homeworkBtn.id = "homeworkBtn";
+      homeworkBtn.innerText = "My Homework";
+      homeworkBtn.classList.add("operBtns");
+      operatingBtnsSect.appendChild(homeworkBtn);
+
+      const projectsBtn = document.createElement("a");
+      projectsBtn.id = "projectsBtn";
+      projectsBtn.innerText = "My Projects";
+      projectsBtn.classList.add("operBtns");
+      operatingBtnsSect.appendChild(projectsBtn);
+
+      const assigmentsBtn = document.createElement("a");
+      assigmentsBtn.id = "assigmentsBtn";
+      assigmentsBtn.innerText = "My Assigments";
+      assigmentsBtn.classList.add("operBtns");
+      operatingBtnsSect.appendChild(assigmentsBtn);
+
+      const showAllDone = document.createElement("a");
+      showAllDone.id = "showAllDone";
+      showAllDone.innerText = "Show All Finished Tasks";
+      showAllDone.classList.add("operBtns");
+      operatingBtnsSect.appendChild(showAllDone);
+    });
 };
 
 window.addEventListener("DOMContentLoaded", (e) => {
@@ -585,15 +1640,28 @@ window.addEventListener("DOMContentLoaded", (e) => {
       const pageName = (pageId = nameSplit[1]);
       console.log(pageName);
 
-      switch (true) {
-        case pageName == "signUp":
+      switch (pageName) {
+        case "login":
+          loadSinglelogPage();
+          break;
+
+        case "signUp":
           loadSignUpPage();
           break;
 
-        case pageName == "profile" && ls.getItem("token") != "":
+        case "createAccount":
+          console.log("you are on create account page");
+          loadCreateAccountPage();
+          break;
+
+        case "profile":
           console.log("you are on profile page");
           loadProfilePage();
-          console.log(`this is token ${ls.getItem("token")}`);
+          break;
+
+        case "group":
+          console.log("you are on group page");
+          loadGroupPage();
           break;
 
         default:
