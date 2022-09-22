@@ -476,6 +476,102 @@ loadProfilePage = () => {
   createTask.classList.add("btn");
   createBtns.appendChild(createTask);
 
+  //create task here
+  createTask.addEventListener("click", (e) => {
+    myBoardDiv.innerHTML = '';
+    myBoardHeadline.innerText = `Hello ${account.displayName}. You can create a task here`;
+
+    const defineTask = document.createElement("form");
+    defineTask.id = "defineTask";
+    myBoardDiv.appendChild(defineTask);
+
+    const defineTaskSubj = document.createElement("input");
+    defineTaskSubj.id = "defineTaskSubj";
+    defineTaskSubj.type = "text";
+    defineTaskSubj.placeholder = "Describe your task";
+    defineTask.appendChild(defineTaskSubj);
+
+    const defineTaskDropdownLabel = document.createElement("label");
+    defineTaskDropdownLabel.id = "defineTaskDropdownLabel";
+    defineTaskDropdownLabel.for = "defineTaskDropdown";
+    defineTaskDropdownLabel.innerText = "Choose task category:";
+    defineTask.appendChild(defineTaskDropdownLabel);
+
+    const defineTaskDropdown = document.createElement("select");
+    defineTaskDropdown.id = "defineTaskDropdown";
+    defineTaskDropdown.name = "Task label";
+    defineTask.appendChild(defineTaskDropdown);
+
+    const defineTaskHw = document.createElement("option");
+    defineTaskHw.id = "defineTaskHw";
+    defineTaskHw.value = "Homework";
+    defineTaskHw.innerText = "Homework";
+    defineTaskDropdown.appendChild(defineTaskHw);
+
+    const defineTaskProj = document.createElement("option");
+    defineTaskProj.id = "defineTaskProj";
+    defineTaskProj.value = "Project";
+    defineTaskProj.innerText = "Project";
+    defineTaskDropdown.appendChild(defineTaskProj);
+
+    const defineTaskAs = document.createElement("option");
+    defineTaskAs.id = "defineTaskAs";
+    defineTaskAs.value = "Assignment";
+    defineTaskAs.innerText = "Assignment";
+    defineTaskDropdown.appendChild(defineTaskAs);
+
+    const defineTaskDateLab = document.createElement("label");
+    defineTaskDateLab.id = "defineTaskDateLabel";
+    defineTaskDateLab.for = "TaskDueDate";
+    defineTaskDateLab.innerText = "Task due date:";
+    defineTask.appendChild(defineTaskDateLab);
+
+    const defineTaskDate = document.createElement("input");
+    defineTaskDate.id = "defineTaskDate";
+    defineTaskDate.type = "date";
+    defineTaskDate.name = "TaskDueDate";
+    defineTask.appendChild(defineTaskDate);
+
+    const defineTaskBtn = document.createElement("input");
+    defineTaskBtn.id = "defineTaskBtn";
+    defineTaskBtn.type = "submit";
+    defineTaskBtn.value = "Add task";
+    defineTaskBtn.classList.add("btn");
+    defineTask.appendChild(defineTaskBtn);
+
+    //create the new task
+    defineTaskBtn.addEventListener("click", (e) => {
+      e.preventDefault()
+      // myBoardDiv.classList.add("hideMyBoardDiv");
+      const payload = {
+        "labelId": defineTaskDropdown.value,
+        "taskdueDate": defineTaskDate.value,
+        "tasksubject": defineTaskSubj.value
+
+      }
+
+      const fetchOpt = {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+          "x-authToken": mainToken
+        },
+        body: JSON.stringify(payload)
+      }
+
+      fetch(`${fetchUrl}/api/tasks`, fetchOpt)
+      .then((res) => {
+        if (res.status == 200) {
+          console.log("status 200");
+          return res.json();
+        }
+      })
+    });
+  })
+
+
+
+
   const createGroup = document.createElement("button");
   createGroup.id = "createGroupBtn";
   createGroup.innerText = "create group";
@@ -598,12 +694,15 @@ loadProfilePage = () => {
     const fetchOpt = {
       headers: {
         "Content-type": "application/json",
-        "x-authToken": ls.getItem("token")},};
+        "x-authToken": ls.getItem("token")
+      },
+    };
     fetch(`${fetchUrl}/api/tasks/own/1`, fetchOpt)
       .then((res) => {
         if (res.status == 200) {
           return res.json();
-        }})
+        }
+      })
       .then((data) => {
         myBoardDiv.classList.remove("hideMyBoardDiv");
         myBoardDiv.innerHTML = '';
@@ -616,7 +715,9 @@ loadProfilePage = () => {
           showAllHomeworkListItem.innerText = task.tasksubject;
           showAllHomeworkListItem.classList.add("labelId1");
           showAllHomework.appendChild(showAllHomeworkListItem);
-        })});});
+        })
+      });
+  });
 
   const projectsBtn = document.createElement("a");
   projectsBtn.id = "projectsBtn";
@@ -624,32 +725,37 @@ loadProfilePage = () => {
   projectsBtn.classList.add("operBtns");
   operatingBtnsSect.appendChild(projectsBtn);
 
-//  Generate all own tasks with labelId = 2 (projects) here
-projectsBtn.addEventListener("click", (e) => {
-  myBoardDiv.classList.add("hideMyBoardDiv");
-  myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your project tasks`;
-  const fetchOpt = {
-    headers: {
-      "Content-type": "application/json",
-      "x-authToken": ls.getItem("token")},};
-  fetch(`${fetchUrl}/api/tasks/own/2`, fetchOpt)
-    .then((res) => {
-      if (res.status == 200) {
-        return res.json();
-      }})
-    .then((data) => {
-      myBoardDiv.classList.remove("hideMyBoardDiv");
-      myBoardDiv.innerHTML = '';
-      const showAllProjects = document.createElement("ul");
-      showAllProjects.id = "showAllProjects";
-      myBoardDiv.appendChild(showAllProjects);
-      data.forEach(task => {
-        const showAllProjectsListItem = document.createElement("li");
-        showAllProjectsListItem.id = "showAllProjectsListItem";
-        showAllProjectsListItem.innerText = task.tasksubject;
-        showAllProjectsListItem.classList.add("labelId2");
-        showAllProjects.appendChild(showAllProjectsListItem);
-      })});});
+  //  Generate all own tasks with labelId = 2 (projects) here
+  projectsBtn.addEventListener("click", (e) => {
+    myBoardDiv.classList.add("hideMyBoardDiv");
+    myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your project tasks`;
+    const fetchOpt = {
+      headers: {
+        "Content-type": "application/json",
+        "x-authToken": ls.getItem("token")
+      },
+    };
+    fetch(`${fetchUrl}/api/tasks/own/2`, fetchOpt)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        }
+      })
+      .then((data) => {
+        myBoardDiv.classList.remove("hideMyBoardDiv");
+        myBoardDiv.innerHTML = '';
+        const showAllProjects = document.createElement("ul");
+        showAllProjects.id = "showAllProjects";
+        myBoardDiv.appendChild(showAllProjects);
+        data.forEach(task => {
+          const showAllProjectsListItem = document.createElement("li");
+          showAllProjectsListItem.id = "showAllProjectsListItem";
+          showAllProjectsListItem.innerText = task.tasksubject;
+          showAllProjectsListItem.classList.add("labelId2");
+          showAllProjects.appendChild(showAllProjectsListItem);
+        })
+      });
+  });
 
   const assigmentsBtn = document.createElement("a");
   assigmentsBtn.id = "assigmentsBtn";
@@ -659,30 +765,35 @@ projectsBtn.addEventListener("click", (e) => {
 
   //  Generate all own tasks with labelId = 3 (assignments) here
   assigmentsBtn.addEventListener("click", (e) => {
-  myBoardDiv.classList.add("hideMyBoardDiv");
-  myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your assignment tasks`;
-  const fetchOpt = {
-    headers: {
-      "Content-type": "application/json",
-      "x-authToken": ls.getItem("token")},};
-  fetch(`${fetchUrl}/api/tasks/own/3`, fetchOpt)
-    .then((res) => {
-      if (res.status == 200) {
-        return res.json();
-      }})
-    .then((data) => {
-      myBoardDiv.classList.remove("hideMyBoardDiv");
-      myBoardDiv.innerHTML = '';
-      const showAllAssignments = document.createElement("ul");
-      showAllAssignments.id = "showAllAssignments";
-      myBoardDiv.appendChild(showAllAssignments);
-      data.forEach(task => {
-        const showAllAssignmentsListItem = document.createElement("li");
-        showAllAssignmentsListItem.id = "showAllAssignmentsListItem";
-        showAllAssignmentsListItem.innerText = task.tasksubject;
-        showAllAssignmentsListItem.classList.add("labelId3");
-        showAllAssignments.appendChild(showAllAssignmentsListItem);
-      })});});
+    myBoardDiv.classList.add("hideMyBoardDiv");
+    myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your assignment tasks`;
+    const fetchOpt = {
+      headers: {
+        "Content-type": "application/json",
+        "x-authToken": ls.getItem("token")
+      },
+    };
+    fetch(`${fetchUrl}/api/tasks/own/3`, fetchOpt)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        }
+      })
+      .then((data) => {
+        myBoardDiv.classList.remove("hideMyBoardDiv");
+        myBoardDiv.innerHTML = '';
+        const showAllAssignments = document.createElement("ul");
+        showAllAssignments.id = "showAllAssignments";
+        myBoardDiv.appendChild(showAllAssignments);
+        data.forEach(task => {
+          const showAllAssignmentsListItem = document.createElement("li");
+          showAllAssignmentsListItem.id = "showAllAssignmentsListItem";
+          showAllAssignmentsListItem.innerText = task.tasksubject;
+          showAllAssignmentsListItem.classList.add("labelId3");
+          showAllAssignments.appendChild(showAllAssignmentsListItem);
+        })
+      });
+  });
 
   const showAllDone = document.createElement("a");
   showAllDone.id = "showAllDone";
