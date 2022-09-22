@@ -435,7 +435,7 @@ loadProfilePage = () => {
           body: JSON.stringify(payload),
         };
 
-        fetch(`${fetchUrl}/api/accounts/${account.accountId}`, fetchOpt)
+        fetch(`${fetchUrl}/api/accounts/own`, fetchOpt)
           .then((res) => {
             if (res.status == 200) {
               console.log("succes");
@@ -567,7 +567,7 @@ loadProfilePage = () => {
 
   const recentGroupsHeadline = document.createElement("h4");
   recentGroupsHeadline.id = "recentGroupsHeadline";
-  recentGroupsHeadline.innerText = "My Groups";
+  recentGroupsHeadline.innerText = "All Groups";
   recentGroups.appendChild(recentGroupsHeadline);
 
   const borderRecGroupTop = document.createElement("div");
@@ -578,6 +578,39 @@ loadProfilePage = () => {
   const recentGroupsShow = document.createElement("section");
   recentGroupsShow.id = "recentGroupsShow";
   recentGroups.appendChild(recentGroupsShow);
+
+  const fetchOpt = {
+    headers: {
+      "Content-type": "application/json",
+      "x-authToken": mainToken,
+    },
+  };
+
+  fetch(`${fetchUrl}/api/groupmembers/membership`, fetchOpt)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      }
+    })
+    .then((data) => {
+      console.log(data);
+      data.forEach((group) => {
+        if (group.FK_userId != account.userId) {
+          console.log("group");
+          console.log(group);
+          const groupMembershipLink = document.createElement("a");
+          groupMembershipLink.id = "groupMembershipLink";
+          groupMembershipLink.innerText = group.groupName;
+          recentGroupsShow.appendChild(groupMembershipLink);
+          groupMembershipLink.addEventListener("click", () => {
+            ls.setItem("currentOwnGroup", JSON.stringify(group));
+            console.log("currentOwnGroup");
+            console.log(ls.getItem("currentOwnGroup"));
+            window.location.href = `${baseUrl}?page=group`;
+          });
+        }
+      });
+    });
 
   const borderRecGroupBottom = document.createElement("div");
   borderRecGroupBottom.id = "borderRecGroupBottom";
@@ -622,7 +655,7 @@ loadProfilePage = () => {
     const fetchOpt = {
       headers: {
         "Content-type": "application/json",
-        "x-authToken": ls.getItem("token")
+        "x-authToken": ls.getItem("token"),
       },
     };
 
@@ -635,36 +668,37 @@ loadProfilePage = () => {
       .then((data) => {
         console.log(data);
         myBoardDiv.classList.remove("hideMyBoardDiv");
-        myBoardDiv.innerHTML = '';
+        myBoardDiv.innerHTML = "";
 
         const showAllTasksList = document.createElement("ul");
         showAllTasksList.id = "showAllTasksList";
         myBoardDiv.appendChild(showAllTasksList);
 
-        data.forEach(task => {
-
+        data.forEach((task) => {
           const showAllTasksListItem = document.createElement("li");
           showAllTasksListItem.id = "showAllTasksList";
           showAllTasksListItem.innerText = task.tasksubject;
           switch (task.FK_labelId) {
-            case (1): showAllTasksListItem.classList.add("labelId1");
+            case 1:
+              showAllTasksListItem.classList.add("labelId1");
               break;
-            case (2): showAllTasksListItem.classList.add("labelId2");
+            case 2:
+              showAllTasksListItem.classList.add("labelId2");
               break;
-            case (3): showAllTasksListItem.classList.add("labelId3");
+            case 3:
+              showAllTasksListItem.classList.add("labelId3");
               break;
             default:
               break;
           }
           showAllTasksList.appendChild(showAllTasksListItem);
-        })
+        });
       });
-
   });
 
   const showAllGroups = document.createElement("a");
   showAllGroups.id = "showAllGroupsBtn";
-  showAllGroups.innerText = "show all groups";
+  showAllGroups.innerText = "show my groups";
   showAllGroups.classList.add("btnREVERSE");
   showAllBtns.appendChild(showAllGroups);
 
@@ -716,7 +750,6 @@ loadProfilePage = () => {
   homeworkBtn.classList.add("operBtns");
   operatingBtnsSect.appendChild(homeworkBtn);
 
-
   //  Generate all own tasks with labelId = 1 (homework) here
   homeworkBtn.addEventListener("click", (e) => {
     myBoardDiv.classList.add("hideMyBoardDiv");
@@ -724,25 +757,30 @@ loadProfilePage = () => {
     const fetchOpt = {
       headers: {
         "Content-type": "application/json",
-        "x-authToken": ls.getItem("token")},};
+        "x-authToken": ls.getItem("token"),
+      },
+    };
     fetch(`${fetchUrl}/api/tasks/own/1`, fetchOpt)
       .then((res) => {
         if (res.status == 200) {
           return res.json();
-        }})
+        }
+      })
       .then((data) => {
         myBoardDiv.classList.remove("hideMyBoardDiv");
-        myBoardDiv.innerHTML = '';
+        myBoardDiv.innerHTML = "";
         const showAllHomework = document.createElement("ul");
         showAllHomework.id = "showAllHomework";
         myBoardDiv.appendChild(showAllHomework);
-        data.forEach(task => {
+        data.forEach((task) => {
           const showAllHomeworkListItem = document.createElement("li");
           showAllHomeworkListItem.id = "showAllHomeworkListItem";
           showAllHomeworkListItem.innerText = task.tasksubject;
           showAllHomeworkListItem.classList.add("labelId1");
           showAllHomework.appendChild(showAllHomeworkListItem);
-        })});});
+        });
+      });
+  });
 
   const projectsBtn = document.createElement("a");
   projectsBtn.id = "projectsBtn";
@@ -750,32 +788,37 @@ loadProfilePage = () => {
   projectsBtn.classList.add("operBtns");
   operatingBtnsSect.appendChild(projectsBtn);
 
-//  Generate all own tasks with labelId = 2 (projects) here
-projectsBtn.addEventListener("click", (e) => {
-  myBoardDiv.classList.add("hideMyBoardDiv");
-  myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your project tasks`;
-  const fetchOpt = {
-    headers: {
-      "Content-type": "application/json",
-      "x-authToken": ls.getItem("token")},};
-  fetch(`${fetchUrl}/api/tasks/own/2`, fetchOpt)
-    .then((res) => {
-      if (res.status == 200) {
-        return res.json();
-      }})
-    .then((data) => {
-      myBoardDiv.classList.remove("hideMyBoardDiv");
-      myBoardDiv.innerHTML = '';
-      const showAllProjects = document.createElement("ul");
-      showAllProjects.id = "showAllProjects";
-      myBoardDiv.appendChild(showAllProjects);
-      data.forEach(task => {
-        const showAllProjectsListItem = document.createElement("li");
-        showAllProjectsListItem.id = "showAllProjectsListItem";
-        showAllProjectsListItem.innerText = task.tasksubject;
-        showAllProjectsListItem.classList.add("labelId2");
-        showAllProjects.appendChild(showAllProjectsListItem);
-      })});});
+  //  Generate all own tasks with labelId = 2 (projects) here
+  projectsBtn.addEventListener("click", (e) => {
+    myBoardDiv.classList.add("hideMyBoardDiv");
+    myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your project tasks`;
+    const fetchOpt = {
+      headers: {
+        "Content-type": "application/json",
+        "x-authToken": ls.getItem("token"),
+      },
+    };
+    fetch(`${fetchUrl}/api/tasks/own/2`, fetchOpt)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        }
+      })
+      .then((data) => {
+        myBoardDiv.classList.remove("hideMyBoardDiv");
+        myBoardDiv.innerHTML = "";
+        const showAllProjects = document.createElement("ul");
+        showAllProjects.id = "showAllProjects";
+        myBoardDiv.appendChild(showAllProjects);
+        data.forEach((task) => {
+          const showAllProjectsListItem = document.createElement("li");
+          showAllProjectsListItem.id = "showAllProjectsListItem";
+          showAllProjectsListItem.innerText = task.tasksubject;
+          showAllProjectsListItem.classList.add("labelId2");
+          showAllProjects.appendChild(showAllProjectsListItem);
+        });
+      });
+  });
 
   const assigmentsBtn = document.createElement("a");
   assigmentsBtn.id = "assigmentsBtn";
@@ -785,30 +828,35 @@ projectsBtn.addEventListener("click", (e) => {
 
   //  Generate all own tasks with labelId = 3 (assignments) here
   assigmentsBtn.addEventListener("click", (e) => {
-  myBoardDiv.classList.add("hideMyBoardDiv");
-  myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your assignment tasks`;
-  const fetchOpt = {
-    headers: {
-      "Content-type": "application/json",
-      "x-authToken": ls.getItem("token")},};
-  fetch(`${fetchUrl}/api/tasks/own/3`, fetchOpt)
-    .then((res) => {
-      if (res.status == 200) {
-        return res.json();
-      }})
-    .then((data) => {
-      myBoardDiv.classList.remove("hideMyBoardDiv");
-      myBoardDiv.innerHTML = '';
-      const showAllAssignments = document.createElement("ul");
-      showAllAssignments.id = "showAllAssignments";
-      myBoardDiv.appendChild(showAllAssignments);
-      data.forEach(task => {
-        const showAllAssignmentsListItem = document.createElement("li");
-        showAllAssignmentsListItem.id = "showAllAssignmentsListItem";
-        showAllAssignmentsListItem.innerText = task.tasksubject;
-        showAllAssignmentsListItem.classList.add("labelId3");
-        showAllAssignments.appendChild(showAllAssignmentsListItem);
-      })});});
+    myBoardDiv.classList.add("hideMyBoardDiv");
+    myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your assignment tasks`;
+    const fetchOpt = {
+      headers: {
+        "Content-type": "application/json",
+        "x-authToken": ls.getItem("token"),
+      },
+    };
+    fetch(`${fetchUrl}/api/tasks/own/3`, fetchOpt)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        }
+      })
+      .then((data) => {
+        myBoardDiv.classList.remove("hideMyBoardDiv");
+        myBoardDiv.innerHTML = "";
+        const showAllAssignments = document.createElement("ul");
+        showAllAssignments.id = "showAllAssignments";
+        myBoardDiv.appendChild(showAllAssignments);
+        data.forEach((task) => {
+          const showAllAssignmentsListItem = document.createElement("li");
+          showAllAssignmentsListItem.id = "showAllAssignmentsListItem";
+          showAllAssignmentsListItem.innerText = task.tasksubject;
+          showAllAssignmentsListItem.classList.add("labelId3");
+          showAllAssignments.appendChild(showAllAssignmentsListItem);
+        });
+      });
+  });
 
   const showAllDone = document.createElement("a");
   showAllDone.id = "showAllDone";
@@ -1003,6 +1051,8 @@ getAllGroupsFunction = (div) => {
               })
 
               .then((data) => {
+                ls.setItem("currentOwnGroup", JSON.stringify(data));
+
                 if (!data.statusCode && Object.keys(data).length != 0) {
                   const exitIconLink = document.createElement("a");
                   const exitIcon = document.createElement("img");
@@ -1014,7 +1064,8 @@ getAllGroupsFunction = (div) => {
                     window.location.reload();
                   });
 
-                  const groupTitle = document.createElement("h4");
+                  const groupTitle = document.createElement("a");
+                  groupTitle.href = `${baseUrl}?page=group`;
                   groupTitle.innerText = data.groupName;
                   div.appendChild(groupTitle);
 
@@ -1024,7 +1075,7 @@ getAllGroupsFunction = (div) => {
 
                   data.groupMembers.forEach((member) => {
                     const memberItem = document.createElement("p");
-                    memberItem.innerText = member;
+                    memberItem.innerText = member.userName;
                     groupMembers.appendChild(memberItem);
                   });
 
@@ -1132,400 +1183,439 @@ addGroupMembers = (div, name) => {
   });
 };
 
-
 loadGroupPage = () => {
-    let account;
-    account = JSON.parse(ls.getItem("account"));
-    console.log(ls.getItem("account"));
-  
-    body.innerHTML = "";
-    body.classList.add("profileBody");
-  
-    //   header
-    const header = document.createElement("header");
-    header.id = "header";
-    body.appendChild(header);
-  
-    const nav = document.createElement("nav");
-    header.appendChild(nav);
-  
-    const AbTheApp = document.createElement("a");
-    AbTheApp.innerText = "about the app";
-    AbTheApp.classList.add("navLink");
-    nav.appendChild(AbTheApp);
-  
-    const userGuide = document.createElement("a");
-    userGuide.innerText = "user guide";
-    userGuide.classList.add("navLink");
-    nav.appendChild(userGuide);
-  
-    const help = document.createElement("a");
-    help.innerText = "help";
-    help.classList.add("navLink");
-    nav.appendChild(help);
-  
-    const userAccSet = document.createElement("div");
-    userAccSet.id = "userAccSet";
-    userAccSet.classList.add("navLink");
-    nav.appendChild(userAccSet);
-  
-    const userAccountIcon = document.createElement("img");
-    userAccountIcon.id = "userAccountIcon";
-    userAccountIcon.src = "./assets/svg/logIn.svg";
-    userAccSet.appendChild(userAccountIcon);
-  
-    //   account settings
-  
-    const accSideBar = document.createElement("div");
-    accSideBar.classList.add("hidden");
-    accSideBar.id = "accountSet";
-    body.appendChild(accSideBar);
-  
-    userAccSet.addEventListener("click", (e) => {
-      accSideBar.classList.remove("hidden");
-  
-      const exitIconLink = document.createElement("a");
-      const exitIcon = document.createElement("img");
-  
-      exitIcon.src = "./assets/svg/exitIcon.svg";
-      exitIcon.id = "exitIconSet";
-      accSideBar.appendChild(exitIconLink);
-      exitIconLink.appendChild(exitIcon);
-  
-      exitIconLink.addEventListener("click", (e) => {
-        accSideBar.classList.add("hidden");
-        accSideBar.innerHTML = "";
+  body.innerHTML = "";
+  body.classList.add("profileBody"); //intentional to add profileBody class here.
+
+  const OwnGroup = JSON.parse(ls.getItem("currentOwnGroup"));
+  console.log("currentOwnGroup");
+  console.log(OwnGroup);
+  console.log(OwnGroup.FK_userId);
+
+  const account = JSON.parse(ls.getItem("account"));
+  console.log("account");
+  console.log(account);
+
+  const fetchOpt = {
+    headers: {
+      "Content-type": "application/json",
+      "x-authtoken": mainToken,
+    },
+  };
+
+  fetch(`${fetchUrl}/api/groups/${OwnGroup.groupId}`, fetchOpt)
+    .then((res) => {
+      if (res.status == 200) {
+        console.log("status: 200");
+        return res.json();
+      }
+    })
+
+    .then((data) => {
+      console.log(data);
+
+      //   header on the Group page
+      const header = document.createElement("header");
+      header.id = "header";
+      body.appendChild(header);
+
+      const nav = document.createElement("nav");
+      header.appendChild(nav);
+
+      const AbTheApp = document.createElement("a");
+      AbTheApp.innerText = "about the app";
+      AbTheApp.classList.add("navLink");
+      nav.appendChild(AbTheApp);
+
+      const userGuide = document.createElement("a");
+      userGuide.innerText = "user guide";
+      userGuide.classList.add("navLink");
+      nav.appendChild(userGuide);
+
+      const help = document.createElement("a");
+      help.innerText = "help";
+      help.classList.add("navLink");
+      nav.appendChild(help);
+
+      const userAccountIcon = document.createElement("img");
+      userAccountIcon.id = "userAccountIcon";
+      userAccountIcon.src = "./assets/svg/logIn.svg";
+      nav.appendChild(userAccountIcon);
+
+      //    Grouppage main
+      body.appendChild(main);
+
+      //    GroupDescription section
+      const myGroup = document.createElement("section");
+      myGroup.id = "myGroup";
+      main.appendChild(myGroup);
+
+      const goBack = document.createElement("a");
+      goBack.id = "goBack";
+      goBack.innerText = "goBack";
+      myGroup.appendChild(goBack);
+      goBack.addEventListener("click", () => {
+        ls.removeItem("currentOwnGroup");
+        window.location.href = `${baseUrl}?page=profile`;
       });
-      const pDivAccSet = document.createElement("section");
-      pDivAccSet.id = "pDivAccSet";
-      accSideBar.appendChild(pDivAccSet);
-  
-      const userNamep = document.createElement("p");
-      userNamep.innerText = `username: ${account.displayName}`;
-      pDivAccSet.appendChild(userNamep);
-  
-      const emailp = document.createElement("p");
-      emailp.innerText = `email: ${account.email}`;
-      pDivAccSet.appendChild(emailp);
-  
-      const descriptionp = document.createElement("p");
-      descriptionp.innerText = `bio: ${account.accountDescription}`;
-      pDivAccSet.appendChild(descriptionp);
-  
-      // buttons
-  
-      const btnAccSet = document.createElement("section");
-      pDivAccSet.id = "btnAccSet";
-      accSideBar.appendChild(btnAccSet);
-  
-      const changeUsername = document.createElement("button");
-      changeUsername.innerText = `Change Username`;
-      changeUsername.classList.add("btn");
-      btnAccSet.appendChild(changeUsername);
-  
-      changeUsername.addEventListener("click", () => {
-        accSideBar.innerHTML = "";
-        const changeUserNameDiv = document.createElement("div");
-        changeUserNameDiv.id = "changeUserNameDiv";
-        accSideBar.appendChild(changeUserNameDiv);
-  
-        const changeUserNameInpDiv = document.createElement("div");
-        changeUserNameInpDiv.id = "changeUserNameCur";
-        changeUserNameDiv.appendChild(changeUserNameInpDiv);
-  
-        const changeUserNameCur = document.createElement("p");
-        changeUserNameCur.id = "changeUserNameCur";
-        changeUserNameCur.innerText = `current username: ${account.displayName}`;
-        changeUserNameInpDiv.appendChild(changeUserNameCur);
-  
-        const changeUserNameInp = document.createElement("input");
-        changeUserNameInp.id = "changeUserNameInp";
-        changeUserNameInp.type = "text";
-        changeUserNameInp.placeholder = "new username";
-        changeUserNameInpDiv.appendChild(changeUserNameInp);
-  
-        const changeUserCancel = document.createElement("button");
-        changeUserCancel.id = "changeUserCancel";
-        changeUserCancel.innerText = "cancel";
-        changeUserCancel.classList.add("btn");
-        changeUserNameDiv.appendChild(changeUserCancel);
-  
-        changeUserCancel.addEventListener("click", () => {
-          window.location.reload();
-        });
-  
-        const changeUserSubmit = document.createElement("button");
-        changeUserSubmit.id = "changeUserSubmit";
-        changeUserSubmit.innerText = "submit";
-        changeUserSubmit.classList.add("btn");
-        changeUserNameDiv.appendChild(changeUserSubmit);
-  
-        changeUserSubmit.addEventListener("click", () => {
-          const payload = {
-            displayName: changeUserNameInp.value,
-          };
-  
-          const fetchOpt = {
-            method: "PUT",
-            headers: {
-              "Content-type": "application/json",
-              "x-authToken": mainToken,
-            },
-            body: JSON.stringify(payload),
-          };
-  
-          fetch(`${fetchUrl}/api/accounts/${account.accountId}`, fetchOpt)
-            .then((res) => {
-              if (res.status == 200) {
-                console.log("succes");
-              } else {
-                console.log("not a succes");
-              }
-              return res.json();
-            })
-  
-            .then((data) => {
-              if (!data.statusCode && Object.keys(data).length != 0) {
-                ls.setItem("account", JSON.stringify(data));
-                console.log(ls.getItem("account"));
-                console.log(`this is the account ${ls.getItem("account")}`);
-              }
-  
-              changeUserNameDiv.innerHTML = "";
-              changeUserNameDiv.innerText = `Your username has been updated`;
-  
-              reloadWINDOW = () => {
-                window.location.reload();
-              };
-  
-              setTimeout(reloadWINDOW, 1500);
-            });
-        });
-      });
-  
-      const logOff = document.createElement("button");
-      logOff.innerText = `Log Off`;
-      logOff.classList.add("btn");
-      btnAccSet.appendChild(logOff);
-  
-      logOff.addEventListener("click", () => {
-        ls.clear();
-        window.location.href = baseUrl;
-      });
-  
-      const deletaAcc = document.createElement("button");
-      deletaAcc.innerText = `Delate Account`;
-      deletaAcc.classList.add("btn");
-      btnAccSet.appendChild(deletaAcc);
-  
-      deletaAcc.addEventListener("click", (e) => {
-        body.innerHTML = "";
-        const deleteConfirm = document.createElement("div");
-        deleteConfirm.id = "deleteConfirm";
-        deleteConfirm.classList.add("deleteConfirm");
-        body.appendChild(deleteConfirm);
-  
-        const deleteConfirmText = document.createElement("p");
-        deleteConfirm.id = "deleteConfirmText";
-        deleteConfirmText.innerText =
-          "Are you sure you want to delete your account?";
-        deleteConfirm.appendChild(deleteConfirmText);
-  
-        const deleteConfirmBtnDiv = document.createElement("div");
-        deleteConfirmBtnDiv.id = "deleteConfirmBtnDiv";
-        deleteConfirmBtnDiv.classList.add("flex");
-        deleteConfirm.appendChild(deleteConfirmBtnDiv);
-  
-        const deleteConfirmCancelBtn = document.createElement("button");
-        deleteConfirm.id = "deleteConfirmCancelBtn";
-        deleteConfirmCancelBtn.innerText = "cancel";
-        deleteConfirmCancelBtn.classList.add("btn");
-        deleteConfirmBtnDiv.appendChild(deleteConfirmCancelBtn);
-        deleteConfirmCancelBtn.addEventListener("click", () => {
-          window.location.reload();
-        });
-  
-        const deleteConfirmBtn = document.createElement("button");
-        deleteConfirmBtn.id = "deleteConfirmCancelBtn";
-        deleteConfirmBtn.innerText = "delete";
-        deleteConfirmBtn.classList.add("btn");
-        deleteConfirmBtnDiv.appendChild(deleteConfirmBtn);
-        deleteConfirmBtn.addEventListener("click", () => {
-          const fetchOpt = {
-            method: "DELETE",
-            headers: {
-              "Content-type": "application/json",
-              "x-authToken": mainToken,
-            },
-          };
-  
-          fetch(`${fetchUrl}/api/accounts/${account.accountId}`, fetchOpt).then(
-            (res) => {
-              if (res.status == 200) {
-                console.log("succes");
-              } else {
-                console.log("not a succes");
-              }
+
+      const myGroupHeadline = document.createElement("h3");
+      myGroupHeadline.id = "myGroupHeadline";
+      myGroupHeadline.innerText = OwnGroup.groupName;
+      myGroup.appendChild(myGroupHeadline);
+
+      const myGroupDiv = document.createElement("div");
+      myGroupDiv.id = "myGroupDiv";
+      myGroup.appendChild(myGroupDiv);
+
+      const myGroupDivDescription = document.createElement("p");
+      myGroupDivDescription.id = "myGroupDivDescription";
+      myGroupDivDescription.innerText = data.groupDescription;
+      myGroupDiv.appendChild(myGroupDivDescription);
+
+      const myGroupDivAdmin = document.createElement("p");
+      myGroupDivAdmin.id = "myGroupDivAdmin";
+      myGroupDivAdmin.innerText = `admin: ${data.userName}`;
+      myGroupDiv.appendChild(myGroupDivAdmin);
+
+      const myGroupDivMembers = document.createElement("ul");
+      myGroupDivMembers.id = "myGroupDivMembers";
+      myGroupDiv.appendChild(myGroupDivMembers);
+
+      if (data.userId == account.userId) {
+        const fetchOpt = {
+          headers: {
+            "Content-type": "application/json",
+            "x-authtoken": mainToken,
+          },
+        };
+        fetch(`${fetchUrl}/api/groupmembers/${OwnGroup.groupId}`, fetchOpt)
+          .then((res) => {
+            if (res.status == 200) {
+              console.log("status: 200");
               return res.json();
             }
-          );
-  
-          ls.clear();
-          window.location.href = baseUrl;
+          })
+          .then((data) => {
+            if (data.groupMembers) {
+              data.groupMembers.forEach((member) => {
+                const myGroupDivMember = document.createElement("li");
+                myGroupDivMember.id = "myGroupDivMember";
+                myGroupDivMembers.appendChild(myGroupDivMember);
+                const myGroupDivMemberLink = document.createElement("a");
+                myGroupDivMemberLink.id = "myGroupDivMemberLink";
+                myGroupDivMemberLink.innerText = member.userName;
+                myGroupDivMember.appendChild(myGroupDivMemberLink);
+
+                myGroupDivMemberLink.addEventListener("click", () => {
+                  myGroupDivMembers.innerHTML = "";
+                  const groupMemberElm = document.createElement("div");
+                  groupMemberElm.id = "groupMemberElm";
+                  myGroupDivMembers.appendChild(groupMemberElm);
+
+                  const groupMemberElmUsername = document.createElement("p");
+                  groupMemberElmUsername.id = "groupMemberElmUsername";
+                  groupMemberElmUsername.innerText = member.userName;
+                  groupMemberElm.appendChild(groupMemberElmUsername);
+
+                  const groupMemberEmail = document.createElement("p");
+                  groupMemberEmail.id = "groupMemberEmail";
+                  groupMemberEmail.innerText = member.email;
+                  groupMemberElm.appendChild(groupMemberEmail);
+
+                  const removeMemberBtn = document.createElement("button");
+                  removeMemberBtn.id = "groupMemberEmail";
+                  removeMemberBtn.innerText = "remove member";
+                  removeMemberBtn.classList.add("btn");
+                  groupMemberElm.appendChild(removeMemberBtn);
+
+                  removeMemberBtn.addEventListener("click", () => {
+                    groupMemberElm.innerHTML = "";
+
+                    const areYouSure = document.createElement("p");
+                    areYouSure.id = "areYouSure";
+                    areYouSure.innerText = `are you sured you want to remove ${member.userName} from the group ?`;
+                    groupMemberElm.appendChild(areYouSure);
+
+                    const cancelBtn = document.createElement("button");
+                    cancelBtn.id = "cancelBtn";
+                    cancelBtn.innerText = "cancel";
+                    cancelBtn.classList.add("btn");
+                    groupMemberElm.appendChild(cancelBtn);
+                    cancelBtn.addEventListener("click", () => {
+                      window.location.reload();
+                    });
+
+                    const removeBtn = document.createElement("button");
+                    removeBtn.id = "removeBtn";
+                    removeBtn.innerText = "confirm";
+                    removeBtn.classList.add("btn");
+                    groupMemberElm.appendChild(removeBtn);
+                    removeBtn.addEventListener("click", () => {
+                      const fetchOpt = {
+                        method: "DELETE",
+                        headers: {
+                          "Content-type": "application/json",
+                          "x-authtoken": mainToken,
+                        },
+                      };
+                      fetch(
+                        `${fetchUrl}/api/groupmembers/${OwnGroup.groupId}/${member.email}`,
+                        fetchOpt
+                      )
+                        .then((res) => {
+                          if (res.status == 200) {
+                            console.log("status: 200");
+                            return res.json();
+                          }
+                        })
+                        .then((data) => {
+                          groupMemberElm.innerHTML = "";
+                          const removedMemberCOn = document.createElement("p");
+                          removedMemberCOn.id = "removedMember";
+                          removedMemberCOn.innerText = `removed ${member.userName} from the group`;
+                          groupMemberElm.appendChild(removedMemberCOn);
+
+                          reloadWINDOW = () => {
+                            window.location.reload();
+                          };
+
+                          setTimeout(reloadWINDOW, 3000);
+                        });
+                    });
+                  });
+                });
+              });
+            }
+          });
+      }
+
+      if (data.userId != account.userId) {
+        console.log(data.FK_userId);
+        console.log("not an admin");
+        const leaveBtn = document.createElement("button");
+        leaveBtn.id = "leaveBtn";
+        leaveBtn.classList.add("btn");
+        leaveBtn.innerText = "leave the group";
+        myGroupDiv.appendChild(leaveBtn);
+
+        leaveBtn.addEventListener("click", () => {
+          const confirmLeaveDiv = document.createElement("div");
+          confirmLeaveDiv.id = "confirmLeaveDiv";
+          myGroupDiv.appendChild(confirmLeaveDiv);
+
+          const confirmLeaveP = document.createElement("p");
+          confirmLeaveP.id = "confirmLeaveP";
+          confirmLeaveP.innerText =
+            "Are you sure you want to leave this group?";
+          confirmLeaveDiv.appendChild(confirmLeaveP);
+
+          const cancelBtn = document.createElement("button");
+          cancelBtn.id = "cancelBtn";
+          cancelBtn.innerText = "cancel";
+          cancelBtn.classList.add("btn");
+          confirmLeaveDiv.appendChild(cancelBtn);
+          cancelBtn.addEventListener("click", () => {
+            window.location.reload();
+          });
+
+          const confirmBtn = document.createElement("button");
+          confirmBtn.id = "confirmBtn";
+          confirmBtn.innerText = "confirm";
+          confirmBtn.classList.add("btn");
+          confirmLeaveDiv.appendChild(confirmBtn);
+          goBackProfile = () => {
+            window.location.href = `${baseUrl}?page=profile`;
+          };
+          confirmBtn.addEventListener("click", () => {
+            const fetchOpt = {
+              method: "DELETE",
+              headers: {
+                "Content-type": "application/json",
+                "x-authtoken": mainToken,
+              },
+            };
+
+            fetch(
+              `${fetchUrl}/api/groupmembers/${OwnGroup.groupId}/${account.userId}`,
+              fetchOpt
+            )
+              .then((res) => {
+                if (res.status == 200) {
+                  console.log("status: 200");
+                  return res.json();
+                }
+              })
+
+              .then((data) => {
+                const confirmLeaveP = document.createElement("p");
+                confirmLeaveP.id = "confirmLeaveP";
+                confirmLeaveP.innerText = `Left ${data.groupName}`;
+                confirmLeaveDiv.appendChild(confirmLeaveP);
+
+                ls.removeItem("currentOwnGroup");
+                setTimeout(goBackProfile(), 1000);
+              });
+          });
         });
-      });
+      }
+
+      //    GroupTasks section (on the right side of the screen)
+      const groupTasks = document.createElement("section");
+      groupTasks.id = "groupTasks";
+      main.appendChild(groupTasks);
+
+      //    Group tasks - Create a task button
+      const groupTasksCreateTaskBtn = document.createElement("button");
+      groupTasksCreateTaskBtn.id = "groupTasksCreateTaskBtn";
+      groupTasksCreateTaskBtn.innerText = "Create A Task";
+      groupTasksCreateTaskBtn.classList.add("btn");
+      groupTasks.appendChild(groupTasksCreateTaskBtn);
+
+      //    Group tasks - upcoming tasks
+      const groupTasksUpcoming = document.createElement("div");
+      groupTasksUpcoming.id = "groupTasksUpcoming";
+      groupTasks.appendChild(groupTasksUpcoming);
+
+      const groupTasksUpcomingHeadline = document.createElement("h4");
+      groupTasksUpcomingHeadline.id = "groupTasksUpcomingHeadline";
+      groupTasksUpcomingHeadline.innerText = "Upcoming Group Tasks";
+      groupTasksUpcoming.appendChild(groupTasksUpcomingHeadline);
+
+      const borderGroupTasksUpcTop = document.createElement("div");
+      borderGroupTasksUpcTop.id = "borderGroupTasksUpcTop";
+      borderGroupTasksUpcTop.classList.add("borderHorizontal");
+      groupTasksUpcoming.appendChild(borderGroupTasksUpcTop);
+
+      //   Table to store upcoming tasks
+      const groupTasksUpcShow = document.createElement("table");
+      groupTasksUpcShow.id = "groupTasksUpcShow";
+      groupTasksUpcoming.appendChild(groupTasksUpcShow);
+
+      const groupTasksUpcShowTr = document.createElement("tr");
+      groupTasksUpcShowTr.id = "groupTasksUpcShowTr";
+      groupTasksUpcShow.appendChild(groupTasksUpcShowTr);
+
+      const groupTasksUpcShowTaskName = document.createElement("td");
+      groupTasksUpcShowTaskName.id = "groupTasksUpcShowTaskName";
+      groupTasksUpcShowTaskName.innerText = "Task Name";
+      groupTasksUpcShowTr.appendChild(groupTasksUpcShowTaskName);
+
+      const groupTasksUpcShowTaskColor = document.createElement("td");
+      groupTasksUpcShowTaskColor.id = "groupTasksUpcShowTaskColor";
+      groupTasksUpcShowTaskColor.innerText = "Task Type";
+      groupTasksUpcShowTr.appendChild(groupTasksUpcShowTaskColor);
+
+      const borderGroupTasksUpcBottom = document.createElement("div");
+      borderGroupTasksUpcBottom.id = "borderGroupTasksUpcBottom";
+      borderGroupTasksUpcBottom.classList.add("borderHorizontal");
+      groupTasksUpcoming.appendChild(borderGroupTasksUpcBottom);
+
+      //    Section to store all the group's tasks
+      const allGroupTasks = document.createElement("section");
+      allGroupTasks.id = "allGroupTasks";
+      main.appendChild(allGroupTasks);
+
+      const allGroupTasksHeadline = document.createElement("h3");
+      allGroupTasksHeadline.id = "allGroupTasksHeadline";
+      allGroupTasks.appendChild(allGroupTasksHeadline);
+
+      const allGroupTasksTable = document.createElement("table");
+      allGroupTasksTable.id = "allGroupTasksTable";
+      allGroupTasks.appendChild(allGroupTasksTable);
+
+      const allGroupTasksTableTr = document.createElement("tr");
+      allGroupTasksTableTr.id = "allGroupTasksTableTr";
+      allGroupTasksTable.appendChild(allGroupTasksTableTr);
+
+      const allGroupTasksTableTaskName = document.createElement("th");
+      allGroupTasksTableTaskName.id = "allGroupTasksTableTaskName";
+      allGroupTasksTableTaskName.innerText = "Task Name";
+      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskName);
+
+      const allGroupTasksTableTaskAssignedTo = document.createElement("th");
+      allGroupTasksTableTaskAssignedTo.id = "allGroupTasksTableTaskAssignedTo";
+      allGroupTasksTableTaskAssignedTo.innerText = "Assigned To";
+      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskAssignedTo);
+
+      const allGroupTasksTableTaskDueDate = document.createElement("th");
+      allGroupTasksTableTaskDueDate.id = "allGroupTasksTableTaskDueDate";
+      allGroupTasksTableTaskDueDate.innerText = "Due Date";
+      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskDueDate);
+
+      const allGroupTasksTableTaskStatus = document.createElement("th");
+      allGroupTasksTableTaskStatus.id = "allGroupTasksTableTaskStatus";
+      allGroupTasksTableTaskStatus.innerText = "Status";
+      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskStatus);
+
+      const allGroupTasksTableTaskLabel = document.createElement("th");
+      allGroupTasksTableTaskLabel.id = "allGroupTasksTableTaskLabel";
+      allGroupTasksTableTaskLabel.innerText = "Task Label";
+      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskLabel);
+
+      //  aside on the group page
+      const aside = document.createElement("aside");
+      aside.id = "aside";
+      body.appendChild(aside);
+
+      const headlineAside = document.createElement("h2");
+      headlineAside.id = "operatingBtnsSect";
+      headlineAside.innerText = "My Tasks";
+      aside.appendChild(headlineAside);
+
+      const upcomTaskSect = document.createElement("section");
+      upcomTaskSect.id = "upcomTaskSect";
+      aside.appendChild(upcomTaskSect);
+
+      const upComHeadline = document.createElement("h4");
+      upComHeadline.id = "upComHeadline";
+      upComHeadline.innerText = "Upcoming";
+      upcomTaskSect.appendChild(upComHeadline);
+
+      const borderUpComTop = document.createElement("div");
+      borderUpComTop.id = "borderUpComTop";
+      borderUpComTop.classList.add("borderHorizontal");
+      upcomTaskSect.appendChild(borderUpComTop);
+
+      const upComTasks = document.createElement("section");
+      upComTasks.id = "upComTasks";
+      upcomTaskSect.appendChild(upComTasks);
+
+      const borderUpComBottom = document.createElement("div");
+      borderUpComBottom.id = "borderUpComBottom";
+      borderUpComBottom.classList.add("borderHorizontal");
+      upcomTaskSect.appendChild(borderUpComBottom);
+
+      const operatingBtnsSect = document.createElement("section");
+      operatingBtnsSect.id = "operatingBtnsSect";
+      operatingBtnsSect.classList.add("flex_column");
+      aside.appendChild(operatingBtnsSect);
+
+      const homeworkBtn = document.createElement("a");
+      homeworkBtn.id = "homeworkBtn";
+      homeworkBtn.innerText = "My Homework";
+      homeworkBtn.classList.add("operBtns");
+      operatingBtnsSect.appendChild(homeworkBtn);
+
+      const projectsBtn = document.createElement("a");
+      projectsBtn.id = "projectsBtn";
+      projectsBtn.innerText = "My Projects";
+      projectsBtn.classList.add("operBtns");
+      operatingBtnsSect.appendChild(projectsBtn);
+
+      const assigmentsBtn = document.createElement("a");
+      assigmentsBtn.id = "assigmentsBtn";
+      assigmentsBtn.innerText = "My Assigments";
+      assigmentsBtn.classList.add("operBtns");
+      operatingBtnsSect.appendChild(assigmentsBtn);
+
+      const showAllDone = document.createElement("a");
+      showAllDone.id = "showAllDone";
+      showAllDone.innerText = "Show All Finished Tasks";
+      showAllDone.classList.add("operBtns");
+      operatingBtnsSect.appendChild(showAllDone);
     });
-  
-    //   main
-  
-    //   const accountInfo = ls.getItem('account')
-    console.log(account.displayName);
-    body.appendChild(main);
-    const myBoard = document.createElement("section");
-    myBoard.id = "myBoard";
-    main.appendChild(myBoard);
-  
-    const myBoardHeadline = document.createElement("h3");
-    myBoardHeadline.id = "myBoardHeadline";
-    myBoardHeadline.innerText = `Hello ${account.displayName}`;
-    myBoard.appendChild(myBoardHeadline);
-  
-    const myBoardDiv = document.createElement("div");
-    myBoardDiv.id = "myBoardDiv";
-    myBoard.appendChild(myBoardDiv);
-  
-    const myBoardDivTXT = document.createElement("input");
-    myBoardDivTXT.id = "myBoardDivTXT";
-    myBoardDivTXT.type = "text ";
-    myBoardDivTXT.placeholder = "Your board is empty";
-    myBoardDiv.appendChild(myBoardDivTXT);
-  
-    const recentGroups = document.createElement("section");
-    recentGroups.id = "recentGroups";
-    main.appendChild(recentGroups);
-  
-    const recentGroupsHeadline = document.createElement("h4");
-    recentGroupsHeadline.id = "recentGroupsHeadline";
-    recentGroupsHeadline.innerText = "My Groups";
-    recentGroups.appendChild(recentGroupsHeadline);
-  
-    const borderRecGroupTop = document.createElement("div");
-    borderRecGroupTop.id = "borderRecGroupTop";
-    borderRecGroupTop.classList.add("borderHorizontal");
-    recentGroups.appendChild(borderRecGroupTop);
-  
-    const recentGroupsShow = document.createElement("section");
-    recentGroupsShow.id = "recentGroupsShow";
-    recentGroups.appendChild(recentGroupsShow);
-  
-    const borderRecGroupBottom = document.createElement("div");
-    borderRecGroupBottom.id = "borderRecGroupBottom";
-    borderRecGroupBottom.classList.add("borderHorizontal");
-    recentGroups.appendChild(borderRecGroupBottom);
-  
-    createBtns.id = "createBtnSect";
-    createBtns.classList.add("flex_column");
-    main.appendChild(createBtns);
-  
-    const createTask = document.createElement("button");
-    createTask.id = "createTaskBtn";
-    createTask.innerText = "create task";
-    createTask.classList.add("btn");
-    createBtns.appendChild(createTask);
-  
-    const createGroup = document.createElement("button");
-    createGroup.id = "createGroupBtn";
-    createGroup.innerText = "create group";
-    createGroup.classList.add("btn");
-    createBtns.appendChild(createGroup);
-  
-    createGroup.addEventListener("click", (e) => {
-      createGroupFunction();
-    });
-  
-    const showAllBtns = document.createElement("section");
-    showAllBtns.id = "showAllBtns";
-    showAllBtns.classList.add("flex_column");
-    main.appendChild(showAllBtns);
-  
-    const showAllTasks = document.createElement("a");
-    showAllTasks.id = "showAllTasksBtn";
-    showAllTasks.innerText = "show all tasks";
-    showAllTasks.classList.add("btnREVERSE");
-    showAllBtns.appendChild(showAllTasks);
-  
-    const showAllGroups = document.createElement("a");
-    showAllGroups.id = "showAllGroupsBtn";
-    showAllGroups.innerText = "show all groups";
-    showAllGroups.classList.add("btnREVERSE");
-    showAllBtns.appendChild(showAllGroups);
-  
-    showAllGroups.addEventListener("click", (e) => {
-      getAllGroupsFunction(showAllBtns);
-    });
-  
-    // aside
-    const aside = document.createElement("aside");
-    aside.id = "aside";
-    body.appendChild(aside);
-  
-    const headlineAside = document.createElement("h2");
-    headlineAside.id = "operatingBtnsSect";
-    headlineAside.innerText = "My Tasks";
-    aside.appendChild(headlineAside);
-  
-    const upcomTaskSect = document.createElement("section");
-    upcomTaskSect.id = "upcomTaskSect";
-    aside.appendChild(upcomTaskSect);
-  
-    const upComHeadline = document.createElement("h4");
-    upComHeadline.id = "upComHeadline";
-    upComHeadline.innerText = "Upcoming";
-    upcomTaskSect.appendChild(upComHeadline);
-  
-    const borderUpComTop = document.createElement("div");
-    borderUpComTop.id = "borderUpComTop";
-    borderUpComTop.classList.add("borderHorizontal");
-    upcomTaskSect.appendChild(borderUpComTop);
-  
-    const upComTasks = document.createElement("section");
-    upComTasks.id = "upComTasks";
-    upcomTaskSect.appendChild(upComTasks);
-  
-    const borderUpComBottom = document.createElement("div");
-    borderUpComBottom.id = "borderUpComBottom";
-    borderUpComBottom.classList.add("borderHorizontal");
-    upcomTaskSect.appendChild(borderUpComBottom);
-  
-    const operatingBtnsSect = document.createElement("section");
-    operatingBtnsSect.id = "operatingBtnsSect";
-    operatingBtnsSect.classList.add("flex_column");
-    aside.appendChild(operatingBtnsSect);
-  
-    const homeworkBtn = document.createElement("a");
-    homeworkBtn.id = "homeworkBtn";
-    homeworkBtn.innerText = "My Homework";
-    homeworkBtn.classList.add("operBtns");
-    operatingBtnsSect.appendChild(homeworkBtn);
-  
-    const projectsBtn = document.createElement("a");
-    projectsBtn.id = "projectsBtn";
-    projectsBtn.innerText = "My Projects";
-    projectsBtn.classList.add("operBtns");
-    operatingBtnsSect.appendChild(projectsBtn);
-  
-    const assigmentsBtn = document.createElement("a");
-    assigmentsBtn.id = "assigmentsBtn";
-    assigmentsBtn.innerText = "My Assigments";
-    assigmentsBtn.classList.add("operBtns");
-    operatingBtnsSect.appendChild(assigmentsBtn);
-  
-    const showAllDone = document.createElement("a");
-    showAllDone.id = "showAllDone";
-    showAllDone.innerText = "Show All Finished Tasks";
-    showAllDone.classList.add("operBtns");
-    operatingBtnsSect.appendChild(showAllDone);
-  };
+};
 
 window.addEventListener("DOMContentLoaded", (e) => {
   const currentUrl = window.location.href;
@@ -1562,13 +1652,16 @@ window.addEventListener("DOMContentLoaded", (e) => {
         case "createAccount":
           console.log("you are on create account page");
           loadCreateAccountPage();
-          console.log(`this is userObj ${ls.getItem("userObj")}`);
           break;
 
         case "profile":
           console.log("you are on profile page");
           loadProfilePage();
-          console.log(`this is token ${ls.getItem("token")}`);
+          break;
+
+        case "group":
+          console.log("you are on group page");
+          loadGroupPage();
           break;
 
         default:
