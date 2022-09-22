@@ -535,6 +535,18 @@ loadProfilePage = () => {
         window.location.href = baseUrl;
       });
     });
+
+   if(account.role.roleId == 1){
+    const adminButton = document.createElement("button");
+    adminButton.innerText = `Admin`;
+    adminButton.classList.add("btn");
+    btnAccSet.appendChild(adminButton);
+   }
+   else{
+    console.log("YOU ARE NOT the Admin");
+   }
+
+  
   });
 
   //   main
