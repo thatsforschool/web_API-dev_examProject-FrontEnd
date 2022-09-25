@@ -476,16 +476,16 @@ loadProfilePage = () => {
   createTask.classList.add("btn");
   createBtns.appendChild(createTask);
 
-  //create task here
+  //create task here: inputting the data
   createTask.addEventListener("click", (e) => {
     myBoardDiv.innerHTML = '';
     myBoardHeadline.innerText = `Hello ${account.displayName}. You can create a task here`;
 
-    const defineTask = document.createElement("form");
+    let defineTask = document.createElement("form");
     defineTask.id = "defineTask";
     myBoardDiv.appendChild(defineTask);
 
-    const defineTaskSubj = document.createElement("input");
+    let defineTaskSubj = document.createElement("input");
     defineTaskSubj.id = "defineTaskSubj";
     defineTaskSubj.type = "text";
     defineTaskSubj.placeholder = "Describe your task";
@@ -497,26 +497,26 @@ loadProfilePage = () => {
     defineTaskDropdownLabel.innerText = "Choose task category:";
     defineTask.appendChild(defineTaskDropdownLabel);
 
-    const defineTaskDropdown = document.createElement("select");
+    let defineTaskDropdown = document.createElement("select");
     defineTaskDropdown.id = "defineTaskDropdown";
     defineTaskDropdown.name = "Task label";
     defineTask.appendChild(defineTaskDropdown);
 
-    const defineTaskHw = document.createElement("option");
+    let defineTaskHw = document.createElement("option");
     defineTaskHw.id = "defineTaskHw";
-    defineTaskHw.value = "Homework";
+    defineTaskHw.value = "1";
     defineTaskHw.innerText = "Homework";
     defineTaskDropdown.appendChild(defineTaskHw);
 
-    const defineTaskProj = document.createElement("option");
+    let defineTaskProj = document.createElement("option");
     defineTaskProj.id = "defineTaskProj";
-    defineTaskProj.value = "Project";
+    defineTaskProj.value = "2";
     defineTaskProj.innerText = "Project";
     defineTaskDropdown.appendChild(defineTaskProj);
 
-    const defineTaskAs = document.createElement("option");
+    let defineTaskAs = document.createElement("option");
     defineTaskAs.id = "defineTaskAs";
-    defineTaskAs.value = "Assignment";
+    defineTaskAs.value = "3";
     defineTaskAs.innerText = "Assignment";
     defineTaskDropdown.appendChild(defineTaskAs);
 
@@ -526,48 +526,55 @@ loadProfilePage = () => {
     defineTaskDateLab.innerText = "Task due date:";
     defineTask.appendChild(defineTaskDateLab);
 
-    const defineTaskDate = document.createElement("input");
+    let defineTaskDate = document.createElement("input");
     defineTaskDate.id = "defineTaskDate";
     defineTaskDate.type = "date";
     defineTaskDate.name = "TaskDueDate";
     defineTask.appendChild(defineTaskDate);
 
-    const defineTaskBtn = document.createElement("input");
+    let defineTaskBtn = document.createElement("input");
     defineTaskBtn.id = "defineTaskBtn";
     defineTaskBtn.type = "submit";
     defineTaskBtn.value = "Add task";
     defineTaskBtn.classList.add("btn");
     defineTask.appendChild(defineTaskBtn);
-
-    //create the new task
-    defineTaskBtn.addEventListener("click", (e) => {
-      e.preventDefault()
-      // myBoardDiv.classList.add("hideMyBoardDiv");
-      const payload = {
-        "labelId": defineTaskDropdown.value,
-        "taskdueDate": defineTaskDate.value,
-        "tasksubject": defineTaskSubj.value
-
-      }
-
-      const fetchOpt = {
-        method: 'POST',
-        headers: {
-          'Content-type': 'application/json',
-          "x-authToken": mainToken
-        },
-        body: JSON.stringify(payload)
-      }
-
-      fetch(`${fetchUrl}/api/tasks`, fetchOpt)
-      .then((res) => {
-        if (res.status == 200) {
-          console.log("status 200");
-          return res.json();
-        }
-      })
-    });
   })
+
+  const date = date.parse(defineTaskDate.value);
+  console.log(date);
+  // defineTaskBtn.addEventListener("click", (e) => {
+  //   e.preventDefault();
+  //   const payload = {
+  //     labelId: defineTaskDropdown.value,
+  //     taskdueDate: date,
+  //     tasksubject: defineTaskSubj.value
+  //   };
+
+  //   const fetchOpt = {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-type": "application/json",
+  //       "x-authtoken": mainToken,
+  //     },
+  //     body: JSON.stringify(payload),
+  //   };
+
+  //   fetch(`${fetchUrl}/api/tasks`, fetchOpt)
+  //     .then((res) => {
+  //       if (res.status == 200) {
+  //         return res.json();
+  //       }
+  //     })
+
+  //     .then((data) => {
+  //       // if (!data.statusCode && Object.keys(data).length != 0) {
+  //       //   addGroupMembers(createBtns, data.groupName);
+  //       // } else {
+  //       //   errorMes.innerText = "Invalid input";
+  //       //   logInSect.appendChild(errorMes);
+  //       // }
+  //     });
+  // });
 
 
 
