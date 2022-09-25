@@ -42,7 +42,8 @@ body {
   justify-content: space-around;
 }
 
-#mainSignUp {
+#mainSignUp,
+#mainLogIn {
   width: 600px;
   height: 800px;
   background-color: var(--yellow);
@@ -55,6 +56,12 @@ body {
   width: 300px;
   height: 400px;
   margin: 100px;
+}
+
+.logInSingle {
+  width: 300px;
+  height: 400px;
+  padding: 100px 140px;
 }
 
 /* #logInForm {} */
@@ -98,7 +105,8 @@ input::placeholder {
   padding: 20px;
 }
 
-#signInIcon {
+#signInIcon,
+#signInIconSingle {
   max-width: 100px;
   margin-left: 100px;
 }
@@ -122,8 +130,17 @@ input::placeholder {
   margin-right: 100px;
 }
 
+#creatUserBtn,
+#mainSignUp p,
 #creatAccountBtn {
   margin: 50px 200px;
+}
+
+
+#mainSignUp p {
+  color: var(--red);
+  text-align: center;
+  font-size: 20px;
 }
 
 #creatAccountIcon {
@@ -408,7 +425,48 @@ nav > a {
 
 .deleteConfirm > p {
   text-align: center;
-  margin-top: 100px ;
+  margin-top: 100px;
+}
+
+.createGroupDiv {
+  border: 4px solid var(--blue);
+  margin: 20px 0 20px 200px;
+  width: 300px;
+}
+.showGroupsDiv {
+  border: 4px solid var(--blue);
+  margin: 20px 0 20px 50px;
+  width: 300px;
+}
+
+.createGroupDiv > input,
+.showGroupsDiv input {
+  width: 190px;
+  margin: 10px 50px;
+}
+
+#groupNameInp {
+  margin-top: 80px;
+}
+
+.createGroupDiv > h4,
+.showGroupsDiv > h4 {
+  margin: 20px 50px;
+}
+
+.createGroupDiv > p,
+.showGroupsDiv p {
+  margin: 0 50px;
+}
+
+#message404 {
+  margin: 50px;
+}
+
+.createGroupDiv > a > img,
+.showGroupsDiv img {
+  margin: 10px 250px 0px 50px;
+  max-width: 20px;
 }
 
 ul#showAllTasksList {
@@ -483,5 +541,24 @@ select {
   cursor: pointer;
   outline: none;
 
+}
+
+ul#showAllTasksList .labelId1 {
+  list-style-image: url(./images/homework.png);
+}
+ul#showAllTasksList .labelId2 {
+  list-style-image: url(./images/project.png);
+}
+ul#showAllTasksList .labelId3 {
+  list-style-image: url(./images/assignment.png);
+}
+ul#showAllHomework .labelId1 {
+  list-style-image: url(./images/homework.png);
+}
+ul#showAllProjects .labelId2 {
+  list-style-image: url(./images/project.png);
+}
+ul#showAllAssignments .labelId3 {
+  list-style-image: url(./images/assignment.png);
 }
 
