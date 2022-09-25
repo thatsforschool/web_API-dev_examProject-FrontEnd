@@ -473,6 +473,76 @@ ul#showAllTasksList {
   list-style: none;
 }
 
+ul#showAllTasksList .labelId1 {list-style-image: url(./images/homework.png);}
+ul#showAllTasksList .labelId2 {list-style-image: url(./images/project.png);}
+ul#showAllTasksList .labelId3 {list-style-image: url(./images/assignment.png);}
+ul#showAllHomework .labelId1 {list-style-image: url(./images/homework.png);}
+ul#showAllProjects .labelId2 {list-style-image: url(./images/project.png);}
+ul#showAllAssignments .labelId3 {list-style-image: url(./images/assignment.png);}
+
+/* Styling for create a task */
+#defineTask {
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+}
+
+#defineTask > input {
+  border: none;
+}
+
+#defineTask > input.btn {
+  background-color: var(--green);
+  color: var(--blue);
+}
+
+#defineTask > input.btn:hover {
+  cursor: pointer;
+  color: var(--blue);
+  background-color: var(--white);
+  border: 3px solid var(--green);
+}
+
+#defineTask > input[type=date] {
+  width: 50%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-bottom: 2px solid var(--lightBlue);
+}
+
+#defineTask > label {
+  margin-top: 15px;
+}
+
+#defineTask > input[type=text] {
+  box-sizing: border-box;
+  padding: 12px 10px;
+  border: 2px solid var(--white);
+  transition: 0.5s;
+  -webkit-transition: 0.5s;
+  -moz-transition: 0.5s;
+  -ms-transition: 0.5s;
+  -o-transition: 0.5s;
+  outline: none;
+}
+#defineTask > input[type=text]:focus {
+  border: 2px solid var(--lightBlue);
+}
+
+select {
+  appearance: none;
+  background-color: transparent;
+  border: none;
+  padding: 0 1em 0 0;
+  margin: 0;
+  width: 50%;
+  font-size: inherit;
+  cursor: pointer;
+  outline: none;
+
+}
+
 ul#showAllTasksList .labelId1 {
   list-style-image: url(./images/homework.png);
 }
@@ -491,3 +561,4 @@ ul#showAllProjects .labelId2 {
 ul#showAllAssignments .labelId3 {
   list-style-image: url(./images/assignment.png);
 }
+

@@ -773,6 +773,138 @@ loadProfilePage = () => {
   createTask.classList.add("btn");
   createBtns.appendChild(createTask);
 
+  //create task here
+  createTask.addEventListener("click", (e) => {
+    myBoardDiv.innerHTML = "";
+    myBoardHeadline.innerText = `Hello ${account.displayName}. You can create a task here`;
+
+    const defineTask = document.createElement("form");
+    defineTask.id = "defineTask";
+    myBoardDiv.appendChild(defineTask);
+
+    const defineTaskSubj = document.createElement("input");
+    defineTaskSubj.id = "defineTaskSubj";
+    defineTaskSubj.type = "text";
+    defineTaskSubj.placeholder = "Describe your task";
+    defineTask.appendChild(defineTaskSubj);
+
+    const defineTaskDropdownLabel = document.createElement("label");
+    defineTaskDropdownLabel.id = "defineTaskDropdownLabel";
+    defineTaskDropdownLabel.for = "defineTaskDropdown";
+    defineTaskDropdownLabel.innerText = "Choose task category:";
+    defineTask.appendChild(defineTaskDropdownLabel);
+
+    const defineTaskDropdown = document.createElement("select");
+    defineTaskDropdown.id = "defineTaskDropdown";
+    defineTaskDropdown.name = "Task label";
+    defineTask.appendChild(defineTaskDropdown);
+    let taskLabel = 1;
+
+    defineTaskDropdown.addEventListener("change", (e) => {
+      switch (defineTaskDropdown.value) {
+        case "Homework":
+          taskLabel = 1;
+          break;
+        case "Project":
+          taskLabel = 2;
+          break;
+        case "Assignment":
+          taskLabel = 3;
+          break;
+
+        default:
+          taskLabel = 1;
+          break;
+      }
+
+      console.log(taskLabel);
+    });
+
+    const defineTaskHw = document.createElement("option");
+    defineTaskHw.id = "defineTaskHw";
+    defineTaskHw.value = "Homework";
+    defineTaskHw.innerText = "Homework";
+    defineTaskDropdown.appendChild(defineTaskHw);
+
+    const defineTaskProj = document.createElement("option");
+    defineTaskProj.id = "defineTaskProj";
+    defineTaskProj.value = "Project";
+    defineTaskProj.innerText = "Project";
+    defineTaskDropdown.appendChild(defineTaskProj);
+
+    const defineTaskAs = document.createElement("option");
+    defineTaskAs.id = "defineTaskAs";
+    defineTaskAs.value = "Assignment";
+    defineTaskAs.innerText = "Assignment";
+    defineTaskDropdown.appendChild(defineTaskAs);
+
+    const defineTaskDateLab = document.createElement("label");
+    defineTaskDateLab.id = "defineTaskDateLabel";
+    defineTaskDateLab.for = "TaskDueDate";
+    defineTaskDateLab.innerText = "Task due date:";
+    defineTask.appendChild(defineTaskDateLab);
+
+    let taskDate;
+    const defineTaskDate = document.createElement("input");
+    defineTaskDate.id = "defineTaskDate";
+    defineTaskDate.type = "date";
+    defineTaskDate.name = "TaskDueDate";
+    defineTask.appendChild(defineTaskDate);
+    defineTask.addEventListener("change", (e) => {
+      taskDate = Date.parse(defineTaskDate.value);
+      console.log(`taskDate`);
+      console.log(taskDate);
+    });
+
+    const defineTaskBtn = document.createElement("input");
+    defineTaskBtn.id = "defineTaskBtn";
+    defineTaskBtn.type = "submit";
+    defineTaskBtn.value = "Add task";
+    defineTaskBtn.classList.add("btn");
+    defineTask.appendChild(defineTaskBtn);
+
+    //create the new task
+    defineTaskBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      // myBoardDiv.classList.add("hideMyBoardDiv");
+      const payload = {
+        labelId: taskLabel,
+        taskdueDate: taskDate,
+        tasksubject: defineTaskSubj.value,
+      };
+
+      console.log(payload);
+
+      const fetchOpt = {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          "x-authToken": mainToken,
+        },
+        body: JSON.stringify(payload),
+      };
+
+      fetch(`${fetchUrl}/api/tasks`, fetchOpt)
+        .then((res) => {
+          if (res.status == 200) {
+            console.log("status 200");
+            return res.json();
+          }
+        })
+        .then((data) => {
+          myBoardDiv.innerHTML = "";
+          const sucessMes = document.createElement("p");
+          sucessMes.innerText = "task created succesfuly";
+          myBoardDiv.appendChild(sucessMes);
+
+          reload = () => {
+            window.location.reload();
+          };
+          setTimeout(reload, 1500);
+        });
+    });
+  });
+
   const createGroup = document.createElement("button");
   createGroup.id = "createGroupBtn";
   createGroup.innerText = "create group";
@@ -830,6 +962,33 @@ loadProfilePage = () => {
         }
       })
       .then((data) => {
+        console.log(data);
+        myBoardDiv.innerHTML = "";
+
+        const showAllTasksList = document.createElement("ul");
+        showAllTasksList.id = "showAllTasksList";
+        myBoardDiv.appendChild(showAllTasksList);
+
+        data.forEach((task) => {
+          const showAllTasksListItem = document.createElement("li");
+          showAllTasksListItem.id = "showAllTasksList";
+          showAllTasksListItem.innerText = task.tasksubject;
+          switch (task.FK_labelId) {
+            case 1:
+              showAllTasksListItem.classList.add("labelId1");
+              break;
+            case 2:
+              showAllTasksListItem.classList.add("labelId2");
+              break;
+            case 3:
+              showAllTasksListItem.classList.add("labelId3");
+              break;
+            default:
+              break;
+          }
+          showAllTasksList.appendChild(showAllTasksListItem);
+        });
+=======
         if (!data.statusCode && Object.keys(data).length != 0) {
           console.log(data);
           myBoardDiv.innerHTML = "";
@@ -858,6 +1017,7 @@ loadProfilePage = () => {
             showAllTasksList.appendChild(showAllTasksListItem);
           });
         }
+
       });
   });
 
@@ -929,6 +1089,8 @@ loadProfilePage = () => {
     };
     fetch(`${fetchUrl}/api/tasks/own/1`, fetchOpt)
       .then((res) => {
+        if (res.status == 200) {
+          return res.json();
         switch (res.status) {
           case 200:
             console.log("status 200");
@@ -948,6 +1110,7 @@ loadProfilePage = () => {
             errorMes.innerText = "Incorrect data";
             myBoardDiv.appendChild(errorMes);
             break;
+
         }
       })
       .then((data) => {
@@ -974,9 +1137,11 @@ loadProfilePage = () => {
 
   //  Generate all own tasks with labelId = 2 (projects) here
   projectsBtn.addEventListener("click", (e) => {
+
     const errorMes = document.createElement("p");
     myBoardDiv.innerHTML = "";
     // myBoardDiv.classList.add("hideMyBoardDiv");
+
     myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your project tasks`;
     const fetchOpt = {
       headers: {
@@ -986,6 +1151,11 @@ loadProfilePage = () => {
     };
     fetch(`${fetchUrl}/api/tasks/own/2`, fetchOpt)
       .then((res) => {
+
+        if (res.status == 200) {
+          return res.json();
+        }
+
         switch (res.status) {
             case 200:
               console.log("status 200");
@@ -1031,9 +1201,12 @@ loadProfilePage = () => {
 
   //  Generate all own tasks with labelId = 3 (assignments) here
   assigmentsBtn.addEventListener("click", (e) => {
+    myBoardDiv.classList.add("hideMyBoardDiv");
+
     const errorMes = document.createElement("p");
     myBoardDiv.innerHTML = "";
     // myBoardDiv.classList.add("hideMyBoardDiv");
+
     myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your assignment tasks`;
     const fetchOpt = {
       headers: {
@@ -1043,6 +1216,11 @@ loadProfilePage = () => {
     };
     fetch(`${fetchUrl}/api/tasks/own/3`, fetchOpt)
       .then((res) => {
+
+        if (res.status == 200) {
+          return res.json();
+        }
+
         switch (res.status) {
             case 200:
               console.log("status 200");
@@ -1063,6 +1241,7 @@ loadProfilePage = () => {
               myBoardDiv.appendChild(errorMes);
               break;
           }
+
       })
       .then((data) => {
         myBoardDiv.classList.remove("hideMyBoardDiv");
