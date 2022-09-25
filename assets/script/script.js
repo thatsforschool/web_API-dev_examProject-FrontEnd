@@ -798,7 +798,6 @@ loadProfilePage = () => {
   showAllTasks.addEventListener("click", (e) => {
     const errorMes = document.createElement("p");
     myBoardDiv.innerHTML = "";
-    // myBoardDiv.classList.add("hideMyBoardDiv");
     myBoardHeadline.innerText = `Hello ${account.displayName}. These are all your tasks`;
     const fetchOpt = {
       headers: {
@@ -833,7 +832,6 @@ loadProfilePage = () => {
       .then((data) => {
         if (!data.statusCode && Object.keys(data).length != 0) {
           console.log(data);
-          myBoardDiv.classList.remove("hideMyBoardDiv");
           myBoardDiv.innerHTML = "";
 
           const showAllTasksList = document.createElement("ul");
@@ -1556,7 +1554,7 @@ loadGroupPage = () => {
               return res.json();
             case 401:
               console.log("status 401");
-              errorMes.innerText = "cannot use this email";
+              errorMes.innerText = "conflicting data";
               main.appendChild(errorMes);
               break;
             case 404:
