@@ -988,7 +988,7 @@ loadProfilePage = () => {
           }
           showAllTasksList.appendChild(showAllTasksListItem);
         });
-=======
+
         if (!data.statusCode && Object.keys(data).length != 0) {
           console.log(data);
           myBoardDiv.innerHTML = "";
@@ -1089,8 +1089,6 @@ loadProfilePage = () => {
     };
     fetch(`${fetchUrl}/api/tasks/own/1`, fetchOpt)
       .then((res) => {
-        if (res.status == 200) {
-          return res.json();
         switch (res.status) {
           case 200:
             console.log("status 200");
