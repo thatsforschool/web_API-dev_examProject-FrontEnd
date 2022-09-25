@@ -478,7 +478,7 @@ loadProfilePage = () => {
 
   //create task here
   createTask.addEventListener("click", (e) => {
-    myBoardDiv.innerHTML = '';
+    myBoardDiv.innerHTML = "";
     myBoardHeadline.innerText = `Hello ${account.displayName}. You can create a task here`;
 
     const defineTask = document.createElement("form");
@@ -501,6 +501,27 @@ loadProfilePage = () => {
     defineTaskDropdown.id = "defineTaskDropdown";
     defineTaskDropdown.name = "Task label";
     defineTask.appendChild(defineTaskDropdown);
+    let taskLabel = 1;
+
+    defineTaskDropdown.addEventListener("change", (e) => {
+      switch (defineTaskDropdown.value) {
+        case "Homework":
+          taskLabel = 1;
+          break;
+        case "Project":
+          taskLabel = 2;
+          break;
+        case "Assignment":
+          taskLabel = 3;
+          break;
+
+        default:
+          taskLabel = 1;
+          break;
+      }
+
+      console.log(taskLabel);
+    });
 
     const defineTaskHw = document.createElement("option");
     defineTaskHw.id = "defineTaskHw";
@@ -526,11 +547,17 @@ loadProfilePage = () => {
     defineTaskDateLab.innerText = "Task due date:";
     defineTask.appendChild(defineTaskDateLab);
 
+    let taskDate;
     const defineTaskDate = document.createElement("input");
     defineTaskDate.id = "defineTaskDate";
     defineTaskDate.type = "date";
     defineTaskDate.name = "TaskDueDate";
     defineTask.appendChild(defineTaskDate);
+    defineTask.addEventListener("change", (e) => {
+      taskDate = Date.parse(defineTaskDate.value);
+      console.log(`taskDate`);
+      console.log(taskDate);
+    });
 
     const defineTaskBtn = document.createElement("input");
     defineTaskBtn.id = "defineTaskBtn";
@@ -541,36 +568,45 @@ loadProfilePage = () => {
 
     //create the new task
     defineTaskBtn.addEventListener("click", (e) => {
-      e.preventDefault()
+      e.preventDefault();
       // myBoardDiv.classList.add("hideMyBoardDiv");
       const payload = {
-        "labelId": defineTaskDropdown.value,
-        "taskdueDate": defineTaskDate.value,
-        "tasksubject": defineTaskSubj.value
+        labelId: taskLabel,
+        taskdueDate: taskDate,
+        tasksubject: defineTaskSubj.value,
+      };
 
-      }
+      console.log(payload);
 
       const fetchOpt = {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-type': 'application/json',
-          "x-authToken": mainToken
+          "Content-type": "application/json",
+          "x-authToken": mainToken,
         },
-        body: JSON.stringify(payload)
-      }
+        body: JSON.stringify(payload),
+      };
 
       fetch(`${fetchUrl}/api/tasks`, fetchOpt)
-      .then((res) => {
-        if (res.status == 200) {
-          console.log("status 200");
-          return res.json();
-        }
-      })
+        .then((res) => {
+          if (res.status == 200) {
+            console.log("status 200");
+            return res.json();
+          }
+        })
+        .then((data) => {
+          myBoardDiv.innerHTML = "";
+          const sucessMes = document.createElement("p");
+          sucessMes.innerText = "task created succesfuly";
+          myBoardDiv.appendChild(sucessMes);
+
+          reload = () => {
+            window.location.reload();
+          };
+          setTimeout(reload, 1500);
+        });
     });
-  })
-
-
-
+  });
 
   const createGroup = document.createElement("button");
   createGroup.id = "createGroupBtn";
@@ -596,7 +632,7 @@ loadProfilePage = () => {
     const fetchOpt = {
       headers: {
         "Content-type": "application/json",
-        "x-authToken": ls.getItem("token")
+        "x-authToken": ls.getItem("token"),
       },
     };
 
@@ -609,31 +645,32 @@ loadProfilePage = () => {
       .then((data) => {
         console.log(data);
         myBoardDiv.classList.remove("hideMyBoardDiv");
-        myBoardDiv.innerHTML = '';
+        myBoardDiv.innerHTML = "";
 
         const showAllTasksList = document.createElement("ul");
         showAllTasksList.id = "showAllTasksList";
         myBoardDiv.appendChild(showAllTasksList);
 
-        data.forEach(task => {
-
+        data.forEach((task) => {
           const showAllTasksListItem = document.createElement("li");
           showAllTasksListItem.id = "showAllTasksList";
           showAllTasksListItem.innerText = task.tasksubject;
           switch (task.FK_labelId) {
-            case (1): showAllTasksListItem.classList.add("labelId1");
+            case 1:
+              showAllTasksListItem.classList.add("labelId1");
               break;
-            case (2): showAllTasksListItem.classList.add("labelId2");
+            case 2:
+              showAllTasksListItem.classList.add("labelId2");
               break;
-            case (3): showAllTasksListItem.classList.add("labelId3");
+            case 3:
+              showAllTasksListItem.classList.add("labelId3");
               break;
             default:
               break;
           }
           showAllTasksList.appendChild(showAllTasksListItem);
-        })
+        });
       });
-
   });
 
   const showAllGroups = document.createElement("a");
@@ -686,7 +723,6 @@ loadProfilePage = () => {
   homeworkBtn.classList.add("operBtns");
   operatingBtnsSect.appendChild(homeworkBtn);
 
-
   //  Generate all own tasks with labelId = 1 (homework) here
   homeworkBtn.addEventListener("click", (e) => {
     myBoardDiv.classList.add("hideMyBoardDiv");
@@ -694,7 +730,7 @@ loadProfilePage = () => {
     const fetchOpt = {
       headers: {
         "Content-type": "application/json",
-        "x-authToken": ls.getItem("token")
+        "x-authToken": ls.getItem("token"),
       },
     };
     fetch(`${fetchUrl}/api/tasks/own/1`, fetchOpt)
@@ -705,17 +741,17 @@ loadProfilePage = () => {
       })
       .then((data) => {
         myBoardDiv.classList.remove("hideMyBoardDiv");
-        myBoardDiv.innerHTML = '';
+        myBoardDiv.innerHTML = "";
         const showAllHomework = document.createElement("ul");
         showAllHomework.id = "showAllHomework";
         myBoardDiv.appendChild(showAllHomework);
-        data.forEach(task => {
+        data.forEach((task) => {
           const showAllHomeworkListItem = document.createElement("li");
           showAllHomeworkListItem.id = "showAllHomeworkListItem";
           showAllHomeworkListItem.innerText = task.tasksubject;
           showAllHomeworkListItem.classList.add("labelId1");
           showAllHomework.appendChild(showAllHomeworkListItem);
-        })
+        });
       });
   });
 
@@ -732,7 +768,7 @@ loadProfilePage = () => {
     const fetchOpt = {
       headers: {
         "Content-type": "application/json",
-        "x-authToken": ls.getItem("token")
+        "x-authToken": ls.getItem("token"),
       },
     };
     fetch(`${fetchUrl}/api/tasks/own/2`, fetchOpt)
@@ -743,17 +779,17 @@ loadProfilePage = () => {
       })
       .then((data) => {
         myBoardDiv.classList.remove("hideMyBoardDiv");
-        myBoardDiv.innerHTML = '';
+        myBoardDiv.innerHTML = "";
         const showAllProjects = document.createElement("ul");
         showAllProjects.id = "showAllProjects";
         myBoardDiv.appendChild(showAllProjects);
-        data.forEach(task => {
+        data.forEach((task) => {
           const showAllProjectsListItem = document.createElement("li");
           showAllProjectsListItem.id = "showAllProjectsListItem";
           showAllProjectsListItem.innerText = task.tasksubject;
           showAllProjectsListItem.classList.add("labelId2");
           showAllProjects.appendChild(showAllProjectsListItem);
-        })
+        });
       });
   });
 
@@ -770,7 +806,7 @@ loadProfilePage = () => {
     const fetchOpt = {
       headers: {
         "Content-type": "application/json",
-        "x-authToken": ls.getItem("token")
+        "x-authToken": ls.getItem("token"),
       },
     };
     fetch(`${fetchUrl}/api/tasks/own/3`, fetchOpt)
@@ -781,17 +817,17 @@ loadProfilePage = () => {
       })
       .then((data) => {
         myBoardDiv.classList.remove("hideMyBoardDiv");
-        myBoardDiv.innerHTML = '';
+        myBoardDiv.innerHTML = "";
         const showAllAssignments = document.createElement("ul");
         showAllAssignments.id = "showAllAssignments";
         myBoardDiv.appendChild(showAllAssignments);
-        data.forEach(task => {
+        data.forEach((task) => {
           const showAllAssignmentsListItem = document.createElement("li");
           showAllAssignmentsListItem.id = "showAllAssignmentsListItem";
           showAllAssignmentsListItem.innerText = task.tasksubject;
           showAllAssignmentsListItem.classList.add("labelId3");
           showAllAssignments.appendChild(showAllAssignmentsListItem);
-        })
+        });
       });
   });
 
