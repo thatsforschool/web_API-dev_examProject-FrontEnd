@@ -130,12 +130,17 @@ input::placeholder {
   margin-right: 100px;
 }
 
+#creatUserBtn,
+#mainSignUp p,
 #creatAccountBtn {
   margin: 50px 200px;
 }
 
-#createAccountBtn {
-  margin: 50px 200px;
+
+#mainSignUp p {
+  color: var(--red);
+  text-align: center;
+  font-size: 20px;
 }
 
 #creatAccountIcon {
@@ -434,7 +439,8 @@ nav > a {
   width: 300px;
 }
 
-.createGroupDiv > input, .showGroupsDiv input {
+.createGroupDiv > input,
+.showGroupsDiv input {
   width: 190px;
   margin: 10px 50px;
 }
@@ -449,15 +455,16 @@ nav > a {
 }
 
 .createGroupDiv > p,
-.showGroupsDiv  p {
+.showGroupsDiv p {
   margin: 0 50px;
 }
 
-#message404{
+#message404 {
   margin: 50px;
 }
 
-.createGroupDiv > a > img, .showGroupsDiv img {
+.createGroupDiv > a > img,
+.showGroupsDiv img {
   margin: 10px 250px 0px 50px;
   max-width: 20px;
 }
@@ -466,9 +473,21 @@ ul#showAllTasksList {
   list-style: none;
 }
 
-ul#showAllTasksList .labelId1 {list-style-image: url(./images/homework.png);}
-ul#showAllTasksList .labelId2 {list-style-image: url(./images/project.png);}
-ul#showAllTasksList .labelId3 {list-style-image: url(./images/assignment.png);}
-ul#showAllHomework .labelId1 {list-style-image: url(./images/homework.png);}
-ul#showAllProjects .labelId2 {list-style-image: url(./images/project.png);}
-ul#showAllAssignments .labelId3 {list-style-image: url(./images/assignment.png);}
+ul#showAllTasksList .labelId1 {
+  list-style-image: url(./images/homework.png);
+}
+ul#showAllTasksList .labelId2 {
+  list-style-image: url(./images/project.png);
+}
+ul#showAllTasksList .labelId3 {
+  list-style-image: url(./images/assignment.png);
+}
+ul#showAllHomework .labelId1 {
+  list-style-image: url(./images/homework.png);
+}
+ul#showAllProjects .labelId2 {
+  list-style-image: url(./images/project.png);
+}
+ul#showAllAssignments .labelId3 {
+  list-style-image: url(./images/assignment.png);
+}

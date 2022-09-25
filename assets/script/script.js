@@ -51,7 +51,9 @@ loadLogInPage = () => {
   logInSect.appendChild(signInBtn);
 
   signInBtn.addEventListener("click", (e) => {
-    errMes.innerText = "";
+    const errorMes = document.createElement("p");
+    errorMes.innerHTML = "";
+    e.preventDefault();
     const payload = {
       email: userNameInp.value,
       password: passwordInp.value,
@@ -67,12 +69,39 @@ loadLogInPage = () => {
 
     fetch(`${fetchUrl}/api/accounts/login`, fetchOpt)
       .then((res) => {
-        if (res.status == 200) {
-          const token = res.headers.get("x-authToken");
-          ls.setItem("token", token);
-          console.log(`this is token: ${ls.getItem("token")}`);
+        switch (res.status) {
+          case 200:
+            console.log("status 200");
+            const token = res.headers.get("x-authToken");
+            ls.setItem("token", token);
+            console.log(`this is token: ${ls.getItem("token")}`);
+            return res.json();
+          case 400:
+            console.log("status 400");
+            errorMes.innerText = "Badly formatted request payload";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 401:
+            console.log("status 401");
+            errorMes.innerText = "cannot use this email";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 404:
+            console.log("status 404");
+            errorMes.innerText = "action failed";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 500:
+            console.log("status 500");
+            errorMes.innerText = "Incorrect data";
+            mainSignUp.appendChild(errorMes);
+            break;
+
+          default:
+            errorMes.innerText = "Incorrect data";
+            mainSignUp.appendChild(errorMes);
+            break;
         }
-        return res.json();
       })
 
       .then((data) => {
@@ -163,7 +192,8 @@ loadSignUpPage = () => {
   mainSignUp.appendChild(creatUserBtn);
 
   creatUserBtn.addEventListener("click", (e) => {
-    // errMes.innerText = "";
+    const errorMes = document.createElement("p");
+    errorMes.innerHTML = "";
     e.preventDefault();
     const payload = {
       email: emailInput.value,
@@ -180,8 +210,35 @@ loadSignUpPage = () => {
 
     fetch(`${fetchUrl}/api/users`, fetchOpt)
       .then((res) => {
-        if (res.status == 200) {
-          return res.json();
+        switch (res.status) {
+          case 200:
+            console.log("status 200");
+            return res.json();
+          case 400:
+            console.log("status 400");
+            errorMes.innerText = "Badly formatted request payload";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 401:
+            console.log("status 401");
+            errorMes.innerText = "cannot use this email";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 404:
+            console.log("status 404");
+            errorMes.innerText = "action failed";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 500:
+            console.log("status 500");
+            errorMes.innerText = "Incorrect data";
+            mainSignUp.appendChild(errorMes);
+            break;
+
+          default:
+            errorMes.innerText = "Incorrect data";
+            mainSignUp.appendChild(errorMes);
+            break;
         }
       })
 
@@ -189,10 +246,10 @@ loadSignUpPage = () => {
         if (!data.statusCode && Object.keys(data).length != 0) {
           ls.setItem("userObj", JSON.stringify(data));
           console.log(`this is the account ${ls.getItem("userObj")}`);
-          //   window.location.href = `${baseUrl}?page=crateAccount`;
+          window.location.href = `${baseUrl}?page=createAccount`;
         } else {
           const errorMes = document.createElement("p");
-          errorMes.innerText = "Invalid username or password";
+          errorMes.innerText = "Invalid username or email format";
           mainSignUp.appendChild(errorMes);
         }
       });
@@ -252,7 +309,8 @@ loadCreateAccountPage = () => {
   console.log(user);
 
   creatAccountBtn.addEventListener("click", (e) => {
-    errMes.innerText = "";
+    const errorMes = document.createElement("p");
+    errorMes.innerHTML = "";
     e.preventDefault();
 
     if (passwordInput.value == repeatInput.value) {
@@ -272,8 +330,36 @@ loadCreateAccountPage = () => {
 
       fetch(`${fetchUrl}/api/accounts`, fetchOpt)
         .then((res) => {
-          if (res.status == 200) {
-            return res.json();
+          switch (res.status) {
+            case 200:
+              console.log("status 200");
+              return res.json();
+
+            case 400:
+              console.log("status 400");
+              errorMes.innerText = "Badly formatted request payload";
+              mainSignUp.appendChild(errorMes);
+              break;
+            case 401:
+              console.log("status 401");
+              errorMes.innerText = "cannot use this email";
+              mainSignUp.appendChild(errorMes);
+              break;
+            case 404:
+              console.log("status 404");
+              errorMes.innerText = "action failed";
+              mainSignUp.appendChild(errorMes);
+              break;
+            case 500:
+              console.log("status 500");
+              errorMes.innerText = "Incorrect data";
+              mainSignUp.appendChild(errorMes);
+              break;
+
+            default:
+              errorMes.innerText = "Incorrect data";
+              mainSignUp.appendChild(errorMes);
+              break;
           }
         })
 
@@ -281,15 +367,13 @@ loadCreateAccountPage = () => {
           if (!data.statusCode && Object.keys(data).length != 0) {
             console.log(`account created`);
             ls.removeItem("userObj");
-            window.location.href = `${baseUrl}`;
+            window.location.href = `${baseUrl}?page=signIn`;
           } else {
             const errorMes = document.createElement("p");
             errorMes.innerText = "Invalid username or password";
             mainSignUp.appendChild(errorMes);
           }
         });
-
-      console.log(`account in the ls: ${ls.getItem("userObj")}`);
     }
   });
 };
@@ -422,6 +506,8 @@ loadProfilePage = () => {
       changeUserNameDiv.appendChild(changeUserSubmit);
 
       changeUserSubmit.addEventListener("click", () => {
+        const errorMes = document.createElement("p");
+        errorMes.innerHTML = "";
         const payload = {
           displayName: changeUserNameInp.value,
         };
@@ -437,12 +523,31 @@ loadProfilePage = () => {
 
         fetch(`${fetchUrl}/api/accounts/own`, fetchOpt)
           .then((res) => {
-            if (res.status == 200) {
-              console.log("succes");
-            } else {
-              console.log("not a succes");
+            switch (res.status) {
+              case 200:
+                console.log("status 200");
+                return res.json();
+              case 400:
+                console.log("status 400");
+                errorMes.innerText = "Badly formatted request payload";
+                mainSignUp.appendChild(errorMes);
+                break;
+              case 404:
+                console.log("status 404");
+                errorMes.innerText = "action failed";
+                mainSignUp.appendChild(errorMes);
+                break;
+              case 500:
+                console.log("status 500");
+                errorMes.innerText = "Incorrect data";
+                mainSignUp.appendChild(errorMes);
+                break;
+
+              default:
+                errorMes.innerText = "Incorrect data";
+                mainSignUp.appendChild(errorMes);
+                break;
             }
-            return res.json();
           })
 
           .then((data) => {
@@ -512,6 +617,8 @@ loadProfilePage = () => {
       deleteConfirmBtn.classList.add("btn");
       deleteConfirmBtnDiv.appendChild(deleteConfirmBtn);
       deleteConfirmBtn.addEventListener("click", () => {
+        const errorMes = document.createElement("p");
+        errorMes.innerHTML = "";
         const fetchOpt = {
           method: "DELETE",
           headers: {
@@ -522,12 +629,25 @@ loadProfilePage = () => {
 
         fetch(`${fetchUrl}/api/accounts/${account.accountId}`, fetchOpt).then(
           (res) => {
-            if (res.status == 200) {
-              console.log("succes");
-            } else {
-              console.log("not a succes");
+            switch (res.status) {
+              case 200:
+                return res.json();
+              case 404:
+                console.log("status 404");
+                errorMes.innerText = "action [DELETE] failed";
+                deleteConfirm.appendChild(errorMes);
+                break;
+              case 500:
+                console.log("status 500");
+                errorMes.innerText = "Incorrect data";
+                deleteConfirm.appendChild(errorMes);
+                break;
+
+              default:
+                errorMes.innerText = "Incorrect data";
+                deleteConfirm.appendChild(errorMes);
+                break;
             }
-            return res.json();
           }
         );
 
@@ -585,31 +705,57 @@ loadProfilePage = () => {
       "x-authToken": mainToken,
     },
   };
+  console.log(mainToken);
+  const errorMes = document.createElement("p");
+  errorMes.innerHTML = "";
 
   fetch(`${fetchUrl}/api/groupmembers/membership`, fetchOpt)
     .then((res) => {
-      if (res.status == 200) {
-        return res.json();
+      switch (res.status) {
+        case 200:
+          console.log("status 200 on membership");
+          return res.json();
+        case 404:
+          console.log("status 404");
+          errorMes.innerText = "you are not a member of any group ";
+          recentGroupsShow.appendChild(errorMes);
+          break;
+        case 500:
+          console.log("status 500");
+          errorMes.innerText = "Incorrect data";
+          recentGroupsShow.appendChild(errorMes);
+          break;
+
+        default:
+          errorMes.innerText = "Incorrect data";
+          recentGroupsShow.appendChild(errorMes);
+          break;
       }
     })
     .then((data) => {
-      console.log(data);
-      data.forEach((group) => {
-        if (group.FK_userId != account.userId) {
-          console.log("group");
-          console.log(group);
-          const groupMembershipLink = document.createElement("a");
-          groupMembershipLink.id = "groupMembershipLink";
-          groupMembershipLink.innerText = group.groupName;
-          recentGroupsShow.appendChild(groupMembershipLink);
-          groupMembershipLink.addEventListener("click", () => {
-            ls.setItem("currentOwnGroup", JSON.stringify(group));
-            console.log("currentOwnGroup");
-            console.log(ls.getItem("currentOwnGroup"));
-            window.location.href = `${baseUrl}?page=group`;
-          });
-        }
-      });
+      if (!data.statusCode && Object.keys(data).length != 0) {
+        console.log(data);
+        data.forEach((group) => {
+          if (group.FK_userId != account.userId) {
+            console.log("group");
+            console.log(group);
+            const groupMembershipLink = document.createElement("a");
+            groupMembershipLink.id = "groupMembershipLink";
+            groupMembershipLink.innerText = group.groupName;
+            recentGroupsShow.appendChild(groupMembershipLink);
+            groupMembershipLink.addEventListener("click", () => {
+              ls.setItem("currentOwnGroup", JSON.stringify(group));
+              console.log("currentOwnGroup");
+              console.log(ls.getItem("currentOwnGroup"));
+              window.location.href = `${baseUrl}?page=group`;
+            });
+          }
+        });
+      } else {
+        console.log("error on membership");
+        errorMes.innerText = "Invalid response from server";
+        recentGroupsShow.appendChild(errorMes);
+      }
     });
 
   const borderRecGroupBottom = document.createElement("div");
@@ -650,7 +796,9 @@ loadProfilePage = () => {
 
   // Generate all own tasks here
   showAllTasks.addEventListener("click", (e) => {
-    myBoardDiv.classList.add("hideMyBoardDiv");
+    const errorMes = document.createElement("p");
+    myBoardDiv.innerHTML = "";
+    // myBoardDiv.classList.add("hideMyBoardDiv");
     myBoardHeadline.innerText = `Hello ${account.displayName}. These are all your tasks`;
     const fetchOpt = {
       headers: {
@@ -661,38 +809,57 @@ loadProfilePage = () => {
 
     fetch(`${fetchUrl}/api/tasks/own`, fetchOpt)
       .then((res) => {
-        if (res.status == 200) {
-          return res.json();
+        switch (res.status) {
+          case 200:
+            console.log("status 200");
+            return res.json();
+          case 404:
+            console.log("status 404");
+            errorMes.innerText = "you do not have any tasks in the database";
+            myBoardDiv.appendChild(errorMes);
+            break;
+          case 500:
+            console.log("status 500");
+            errorMes.innerText = "Incorrect data";
+            myBoardDiv.appendChild(errorMes);
+            break;
+
+          default:
+            errorMes.innerText = "Incorrect data";
+            myBoardDiv.appendChild(errorMes);
+            break;
         }
       })
       .then((data) => {
-        console.log(data);
-        myBoardDiv.classList.remove("hideMyBoardDiv");
-        myBoardDiv.innerHTML = "";
+        if (!data.statusCode && Object.keys(data).length != 0) {
+          console.log(data);
+          myBoardDiv.classList.remove("hideMyBoardDiv");
+          myBoardDiv.innerHTML = "";
 
-        const showAllTasksList = document.createElement("ul");
-        showAllTasksList.id = "showAllTasksList";
-        myBoardDiv.appendChild(showAllTasksList);
+          const showAllTasksList = document.createElement("ul");
+          showAllTasksList.id = "showAllTasksList";
+          myBoardDiv.appendChild(showAllTasksList);
 
-        data.forEach((task) => {
-          const showAllTasksListItem = document.createElement("li");
-          showAllTasksListItem.id = "showAllTasksList";
-          showAllTasksListItem.innerText = task.tasksubject;
-          switch (task.FK_labelId) {
-            case 1:
-              showAllTasksListItem.classList.add("labelId1");
-              break;
-            case 2:
-              showAllTasksListItem.classList.add("labelId2");
-              break;
-            case 3:
-              showAllTasksListItem.classList.add("labelId3");
-              break;
-            default:
-              break;
-          }
-          showAllTasksList.appendChild(showAllTasksListItem);
-        });
+          data.forEach((task) => {
+            const showAllTasksListItem = document.createElement("li");
+            showAllTasksListItem.id = "showAllTasksList";
+            showAllTasksListItem.innerText = task.tasksubject;
+            switch (task.FK_labelId) {
+              case 1:
+                showAllTasksListItem.classList.add("labelId1");
+                break;
+              case 2:
+                showAllTasksListItem.classList.add("labelId2");
+                break;
+              case 3:
+                showAllTasksListItem.classList.add("labelId3");
+                break;
+              default:
+                break;
+            }
+            showAllTasksList.appendChild(showAllTasksListItem);
+          });
+        }
       });
   });
 
@@ -752,7 +919,9 @@ loadProfilePage = () => {
 
   //  Generate all own tasks with labelId = 1 (homework) here
   homeworkBtn.addEventListener("click", (e) => {
-    myBoardDiv.classList.add("hideMyBoardDiv");
+    // myBoardDiv.classList.add("hideMyBoardDiv");
+    const errorMes = document.createElement("p");
+    myBoardDiv.innerHTML = "";
     myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your homework`;
     const fetchOpt = {
       headers: {
@@ -762,8 +931,25 @@ loadProfilePage = () => {
     };
     fetch(`${fetchUrl}/api/tasks/own/1`, fetchOpt)
       .then((res) => {
-        if (res.status == 200) {
-          return res.json();
+        switch (res.status) {
+          case 200:
+            console.log("status 200");
+            return res.json();
+          case 404:
+            console.log("status 404");
+            errorMes.innerText = "you do not have any tasks in Homework";
+            myBoardDiv.appendChild(errorMes);
+            break;
+          case 500:
+            console.log("status 500");
+            errorMes.innerText = "Incorrect data";
+            myBoardDiv.appendChild(errorMes);
+            break;
+
+          default:
+            errorMes.innerText = "Incorrect data";
+            myBoardDiv.appendChild(errorMes);
+            break;
         }
       })
       .then((data) => {
@@ -790,7 +976,9 @@ loadProfilePage = () => {
 
   //  Generate all own tasks with labelId = 2 (projects) here
   projectsBtn.addEventListener("click", (e) => {
-    myBoardDiv.classList.add("hideMyBoardDiv");
+    const errorMes = document.createElement("p");
+    myBoardDiv.innerHTML = "";
+    // myBoardDiv.classList.add("hideMyBoardDiv");
     myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your project tasks`;
     const fetchOpt = {
       headers: {
@@ -800,9 +988,26 @@ loadProfilePage = () => {
     };
     fetch(`${fetchUrl}/api/tasks/own/2`, fetchOpt)
       .then((res) => {
-        if (res.status == 200) {
-          return res.json();
-        }
+        switch (res.status) {
+            case 200:
+              console.log("status 200");
+              return res.json();
+            case 404:
+              console.log("status 404");
+              errorMes.innerText = "you do not have any tasks in Projects";
+              myBoardDiv.appendChild(errorMes);
+              break;
+            case 500:
+              console.log("status 500");
+              errorMes.innerText = "Incorrect data";
+              myBoardDiv.appendChild(errorMes);
+              break;
+  
+            default:
+              errorMes.innerText = "Incorrect data";
+              myBoardDiv.appendChild(errorMes);
+              break;
+          }
       })
       .then((data) => {
         myBoardDiv.classList.remove("hideMyBoardDiv");
@@ -828,7 +1033,9 @@ loadProfilePage = () => {
 
   //  Generate all own tasks with labelId = 3 (assignments) here
   assigmentsBtn.addEventListener("click", (e) => {
-    myBoardDiv.classList.add("hideMyBoardDiv");
+    const errorMes = document.createElement("p");
+    myBoardDiv.innerHTML = "";
+    // myBoardDiv.classList.add("hideMyBoardDiv");
     myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your assignment tasks`;
     const fetchOpt = {
       headers: {
@@ -838,9 +1045,26 @@ loadProfilePage = () => {
     };
     fetch(`${fetchUrl}/api/tasks/own/3`, fetchOpt)
       .then((res) => {
-        if (res.status == 200) {
-          return res.json();
-        }
+        switch (res.status) {
+            case 200:
+              console.log("status 200");
+              return res.json();
+            case 404:
+              console.log("status 404");
+              errorMes.innerText = "you do not have any tasks in Assigments";
+              myBoardDiv.appendChild(errorMes);
+              break;
+            case 500:
+              console.log("status 500");
+              errorMes.innerText = "Incorrect data";
+              myBoardDiv.appendChild(errorMes);
+              break;
+  
+            default:
+              errorMes.innerText = "Incorrect data";
+              myBoardDiv.appendChild(errorMes);
+              break;
+          }
       })
       .then((data) => {
         myBoardDiv.classList.remove("hideMyBoardDiv");
@@ -888,7 +1112,7 @@ loadSinglelogPage = () => {
 
   const userNameInp = document.createElement("input");
   userNameInp.type = "text";
-  userNameInp.placeholder = "username";
+  userNameInp.placeholder = "email";
   userNameInp.id = "userNameInp";
   logInSect.appendChild(userNameInp);
 
@@ -905,7 +1129,9 @@ loadSinglelogPage = () => {
   logInSect.appendChild(signInBtn);
 
   signInBtn.addEventListener("click", (e) => {
-    errMes.innerText = "";
+    const errorMes = document.createElement("p");
+    errorMes.innerHTML = "";
+    e.preventDefault();
     const payload = {
       email: userNameInp.value,
       password: passwordInp.value,
@@ -921,12 +1147,39 @@ loadSinglelogPage = () => {
 
     fetch(`${fetchUrl}/api/accounts/login`, fetchOpt)
       .then((res) => {
-        if (res.status == 200) {
-          const token = res.headers.get("x-authToken");
-          ls.setItem("token", token);
-          console.log(`this is token: ${ls.getItem("token")}`);
+        switch (res.status) {
+          case 200:
+            console.log("status 200");
+            const token = res.headers.get("x-authToken");
+            ls.setItem("token", token);
+            console.log(`this is token: ${ls.getItem("token")}`);
+            return res.json();
+          case 400:
+            console.log("status 400");
+            errorMes.innerText = "Badly formatted request payload";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 401:
+            console.log("status 401");
+            errorMes.innerText = "cannot use this email";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 404:
+            console.log("status 404");
+            errorMes.innerText = "action failed";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 500:
+            console.log("status 500");
+            errorMes.innerText = "Incorrect data";
+            mainSignUp.appendChild(errorMes);
+            break;
+
+          default:
+            errorMes.innerText = "Incorrect data";
+            mainSignUp.appendChild(errorMes);
+            break;
         }
-        return res.json();
       })
 
       .then((data) => {
@@ -969,7 +1222,8 @@ createGroupFunction = () => {
   createBtns.appendChild(groupCreateBtn);
 
   groupCreateBtn.addEventListener("click", (e) => {
-    errMes.innerText = "";
+    const errorMes = document.createElement("p");
+    errorMes.innerHTML = "";
     createBtns.innerHTML = "";
 
     const payload = {
@@ -988,8 +1242,35 @@ createGroupFunction = () => {
 
     fetch(`${fetchUrl}/api/groups`, fetchOpt)
       .then((res) => {
-        if (res.status == 200) {
-          return res.json();
+        switch (res.status) {
+          case 200:
+            console.log("status 200");
+            return res.json();
+          case 400:
+            console.log("status 400");
+            errorMes.innerText = "Badly formatted request payload";
+            createBtns.appendChild(errorMes);
+            break;
+          case 401:
+            console.log("status 401");
+            errorMes.innerText = "this group already exists in the database";
+            createBtns.appendChild(errorMes);
+            break;
+          case 404:
+            console.log("status 404");
+            errorMes.innerText = "action failed";
+            createBtns.appendChild(errorMes);
+            break;
+          case 500:
+            console.log("status 500");
+            errorMes.innerText = "Incorrect data";
+            createBtns.appendChild(errorMes);
+            break;
+
+          default:
+            errorMes.innerText = "Incorrect data";
+            createBtns.appendChild(errorMes);
+            break;
         }
       })
 
@@ -1008,7 +1289,19 @@ getAllGroupsFunction = (div) => {
   div.innerHTML = "";
   div.id = "";
   div.classList.add("showGroupsDiv");
+  const errorMes = document.createElement("p");
+  errorMes.innerHTML = "";
 
+  const exitIconLink = document.createElement("a");
+  exitIconLink.id = "exitIconSet";
+  const exitIcon = document.createElement("img");
+  exitIcon.src = "./assets/svg/exitIcon.svg";
+  div.appendChild(exitIconLink);
+  exitIconLink.appendChild(exitIcon);
+
+  exitIconLink.addEventListener("click", (e) => {
+    window.location.reload();
+  });
   const fetchOpt = {
     headers: {
       "Content-type": "application/json",
@@ -1018,11 +1311,26 @@ getAllGroupsFunction = (div) => {
 
   fetch(`${fetchUrl}/api/groups/own`, fetchOpt)
     .then((res) => {
-      if (res.status == 200) {
-        console.log("status: 200");
-      }
+      switch (res.status) {
+        case 200:
+          console.log("status 200");
+          return res.json();
+        case 404:
+          console.log("status 404");
+          errorMes.innerText = "no group found for this user id";
+          div.appendChild(errorMes);
+          break;
+        case 500:
+          console.log("status 500");
+          errorMes.innerText = "Incorrect data";
+          div.appendChild(errorMes);
+          break;
 
-      return res.json();
+        default:
+          errorMes.innerText = "Incorrect data";
+          div.appendChild(errorMes);
+          break;
+      }
     })
 
     .then((data) => {
@@ -1153,7 +1461,8 @@ addGroupMembers = (div, name) => {
   div.appendChild(addMembersBtn);
 
   addMembersBtn.addEventListener("click", () => {
-    errMes.innerText = "";
+    const errorMes = document.createElement("p");
+    errorMes.innerHTML = "";
     const memberEmail = addMembersInp.value;
     const fetchOpt = {
       headers: {
@@ -1164,8 +1473,38 @@ addGroupMembers = (div, name) => {
 
     fetch(`${fetchUrl}/api/users/email/${memberEmail}`, fetchOpt)
       .then((res) => {
-        if (res.status == 200) {
-          return res.json();
+        switch (res.status) {
+          case 200:
+            console.log("status 200");
+            const token = res.headers.get("x-authToken");
+            ls.setItem("token", token);
+            console.log(`this is token: ${ls.getItem("token")}`);
+            return res.json();
+          case 400:
+            console.log("status 400");
+            errorMes.innerText = "Badly formatted request payload";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 401:
+            console.log("status 401");
+            errorMes.innerText = "cannot use this email";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 404:
+            console.log("status 404");
+            errorMes.innerText = "action failed";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 500:
+            console.log("status 500");
+            errorMes.innerText = "Incorrect data";
+            mainSignUp.appendChild(errorMes);
+            break;
+
+          default:
+            errorMes.innerText = "Incorrect data";
+            mainSignUp.appendChild(errorMes);
+            break;
         }
       })
 
@@ -1203,12 +1542,39 @@ loadGroupPage = () => {
     },
   };
 
+  const errorMes = document.createElement("p");
+  errorMes.innerHTML = "";
+
   fetch(`${fetchUrl}/api/groups/${OwnGroup.groupId}`, fetchOpt)
     .then((res) => {
-      if (res.status == 200) {
-        console.log("status: 200");
-        return res.json();
-      }
+        switch (res.status) {
+            case 200:
+              console.log("status 200");
+              const token = res.headers.get("x-authToken");
+              ls.setItem("token", token);
+              console.log(`this is token: ${ls.getItem("token")}`);
+              return res.json();
+            case 401:
+              console.log("status 401");
+              errorMes.innerText = "cannot use this email";
+              main.appendChild(errorMes);
+              break;
+            case 404:
+              console.log("status 404");
+              errorMes.innerText = "action failed";
+              main.appendChild(errorMes);
+              break;
+            case 500:
+              console.log("status 500");
+              errorMes.innerText = "Incorrect data";
+              main.appendChild(errorMes);
+              break;
+  
+            default:
+              errorMes.innerText = "Incorrect data";
+              main.appendChild(errorMes);
+              break;
+          }
     })
 
     .then((data) => {
@@ -1652,6 +2018,10 @@ window.addEventListener("DOMContentLoaded", (e) => {
         case "createAccount":
           console.log("you are on create account page");
           loadCreateAccountPage();
+          break;
+
+        case "signIn":
+          loadSinglelogPage();
           break;
 
         case "profile":
