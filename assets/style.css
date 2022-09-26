@@ -73,24 +73,126 @@ a {
   padding: 10px 0 0 0;
 }
 
+/* || BUTTONS */
+
 .btn {
+  box-sizing: border-box;
+  width: 250px;
+  text-align: center;
+  padding: 10px;
   font-size: 14px;
   width: 200px;
-  height: 30px;
-  border-radius: 5px;
-  border: none;
+  height: 50px;
+  border-radius: 4px;
+  border: 4px solid var(--blue);
   background-color: var(--blue);
   color: var(--white);
-  margin: 30px 50px;
+  margin: 30px 0 0 70px;
+  transition: all ease 0.3s;
+  -webkit-transition: all ease 0.3s;
+  -moz-transition: all ease 0.3s;
+  -ms-transition: all ease 0.3s;
+  -o-transition: all ease 0.3s;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
 }
 
 .btn:hover {
   cursor: pointer;
   color: var(--blue);
   background-color: var(--white);
-  border: 3px solid var(--blue);
 }
 
+.btnREVERSE {
+  box-sizing: border-box;
+  width: 200px;
+  height: 50px;
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+  width: 200px;
+  border-radius: 4px;
+  border: 4px solid var(--blue);
+  background-color: var(--white);
+  color: var(--blue);
+  margin: 30px 0 0 0;
+  transition: all ease 0.3s;
+  -webkit-transition: all ease 0.3s;
+  -moz-transition: all ease 0.3s;
+  -ms-transition: all ease 0.3s;
+  -o-transition: all ease 0.3s;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+}
+
+.btnREVERSE:hover {
+  cursor: pointer;
+  color:  var(--white);
+  background-color: var(--blue);
+}
+
+/* #operatingBtnsSect */
+
+.operBtns {
+  margin: 0 0 30px 40px;
+  box-sizing: border-box;
+  width: 250px;
+  height: 50px;
+  text-align: center;
+  padding: 10px;
+  transition: all ease 0.3s;
+  -webkit-transition: all ease 0.3s;
+  -moz-transition: all ease 0.3s;
+  -ms-transition: all ease 0.3s;
+  -o-transition: all ease 0.3s;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+}
+
+.operBtns:hover {
+  cursor: pointer;
+}
+
+#homeworkBtn {
+  background-color: var(--red);
+  border: 4px solid var(--red);
+}
+#homeworkBtn:hover {
+  background-color: var(--yellow);
+}
+
+#projectsBtn {
+  background-color: var(--ohra);
+  border: 4px solid var(--ohra);
+}
+#projectsBtn:hover {
+  background-color: var(--yellow);
+}
+
+#assigmentsBtn {
+  background-color: var(--lightBlue);
+  border: 4px solid var(--lightBlue);
+}
+#assigmentsBtn:hover {
+  background-color: var(--yellow);
+}
+
+#showAllDone {
+  border: 4px solid var(--green);
+}
+#showAllDone:hover {
+  background-color: var(--green);
+}
+
+
+/* || LOG IN/SIGN UP */
 #passwordInp,
 #userNameInp,
 .signUpInput {
@@ -216,6 +318,7 @@ nav > a {
 #userAccountIcon {
   max-width: 30px;
   margin-left: 50px;
+  cursor: pointer;
 }
 
 /* main */
@@ -229,7 +332,7 @@ nav > a {
 #myBoard {
   grid-row: 1/2;
   grid-column: 1/3;
-  margin-left: 200px;
+  margin: 0 60px;
 }
 
 #recentGroups {
@@ -243,46 +346,19 @@ nav > a {
 
 #createBtnSect {
   grid-row: 2/3;
-  grid-column: 1/2;
-  margin-left: 150px;
-}
-
-#createBtnSect > button {
-  margin-top: 20px;
+  /* grid-column: 1/3; */
+  /* margin-left: 100px; */
 }
 
 #showAllBtns {
   grid-row: 2/3;
   grid-column: 2/3;
-  margin-left: 20px;
 }
 
 #myBoardDiv {
-  width: 600px;
+  width: 550px;
   height: 300px;
   border: solid 4px var(--blue);
-}
-
-.hideMyBoardDiv {
-  display: none;
-}
-
-.btnREVERSE {
-  font-size: 14px;
-  width: 200px;
-  height: 15px;
-  border-radius: 5px;
-  border: 4px solid var(--blue);
-  background-color: var(--white);
-  color: var(--blue);
-  margin: 20px 50px;
-  padding: 5px;
-}
-
-.btnREVERSE:hover {
-  cursor: pointer;
-  color: var(--white);
-  background-color: var(--blue);
 }
 
 #myBoardDivTXT {
@@ -319,59 +395,6 @@ nav > a {
 
 #upComTasks {
   height: 200px;
-}
-
-/* 
-#operatingBtnsSect{
-
-} */
-
-.operBtns {
-  margin-left: 40px;
-  width: 250px;
-  text-align: center;
-  padding: 0;
-  margin-top: 30px;
-  border-radius: 5px;
-  padding: 10px;
-}
-.operBtns:hover {
-  cursor: pointer;
-  padding: 6px;
-}
-
-#homeworkBtn {
-  background-color: var(--red);
-}
-#homeworkBtn:hover {
-  border: 4px solid var(--red);
-  background-color: var(--yellow);
-}
-
-#projectsBtn {
-  background-color: var(--ohra);
-}
-#projectsBtn:hover {
-  border: 4px solid var(--ohra);
-  background-color: var(--yellow);
-}
-
-#assigmentsBtn {
-  background-color: var(--lightBlue);
-}
-#assigmentsBtn:hover {
-  border: 4px solid var(--lightBlue);
-  background-color: var(--yellow);
-}
-
-#showAllDone {
-  border: 4px solid var(--green);
-  box-sizing: border-box;
-  width: 270px;
-  padding: 6px;
-}
-#showAllDone:hover {
-  background-color: var(--green);
 }
 
 #accountSet {
