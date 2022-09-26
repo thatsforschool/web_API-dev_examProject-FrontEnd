@@ -76,3 +76,5 @@ router.put("/own", [authenticate], async (req, res) => {
 
 // DELETE /api/accounts/:accountid
 router.delete("/:accountid", [authenticate], async (req, res) => {
+
+});
