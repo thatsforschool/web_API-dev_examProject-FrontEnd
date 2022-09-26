@@ -2125,7 +2125,7 @@ addGroupMembers = (div, group) => {
 
 loadGroupPage = () => {
   body.innerHTML = "";
-  body.classList.add("profileBody"); //intentional to add profileBody class here.
+  body.classList.add("profileBody"); 
 
   const OwnGroup = JSON.parse(ls.getItem("currentOwnGroup"));
   console.log("currentOwnGroup");
@@ -2208,15 +2208,15 @@ loadGroupPage = () => {
 
       //    Grouppage main
       body.appendChild(main);
+      main.id = "myGroup"; 
 
-      //    GroupDescription section
       const myGroup = document.createElement("section");
-      myGroup.id = "myGroup";
       main.appendChild(myGroup);
 
       const goBack = document.createElement("a");
       goBack.id = "goBack";
       goBack.innerText = "goBack";
+      goBack.classList.add("btnREVERSE");
       myGroup.appendChild(goBack);
       goBack.addEventListener("click", () => {
         ls.removeItem("currentOwnGroup");
@@ -2490,95 +2490,18 @@ loadGroupPage = () => {
       //    GroupTasks section (on the right side of the screen)
       const groupTasks = document.createElement("section");
       groupTasks.id = "groupTasks";
-      main.appendChild(groupTasks);
+      myGroup.appendChild(groupTasks);
 
       //    Group tasks - Create a task button
       const groupTasksCreateTaskBtn = document.createElement("button");
       groupTasksCreateTaskBtn.id = "groupTasksCreateTaskBtn";
       groupTasksCreateTaskBtn.innerText = "Create A Task";
       groupTasksCreateTaskBtn.classList.add("btn");
-      groupTasks.appendChild(groupTasksCreateTaskBtn);
+      myGroupDiv.appendChild(groupTasksCreateTaskBtn);
 
-      //    Group tasks - upcoming tasks
-      const groupTasksUpcoming = document.createElement("div");
-      groupTasksUpcoming.id = "groupTasksUpcoming";
-      groupTasks.appendChild(groupTasksUpcoming);
-
-      const groupTasksUpcomingHeadline = document.createElement("h4");
-      groupTasksUpcomingHeadline.id = "groupTasksUpcomingHeadline";
-      groupTasksUpcomingHeadline.innerText = "Upcoming Group Tasks";
-      groupTasksUpcoming.appendChild(groupTasksUpcomingHeadline);
-
-      const borderGroupTasksUpcTop = document.createElement("div");
-      borderGroupTasksUpcTop.id = "borderGroupTasksUpcTop";
-      borderGroupTasksUpcTop.classList.add("borderHorizontal");
-      groupTasksUpcoming.appendChild(borderGroupTasksUpcTop);
-
-      //   Table to store upcoming tasks
-      const groupTasksUpcShow = document.createElement("table");
-      groupTasksUpcShow.id = "groupTasksUpcShow";
-      groupTasksUpcoming.appendChild(groupTasksUpcShow);
-
-      const groupTasksUpcShowTr = document.createElement("tr");
-      groupTasksUpcShowTr.id = "groupTasksUpcShowTr";
-      groupTasksUpcShow.appendChild(groupTasksUpcShowTr);
-
-      const groupTasksUpcShowTaskName = document.createElement("td");
-      groupTasksUpcShowTaskName.id = "groupTasksUpcShowTaskName";
-      groupTasksUpcShowTaskName.innerText = "Task Name";
-      groupTasksUpcShowTr.appendChild(groupTasksUpcShowTaskName);
-
-      const groupTasksUpcShowTaskColor = document.createElement("td");
-      groupTasksUpcShowTaskColor.id = "groupTasksUpcShowTaskColor";
-      groupTasksUpcShowTaskColor.innerText = "Task Type";
-      groupTasksUpcShowTr.appendChild(groupTasksUpcShowTaskColor);
-
-      const borderGroupTasksUpcBottom = document.createElement("div");
-      borderGroupTasksUpcBottom.id = "borderGroupTasksUpcBottom";
-      borderGroupTasksUpcBottom.classList.add("borderHorizontal");
-      groupTasksUpcoming.appendChild(borderGroupTasksUpcBottom);
-
-      //    Section to store all the group's tasks
-      const allGroupTasks = document.createElement("section");
-      allGroupTasks.id = "allGroupTasks";
-      main.appendChild(allGroupTasks);
-
-      const allGroupTasksHeadline = document.createElement("h3");
-      allGroupTasksHeadline.id = "allGroupTasksHeadline";
-      allGroupTasks.appendChild(allGroupTasksHeadline);
-
-      const allGroupTasksTable = document.createElement("table");
-      allGroupTasksTable.id = "allGroupTasksTable";
-      allGroupTasks.appendChild(allGroupTasksTable);
-
-      const allGroupTasksTableTr = document.createElement("tr");
-      allGroupTasksTableTr.id = "allGroupTasksTableTr";
-      allGroupTasksTable.appendChild(allGroupTasksTableTr);
-
-      const allGroupTasksTableTaskName = document.createElement("th");
-      allGroupTasksTableTaskName.id = "allGroupTasksTableTaskName";
-      allGroupTasksTableTaskName.innerText = "Task Name";
-      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskName);
-
-      const allGroupTasksTableTaskAssignedTo = document.createElement("th");
-      allGroupTasksTableTaskAssignedTo.id = "allGroupTasksTableTaskAssignedTo";
-      allGroupTasksTableTaskAssignedTo.innerText = "Assigned To";
-      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskAssignedTo);
-
-      const allGroupTasksTableTaskDueDate = document.createElement("th");
-      allGroupTasksTableTaskDueDate.id = "allGroupTasksTableTaskDueDate";
-      allGroupTasksTableTaskDueDate.innerText = "Due Date";
-      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskDueDate);
-
-      const allGroupTasksTableTaskStatus = document.createElement("th");
-      allGroupTasksTableTaskStatus.id = "allGroupTasksTableTaskStatus";
-      allGroupTasksTableTaskStatus.innerText = "Status";
-      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskStatus);
-
-      const allGroupTasksTableTaskLabel = document.createElement("th");
-      allGroupTasksTableTaskLabel.id = "allGroupTasksTableTaskLabel";
-      allGroupTasksTableTaskLabel.innerText = "Task Label";
-      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskLabel);
+      const allGroupTasksSection = document.createElement("section");
+      allGroupTasksSection.id = "allGroupTasksSection";
+      myGroup.appendChild(allGroupTasksSection);
 
       //  aside on the group page
       const aside = document.createElement("aside");
@@ -2587,7 +2510,7 @@ loadGroupPage = () => {
 
       const headlineAside = document.createElement("h2");
       headlineAside.id = "operatingBtnsSect";
-      headlineAside.innerText = "My Tasks";
+      headlineAside.innerText = `Tasks for ${OwnGroup.groupName}`;
       aside.appendChild(headlineAside);
 
       const upcomTaskSect = document.createElement("section");
