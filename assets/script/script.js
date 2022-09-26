@@ -937,13 +937,12 @@ loadProfilePage = () => {
     },
   };
   console.log(mainToken);
-  const errorMes = document.createElement("p");
-  window.addEventListener("load", (e) => {
-    errorMes.innerHTML = "";
-  });
 
   fetch(`${fetchUrl}/api/groupmembers/membership`, fetchOpt)
     .then((res) => {
+      const errorMes = document.createElement("p");
+      errorMes.innerHTML = "";
+
       switch (res.status) {
         case 200:
           console.log("status 200 on membership");
@@ -1972,11 +1971,10 @@ getAllGroupsFunction = (div) => {
                   addmemberBtn.addEventListener("click", (e) => {
                     div.innerHTML = "";
                     addGroupMembers(div, group);
-                    
                   });
                   console.log("group");
-                    console.log(group);
-                    ls.setItem("currentOwnGroup", JSON.stringify(group));
+                  console.log(group);
+                  ls.setItem("currentOwnGroup", JSON.stringify(group));
                 }
               });
           });
