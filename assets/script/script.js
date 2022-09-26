@@ -962,32 +962,32 @@ loadProfilePage = () => {
         }
       })
       .then((data) => {
-        console.log(data);
-        myBoardDiv.innerHTML = "";
+        // console.log(data);
+        // myBoardDiv.innerHTML = "";
 
-        const showAllTasksList = document.createElement("ul");
-        showAllTasksList.id = "showAllTasksList";
-        myBoardDiv.appendChild(showAllTasksList);
+        // const showAllTasksList = document.createElement("ul");
+        // showAllTasksList.id = "showAllTasksList";
+        // myBoardDiv.appendChild(showAllTasksList);
 
-        data.forEach((task) => {
-          const showAllTasksListItem = document.createElement("li");
-          showAllTasksListItem.id = "showAllTasksList";
-          showAllTasksListItem.innerText = task.tasksubject;
-          switch (task.FK_labelId) {
-            case 1:
-              showAllTasksListItem.classList.add("labelId1");
-              break;
-            case 2:
-              showAllTasksListItem.classList.add("labelId2");
-              break;
-            case 3:
-              showAllTasksListItem.classList.add("labelId3");
-              break;
-            default:
-              break;
-          }
-          showAllTasksList.appendChild(showAllTasksListItem);
-        });
+        // data.forEach((task) => {
+        //   const showAllTasksListItem = document.createElement("li");
+        //   showAllTasksListItem.id = "showAllTasksList";
+        //   showAllTasksListItem.innerText = task.tasksubject;
+        //   switch (task.FK_labelId) {
+        //     case 1:
+        //       showAllTasksListItem.classList.add("labelId1");
+        //       break;
+        //     case 2:
+        //       showAllTasksListItem.classList.add("labelId2");
+        //       break;
+        //     case 3:
+        //       showAllTasksListItem.classList.add("labelId3");
+        //       break;
+        //     default:
+        //       break;
+        //   }
+        //   showAllTasksList.appendChild(showAllTasksListItem);
+        // });
 
         if (!data.statusCode && Object.keys(data).length != 0) {
           console.log(data);
@@ -1017,7 +1017,6 @@ loadProfilePage = () => {
             showAllTasksList.appendChild(showAllTasksListItem);
           });
         }
-
       });
   });
 
@@ -1058,6 +1057,119 @@ loadProfilePage = () => {
   const upComTasks = document.createElement("section");
   upComTasks.id = "upComTasks";
   upcomTaskSect.appendChild(upComTasks);
+  fetch(`${fetchUrl}/api/tasks/own`, fetchOpt)
+    .then((res) => {
+      switch (res.status) {
+        case 200:
+          console.log("status 200");
+          return res.json();
+        case 404:
+          console.log("status 404");
+          errorMes.innerText = "you do not have any tasks in the database";
+          upComTasks.appendChild(errorMes);
+          break;
+        case 500:
+          console.log("status 500");
+          errorMes.innerText = "Incorrect data";
+          upComTasks.appendChild(errorMes);
+          break;
+
+        default:
+          errorMes.innerText = "Incorrect data";
+          upComTasks.appendChild(errorMes);
+          break;
+      }
+    })
+    .then((data) => {
+      if (!data.statusCode && Object.keys(data).length != 0) {
+        console.log(data);
+        upComTasks.innerHTML = "";
+
+        const showAllTasksList = document.createElement("ul");
+        showAllTasksList.id = "showAllTasksList";
+        upComTasks.appendChild(showAllTasksList);
+
+        sortDates = (a, b) => {
+          if (a.taskdueDate < b.taskdueDate) {
+            return 1;
+          }
+          if (a.taskdueDate > b.taskdueDate) {
+            return -1;
+          }
+          return 0;
+        };
+
+        let sorted = data.sort(sortDates);
+        console.log("sorted");
+        console.log(sorted);
+
+        for (let i = 0; i < 3; i++) {
+          const showAllTasksListItem = document.createElement("li");
+          showAllTasksListItem.id = "showAllTasksList";
+          //   showAllTasksListItem.classList.add("flex");
+          const showAllTasksListItemp = document.createElement("p");
+          showAllTasksListItemp.id = "showAllTasksListp";
+          showAllTasksListItemp.innerText = sorted[i].tasksubject;
+
+          const showAllTasksListItemDate = document.createElement("p");
+          showAllTasksListItemDate.id = "showAllTasksListp";
+          const dueDate = sorted[i].taskdueDate;
+          const curentDate = new Date();
+          const curent = curentDate.getTime();
+          let timeDiffrence;
+          let dayDifference;
+          let daysUntil;
+          switch (true) {
+            case dueDate > curent:
+              timeDiffrence = dueDate - curent;
+              dayDifference = timeDiffrence / (1000 * 3600 * 24);
+              console.log("timeDiffrence");
+              console.log(timeDiffrence);
+              console.log("dayDifference");
+              console.log(dayDifference);
+              console.log("dueDate");
+              console.log(dueDate);
+              console.log("curent");
+              console.log(curent);
+              daysUntil = Math.round(dayDifference);
+              showAllTasksListItemDate.innerText = `${daysUntil} days`;
+              break;
+            case dueDate == null:
+              showAllTasksListItemDate.innerText = `no due date defined`;
+              break;
+            case dueDate < curent:
+              timeDiffrence = curent - dueDate;
+              dayDifference = timeDiffrence / (1000 * 3600 * 24);
+              daysUntil = Math.round(dayDifference);
+              PdaysUntil = Math.abs(daysUntil);
+              console.log(PdaysUntil);
+              showAllTasksListItemDate.innerText = `${PdaysUntil} days past duedate`;
+              break;
+
+            default:
+              break;
+          }
+
+          switch (sorted[i].FK_labelId) {
+            case 1:
+              showAllTasksListItem.classList.add("labelId1");
+              break;
+            case 2:
+              showAllTasksListItem.classList.add("labelId2");
+              break;
+            case 3:
+              showAllTasksListItem.classList.add("labelId3");
+              break;
+            default:
+              break;
+          }
+
+          showAllTasksListItem.appendChild(showAllTasksListItemp);
+          showAllTasksListItem.appendChild(showAllTasksListItemDate);
+          showAllTasksList.appendChild(showAllTasksListItem);
+        }
+      }
+    });
 
   const borderUpComBottom = document.createElement("div");
   borderUpComBottom.id = "borderUpComBottom";
@@ -1108,7 +1220,6 @@ loadProfilePage = () => {
             errorMes.innerText = "Incorrect data";
             myBoardDiv.appendChild(errorMes);
             break;
-
         }
       })
       .then((data) => {
@@ -1135,7 +1246,6 @@ loadProfilePage = () => {
 
   //  Generate all own tasks with labelId = 2 (projects) here
   projectsBtn.addEventListener("click", (e) => {
-
     const errorMes = document.createElement("p");
     myBoardDiv.innerHTML = "";
     // myBoardDiv.classList.add("hideMyBoardDiv");
@@ -1149,31 +1259,30 @@ loadProfilePage = () => {
     };
     fetch(`${fetchUrl}/api/tasks/own/2`, fetchOpt)
       .then((res) => {
-
         if (res.status == 200) {
           return res.json();
         }
 
         switch (res.status) {
-            case 200:
-              console.log("status 200");
-              return res.json();
-            case 404:
-              console.log("status 404");
-              errorMes.innerText = "you do not have any tasks in Projects";
-              myBoardDiv.appendChild(errorMes);
-              break;
-            case 500:
-              console.log("status 500");
-              errorMes.innerText = "Incorrect data";
-              myBoardDiv.appendChild(errorMes);
-              break;
-  
-            default:
-              errorMes.innerText = "Incorrect data";
-              myBoardDiv.appendChild(errorMes);
-              break;
-          }
+          case 200:
+            console.log("status 200");
+            return res.json();
+          case 404:
+            console.log("status 404");
+            errorMes.innerText = "you do not have any tasks in Projects";
+            myBoardDiv.appendChild(errorMes);
+            break;
+          case 500:
+            console.log("status 500");
+            errorMes.innerText = "Incorrect data";
+            myBoardDiv.appendChild(errorMes);
+            break;
+
+          default:
+            errorMes.innerText = "Incorrect data";
+            myBoardDiv.appendChild(errorMes);
+            break;
+        }
       })
       .then((data) => {
         myBoardDiv.classList.remove("hideMyBoardDiv");
@@ -1214,32 +1323,30 @@ loadProfilePage = () => {
     };
     fetch(`${fetchUrl}/api/tasks/own/3`, fetchOpt)
       .then((res) => {
-
         if (res.status == 200) {
           return res.json();
         }
 
         switch (res.status) {
-            case 200:
-              console.log("status 200");
-              return res.json();
-            case 404:
-              console.log("status 404");
-              errorMes.innerText = "you do not have any tasks in Assigments";
-              myBoardDiv.appendChild(errorMes);
-              break;
-            case 500:
-              console.log("status 500");
-              errorMes.innerText = "Incorrect data";
-              myBoardDiv.appendChild(errorMes);
-              break;
-  
-            default:
-              errorMes.innerText = "Incorrect data";
-              myBoardDiv.appendChild(errorMes);
-              break;
-          }
+          case 200:
+            console.log("status 200");
+            return res.json();
+          case 404:
+            console.log("status 404");
+            errorMes.innerText = "you do not have any tasks in Assigments";
+            myBoardDiv.appendChild(errorMes);
+            break;
+          case 500:
+            console.log("status 500");
+            errorMes.innerText = "Incorrect data";
+            myBoardDiv.appendChild(errorMes);
+            break;
 
+          default:
+            errorMes.innerText = "Incorrect data";
+            myBoardDiv.appendChild(errorMes);
+            break;
+        }
       })
       .then((data) => {
         myBoardDiv.classList.remove("hideMyBoardDiv");
@@ -1722,34 +1829,34 @@ loadGroupPage = () => {
 
   fetch(`${fetchUrl}/api/groups/${OwnGroup.groupId}`, fetchOpt)
     .then((res) => {
-        switch (res.status) {
-            case 200:
-              console.log("status 200");
-              const token = res.headers.get("x-authToken");
-              ls.setItem("token", token);
-              console.log(`this is token: ${ls.getItem("token")}`);
-              return res.json();
-            case 401:
-              console.log("status 401");
-              errorMes.innerText = "conflicting data";
-              main.appendChild(errorMes);
-              break;
-            case 404:
-              console.log("status 404");
-              errorMes.innerText = "action failed";
-              main.appendChild(errorMes);
-              break;
-            case 500:
-              console.log("status 500");
-              errorMes.innerText = "Incorrect data";
-              main.appendChild(errorMes);
-              break;
-  
-            default:
-              errorMes.innerText = "Incorrect data";
-              main.appendChild(errorMes);
-              break;
-          }
+      switch (res.status) {
+        case 200:
+          console.log("status 200");
+          const token = res.headers.get("x-authToken");
+          ls.setItem("token", token);
+          console.log(`this is token: ${ls.getItem("token")}`);
+          return res.json();
+        case 401:
+          console.log("status 401");
+          errorMes.innerText = "conflicting data";
+          main.appendChild(errorMes);
+          break;
+        case 404:
+          console.log("status 404");
+          errorMes.innerText = "action failed";
+          main.appendChild(errorMes);
+          break;
+        case 500:
+          console.log("status 500");
+          errorMes.innerText = "Incorrect data";
+          main.appendChild(errorMes);
+          break;
+
+        default:
+          errorMes.innerText = "Incorrect data";
+          main.appendChild(errorMes);
+          break;
+      }
     })
 
     .then((data) => {
