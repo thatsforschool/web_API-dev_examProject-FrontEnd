@@ -1955,6 +1955,12 @@ getAllGroupsFunction = (div) => {
                     window.location.reload();
                   });
 
+                  
+                  const groupTitle = document.createElement("a");
+                  groupTitle.href = `${baseUrl}?page=group`;
+                  groupTitle.innerText = group.groupName;
+                  div.appendChild(groupTitle);
+
                   const message404 = document.createElement("p");
                   message404.id = "message404";
                   message404.innerText = "this group has no members";
