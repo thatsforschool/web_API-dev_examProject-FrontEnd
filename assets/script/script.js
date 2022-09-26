@@ -922,10 +922,8 @@ loadProfilePage = () => {
         adminChangeConfirm.innerText = "Submit";
         adminChangeConfirm.classList.add("btn");
         adminChange.appendChild(adminChangeConfirm);
-        adminChangeConfirm.addEventListener("click", () => {
-
-
-        const emailFortHINGS = adminChangeEmail.value
+        adminChangeConfirm.addEventListener("click", (e) => {
+          const email = adminChangeEmail.value;
 
           const payload = {
             role: {
@@ -935,7 +933,7 @@ loadProfilePage = () => {
           console.log(payload);
           const fetchOption = {
             method: "PUT",
-            header: {
+            headers: {
               "Content-type": "application/json",
               "x-authToken": mainToken,
             },
@@ -943,16 +941,15 @@ loadProfilePage = () => {
           };
           console.log(fetchOption);
 
-          fetch(`${fetchUrl}/api/accounts/email/${emailFortHINGS}`, fetchOption)
-            .then(
-              (res) => {
-                if (res.status == 200) {
-                  console.log("GREAT success");
-                } else {
-                  console.log("he can afford clock radio now");
-                }
-                return res.json();
-              })
+          fetch(`${fetchUrl}/api/accounts/email/${email}`, fetchOption)
+            .then((res) => {
+              if (res.status == 200) {
+                console.log("GREAT success");
+              } else {
+                console.log("he can afford clock radio now");
+              }
+              return res.json();
+            })
 
             .then((data) => {
               if (!data.statusCode && Object.keys(data).length != 0) {
@@ -964,13 +961,13 @@ loadProfilePage = () => {
               adminChange.innerHTML = "";
               adminChange.innerText = "The Role has been changed";
 
-              // reloadWINDOW = () => {
-              //   window.location.reload();
-              // };
+              reloadWINDOW = () => {
+                window.location.reload();
+              };
 
-              // setTimeout(reloadWINDOW, 1500);
+              setTimeout(reloadWINDOW, 1500);
             });
-          console.log(`${fetchUrl}/api/accounts/email/${emailFortHINGS}`);
+          console.log(`${fetchUrl}/api/accounts/email/${email}`);
         });
       });
     }
@@ -1349,30 +1346,30 @@ loadProfilePage = () => {
                 const fetchOpt = {
                   method: "DELETE",
                   headers: {
-                      "Content-type": "application/json",
-                      "x-authtoken": mainToken,
+                    "Content-type": "application/json",
+                    "x-authtoken": mainToken,
                   },
                 };
                 fetch(`${fetchUrl}/api/tasks/${task.taskId}`, fetchOpt)
-                .then((res) => {
-                  if (res.status == 200) {
-                    console.log("status: 200");
-                    return res.json();
-                  }
-                })
-                .then((data) => {
-                  myBoardDiv.innerHTML = "";
-                  const removedTask = document.createElement("p");
-                  removedTask.id = "removedTask";
-                  removedTask.innerText = `Removed the task: "${task.tasksubject}".`;
-                  myBoardDiv.appendChild(removedTask);
+                  .then((res) => {
+                    if (res.status == 200) {
+                      console.log("status: 200");
+                      return res.json();
+                    }
+                  })
+                  .then((data) => {
+                    myBoardDiv.innerHTML = "";
+                    const removedTask = document.createElement("p");
+                    removedTask.id = "removedTask";
+                    removedTask.innerText = `Removed the task: "${task.tasksubject}".`;
+                    myBoardDiv.appendChild(removedTask);
 
-                  reloadWINDOW = () => {
-                    window.location.reload();
-                  };
+                    reloadWINDOW = () => {
+                      window.location.reload();
+                    };
 
-                  setTimeout(reloadWINDOW, 3000);
-                });
+                    setTimeout(reloadWINDOW, 3000);
+                  });
               });
             });
           });
@@ -1485,7 +1482,7 @@ loadProfilePage = () => {
               dayDifference = timeDiffrence / (1000 * 3600);
               daysUntil = Math.round(dayDifference);
               PdaysUntil = Math.abs(daysUntil);
-               showAllTasksListItemDate.innerText = `${PdaysUntil} hours left`;
+              showAllTasksListItemDate.innerText = `${PdaysUntil} hours left`;
               break;
             case dueDate > curent:
               timeDiffrence = dueDate - curent;
@@ -2048,7 +2045,7 @@ getAllGroupsFunction = (div) => {
                     window.location.reload();
                   });
 
-                  
+
                   const groupTitle = document.createElement("a");
                   groupTitle.href = `${baseUrl}?page=group`;
                   groupTitle.innerText = group.groupName;
