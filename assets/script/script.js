@@ -1221,6 +1221,67 @@ loadProfilePage = () => {
                 break;
             }
             showAllTasksList.appendChild(showAllTasksListItem);
+
+            const deleteTask = document.createElement("button");
+            deleteTask.id = "deleteTask";
+            deleteTask.innerText = "Delete task";
+            deleteTask.classList.add("btn");
+            deleteTask.classList.add("deleteTaskBtn");
+            showAllTasksListItem.appendChild(deleteTask);
+
+            deleteTask.addEventListener("click", () => {
+              myBoardDiv.innerHTML = "";
+              const confirmDeleteTask = document.createElement("p");
+              confirmDeleteTask.id = "confirmDeleteTask";
+              confirmDeleteTask.innerText = `Are you sure you want to delete the task: "${task.tasksubject}"?`;
+
+              myBoardDiv.appendChild(confirmDeleteTask);
+
+              const annulDelTask = document.createElement("button");
+              annulDelTask.id = "annulDelTask";
+              annulDelTask.innerText = "Cancel";
+              annulDelTask.classList.add("btn");
+              myBoardDiv.appendChild(annulDelTask);
+              annulDelTask.addEventListener("click", () => {
+                window.location.reload();
+              });
+
+              const yesDelTask = document.createElement("button");
+              yesDelTask.id = "yesDelTask";
+              yesDelTask.innerText = "Continue";
+              yesDelTask.classList.add("btn");
+              myBoardDiv.appendChild(yesDelTask);
+
+              yesDelTask.addEventListener("click", () => {
+                const fetchOpt = {
+                  method: "DELETE",
+                  headers: {
+                      "Content-type": "application/json",
+                      "x-authtoken": mainToken,
+                  },
+                };
+                fetch(`${fetchUrl}/api/tasks/${task.taskId}`, fetchOpt)
+                .then((res) => {
+                  if (res.status == 200) {
+                    console.log("status: 200");
+                    return res.json();
+                  }
+                })
+                .then((data) => {
+                  myBoardDiv.innerHTML = "";
+                  const removedTask = document.createElement("p");
+                  removedTask.id = "removedTask";
+                  removedTask.innerText = `Removed the task: "${task.tasksubject}".`;
+                  myBoardDiv.appendChild(removedTask);
+
+                  reloadWINDOW = () => {
+                    window.location.reload();
+                  };
+
+                  setTimeout(reloadWINDOW, 3000);
+                });
+              });
+            });
           });
         }
       });
