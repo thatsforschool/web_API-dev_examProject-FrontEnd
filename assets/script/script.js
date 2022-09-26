@@ -922,8 +922,10 @@ loadProfilePage = () => {
         adminChangeConfirm.innerText = "Submit";
         adminChangeConfirm.classList.add("btn");
         adminChange.appendChild(adminChangeConfirm);
-        adminChangeConfirm.addEventListener("click", (e) => {
-          const email = adminChangeEmail.value;
+        adminChangeConfirm.addEventListener("click", () => {
+
+
+          const email = adminChangeEmail.value
 
           const payload = {
             role: {
@@ -931,7 +933,7 @@ loadProfilePage = () => {
             }
           };
           console.log(payload);
-          const fetchOption = {
+          const fetchOpt = {
             method: "PUT",
             headers: {
               "Content-type": "application/json",
@@ -939,17 +941,18 @@ loadProfilePage = () => {
             },
             body: JSON.stringify(payload),
           };
-          console.log(fetchOption);
+          console.log(fetchOpt);
 
-          fetch(`${fetchUrl}/api/accounts/email/${email}`, fetchOption)
-            .then((res) => {
-              if (res.status == 200) {
-                console.log("GREAT success");
-              } else {
-                console.log("he can afford clock radio now");
-              }
-              return res.json();
-            })
+          fetch(`${fetchUrl}/api/accounts/email/${email}`, fetchOpt)
+            .then(
+              (res) => {
+                if (res.status == 200) {
+                  console.log("GREAT success");
+                } else {
+                  console.log("he can afford clock radio now");
+                }
+                return res.json();
+              })
 
             .then((data) => {
               if (!data.statusCode && Object.keys(data).length != 0) {
@@ -1220,10 +1223,10 @@ loadProfilePage = () => {
           sucessMes.innerText = "task created succesfuly";
           myBoardDiv.appendChild(sucessMes);
 
-          reload = () => {
-            window.location.reload();
-          };
-          setTimeout(reload, 1500);
+         // reload = () => {
+          //  window.location.reload();
+         // };
+         // setTimeout(reload, 1500);
         });
     });
   });
@@ -1545,7 +1548,8 @@ loadProfilePage = () => {
 
   //  Generate all own tasks with labelId = 1 (homework) here
   homeworkBtn.addEventListener("click", (e) => {
-    // myBoardDiv.classList.add("hideMyBoardDiv");
+    //window.location.replace(`${baseUrl}?page=homework`);
+    myBoardDiv.classList.add("hideMyBoardDiv");
     const errorMes = document.createElement("p");
     myBoardDiv.innerHTML = "";
     myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your homework`;
@@ -1591,7 +1595,7 @@ loadProfilePage = () => {
           showAllHomeworkListItem.classList.add("labelId1");
           showAllHomework.appendChild(showAllHomeworkListItem);
         });
-      });
+     });
   });
 
   const projectsBtn = document.createElement("a");
@@ -1602,6 +1606,8 @@ loadProfilePage = () => {
 
   //  Generate all own tasks with labelId = 2 (projects) here
   projectsBtn.addEventListener("click", (e) => {
+
+   // window.location.replace(`${baseUrl}?page=projects`);
     const errorMes = document.createElement("p");
     myBoardDiv.innerHTML = "";
     // myBoardDiv.classList.add("hideMyBoardDiv");
@@ -1664,6 +1670,7 @@ loadProfilePage = () => {
 
   //  Generate all own tasks with labelId = 3 (assignments) here
   assigmentsBtn.addEventListener("click", (e) => {
+   // window.location.replace(`${baseUrl}?page=assigments`);
     myBoardDiv.classList.add("hideMyBoardDiv");
 
     const errorMes = document.createElement("p");
@@ -2670,7 +2677,7 @@ loadGroupPage = () => {
       allGroupTasksTableTaskLabel.innerText = "Task Label";
       allGroupTasksTableTr.appendChild(allGroupTasksTableTaskLabel);
 
-      //  aside on the group page
+      //  aside on the Homework page
       const aside = document.createElement("aside");
       aside.id = "aside";
       body.appendChild(aside);
@@ -2698,6 +2705,11 @@ loadGroupPage = () => {
       upComTasks.id = "upComTasks";
       upcomTaskSect.appendChild(upComTasks);
 
+      const upComTaskList = document.createElement("li");
+      //console.log(task.displayName)
+      upComTaskList.id = "upComTaskList";
+      upComTasks.appendChild(upComTaskList);
+
       const borderUpComBottom = document.createElement("div");
       borderUpComBottom.id = "borderUpComBottom";
       borderUpComBottom.classList.add("borderHorizontal");
@@ -2708,23 +2720,35 @@ loadGroupPage = () => {
       operatingBtnsSect.classList.add("flex_column");
       aside.appendChild(operatingBtnsSect);
 
+      //Homework
       const homeworkBtn = document.createElement("a");
       homeworkBtn.id = "homeworkBtn";
       homeworkBtn.innerText = "My Homework";
       homeworkBtn.classList.add("operBtns");
       operatingBtnsSect.appendChild(homeworkBtn);
 
+      homeworkBtn.addEventListener("click", (e) => {
+        window.location.replace(`${baseUrl}?page=homework`);
+      });
       const projectsBtn = document.createElement("a");
       projectsBtn.id = "projectsBtn";
       projectsBtn.innerText = "My Projects";
       projectsBtn.classList.add("operBtns");
       operatingBtnsSect.appendChild(projectsBtn);
 
+      projectsBtn.addEventListener("click", (e) => {
+        window.location.replace(`${baseUrl}?page=projects`);
+      });
+
       const assigmentsBtn = document.createElement("a");
       assigmentsBtn.id = "assigmentsBtn";
       assigmentsBtn.innerText = "My Assigments";
       assigmentsBtn.classList.add("operBtns");
       operatingBtnsSect.appendChild(assigmentsBtn);
+
+      assigmentsBtn.addEventListener("click", (e) => {
+        window.location.replace(`${baseUrl}?page=assigments`);
+      })
 
       const showAllDone = document.createElement("a");
       showAllDone.id = "showAllDone";
