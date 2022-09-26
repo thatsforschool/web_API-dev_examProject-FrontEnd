@@ -1256,30 +1256,30 @@ loadProfilePage = () => {
                 const fetchOpt = {
                   method: "DELETE",
                   headers: {
-                      "Content-type": "application/json",
-                      "x-authtoken": mainToken,
+                    "Content-type": "application/json",
+                    "x-authtoken": mainToken,
                   },
                 };
                 fetch(`${fetchUrl}/api/tasks/${task.taskId}`, fetchOpt)
-                .then((res) => {
-                  if (res.status == 200) {
-                    console.log("status: 200");
-                    return res.json();
-                  }
-                })
-                .then((data) => {
-                  myBoardDiv.innerHTML = "";
-                  const removedTask = document.createElement("p");
-                  removedTask.id = "removedTask";
-                  removedTask.innerText = `Removed the task: "${task.tasksubject}".`;
-                  myBoardDiv.appendChild(removedTask);
+                  .then((res) => {
+                    if (res.status == 200) {
+                      console.log("status: 200");
+                      return res.json();
+                    }
+                  })
+                  .then((data) => {
+                    myBoardDiv.innerHTML = "";
+                    const removedTask = document.createElement("p");
+                    removedTask.id = "removedTask";
+                    removedTask.innerText = `Removed the task: "${task.tasksubject}".`;
+                    myBoardDiv.appendChild(removedTask);
 
-                  reloadWINDOW = () => {
-                    window.location.reload();
-                  };
+                    reloadWINDOW = () => {
+                      window.location.reload();
+                    };
 
-                  setTimeout(reloadWINDOW, 3000);
-                });
+                    setTimeout(reloadWINDOW, 3000);
+                  });
               });
             });
           });
@@ -1392,7 +1392,7 @@ loadProfilePage = () => {
               dayDifference = timeDiffrence / (1000 * 3600);
               daysUntil = Math.round(dayDifference);
               PdaysUntil = Math.abs(daysUntil);
-               showAllTasksListItemDate.innerText = `${PdaysUntil} hours left`;
+              showAllTasksListItemDate.innerText = `${PdaysUntil} hours left`;
               break;
             case dueDate > curent:
               timeDiffrence = dueDate - curent;
@@ -1907,9 +1907,9 @@ getAllGroupsFunction = (div) => {
               })
 
               .then((data) => {
-                ls.setItem("currentOwnGroup", JSON.stringify(data));
-
                 if (!data.statusCode && Object.keys(data).length != 0) {
+                  ls.setItem("currentOwnGroup", JSON.stringify(data));
+
                   const exitIconLink = document.createElement("a");
                   const exitIcon = document.createElement("img");
                   exitIcon.src = "./assets/svg/exitIcon.svg";
@@ -1955,7 +1955,6 @@ getAllGroupsFunction = (div) => {
                     window.location.reload();
                   });
 
-                  
                   const groupTitle = document.createElement("a");
                   groupTitle.href = `${baseUrl}?page=group`;
                   groupTitle.innerText = group.groupName;
@@ -1973,7 +1972,11 @@ getAllGroupsFunction = (div) => {
                   addmemberBtn.addEventListener("click", (e) => {
                     div.innerHTML = "";
                     addGroupMembers(div, group);
+                    
                   });
+                  console.log("group");
+                    console.log(group);
+                    ls.setItem("currentOwnGroup", JSON.stringify(group));
                 }
               });
           });
