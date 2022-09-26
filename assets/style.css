@@ -73,6 +73,8 @@ a {
   padding: 10px 0 0 0;
 }
 
+/* || BUTTONS */
+
 .btn {
   box-sizing: border-box;
   width: 250px;
@@ -80,11 +82,13 @@ a {
   padding: 10px;
   font-size: 14px;
   width: 200px;
+  height: 50px;
   border-radius: 4px;
   border: 4px solid var(--blue);
   background-color: var(--blue);
   color: var(--white);
   margin: 30px 50px;
+  margin: 30px 0 0 60px;
   transition: all ease 0.3s;
   -webkit-transition: all ease 0.3s;
   -moz-transition: all ease 0.3s;
@@ -100,9 +104,102 @@ a {
   cursor: pointer;
   color: var(--blue);
   background-color: var(--white);
-  border: 3px solid var(--blue);
 }
 
+.btnREVERSE {
+  box-sizing: border-box;
+  width: 200px;
+  height: 50px;
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+  width: 200px;
+  border-radius: 4px;
+  border: 4px solid var(--blue);
+  background-color: var(--white);
+  color: var(--blue);
+  margin: 30px 0 0 0;
+  transition: all ease 0.3s;
+  -webkit-transition: all ease 0.3s;
+  -moz-transition: all ease 0.3s;
+  -ms-transition: all ease 0.3s;
+  -o-transition: all ease 0.3s;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+}
+
+.btnREVERSE:hover {
+  cursor: pointer;
+  color:  var(--white);
+  background-color: var(--blue);
+}
+
+/* #operatingBtnsSect */
+
+.operBtns {
+  margin: 0 0 30px 40px;
+  box-sizing: border-box;
+  width: 250px;
+  height: 50px;
+  text-align: center;
+  padding: 10px;
+  transition: all ease 0.3s;
+  -webkit-transition: all ease 0.3s;
+  -moz-transition: all ease 0.3s;
+  -ms-transition: all ease 0.3s;
+  -o-transition: all ease 0.3s;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+}
+
+.operBtns:hover {
+  cursor: pointer;
+}
+
+#homeworkBtn {
+  background-color: var(--red);
+  border: 4px solid var(--red);
+}
+#homeworkBtn:hover {
+  background-color: var(--yellow);
+}
+
+#projectsBtn {
+  background-color: var(--ohra);
+  border: 4px solid var(--ohra);
+}
+#projectsBtn:hover {
+  background-color: var(--yellow);
+}
+
+#assigmentsBtn {
+  background-color: var(--lightBlue);
+  border: 4px solid var(--lightBlue);
+}
+#assigmentsBtn:hover {
+  background-color: var(--yellow);
+}
+
+#showAllDone {
+  border: 4px solid var(--green);
+}
+#showAllDone:hover {
+  background-color: var(--green);
+}
+
+.deleteTaskBtn {
+  height: 30px;
+  padding: 0;
+  width: 120px;
+}
+
+
+/* || LOG IN/SIGN UP */
 #passwordInp,
 #userNameInp,
 .signUpInput {
@@ -142,12 +239,17 @@ input::placeholder {
   margin-right: 100px;
 }
 
+#creatUserBtn,
+#mainSignUp p,
 #creatAccountBtn {
   margin: 50px 200px;
 }
 
-#createAccountBtn {
-  margin: 50px 200px;
+
+#mainSignUp p {
+  color: var(--red);
+  text-align: center;
+  font-size: 20px;
 }
 
 #creatAccountIcon {
@@ -223,6 +325,7 @@ nav > a {
 #userAccountIcon {
   max-width: 30px;
   margin-left: 50px;
+  cursor: pointer;
 }
 
 /* main */
@@ -236,7 +339,7 @@ nav > a {
 #myBoard {
   grid-row: 1/2;
   grid-column: 1/3;
-  margin-left: 200px;
+  margin: 0 60px;
 }
 #myGroup {
   grid-row: 1/2;
@@ -275,18 +378,13 @@ nav > a {
 
 #createBtnSect {
   grid-row: 2/3;
-  grid-column: 1/2;
-  margin-left: 150px;
-}
-
-#createBtnSect > button {
-  margin-top: 20px;
+  /* grid-column: 1/3; */
+  /* margin-left: 100px; */
 }
 
 #showAllBtns {
   grid-row: 2/3;
   grid-column: 2/3;
-  margin-left: 20px;
 }
 
 #myBoardDiv {
@@ -301,6 +399,7 @@ nav > a {
 
 #myGroupDiv {
   width: 500px;
+  width: 550px;
   height: 300px;
   border: solid 4px var(--blue);
 }
@@ -410,78 +509,6 @@ nav > a {
   height: 200px;
 }
 
-/* 
-#operatingBtnsSect{
-
-} */
-
-.operBtns {
-  margin-left: 40px;
-  width: 250px;
-  text-align: center;
-  padding: 0;
-  margin-top: 30px;
-  border-radius: 5px;
-  padding: 10px;
-}
-.operBtns:hover{
-    cursor: pointer;
-    padding: 6px;
-  box-sizing: border-box;
-  width: 250px;
-  text-align: center;
-  margin-top: 30px;
-  padding: 10px;
-  transition: all ease 0.3s;
-  -webkit-transition: all ease 0.3s;
-  -moz-transition: all ease 0.3s;
-  -ms-transition: all ease 0.3s;
-  -o-transition: all ease 0.3s;
-  border-radius: 4px;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  -ms-border-radius: 4px;
-  -o-border-radius: 4px;
-}
-.operBtns:hover{
-  cursor: pointer;
-  padding: 6px;
-}
-
-#homeworkBtn {
-  background-color: var(--red);
-}
-#homeworkBtn:hover {
-  border: 4px solid var(--red);
-  background-color: var(--yellow);
-}
-
-#projectsBtn {
-  background-color: var(--ohra);
-}
-#projectsBtn:hover {
-  border: 4px solid var(--ohra);
-  background-color: var(--yellow);
-}
-
-#assigmentsBtn {
-  background-color: var(--lightBlue);
-}
-#assigmentsBtn:hover {
-  border: 4px solid var(--lightBlue);
-  background-color: var(--yellow);
-}
-
-#showAllDone {
-  border: 4px solid var(--green);
-  box-sizing: border-box;
-  width: 270px;
-  padding: 6px;
-}
-#showAllDone:hover {
-  background-color: var(--green);
-}
-
 #accountSet {
   position: absolute;
   z-index: 10;
@@ -547,7 +574,8 @@ nav > a {
   width: 300px;
 }
 
-.createGroupDiv > input, .showGroupsDiv input {
+.createGroupDiv > input,
+.showGroupsDiv input {
   width: 190px;
   margin: 10px 50px;
 }
@@ -562,15 +590,16 @@ nav > a {
 }
 
 .createGroupDiv > p,
-.showGroupsDiv  p {
+.showGroupsDiv p {
   margin: 0 50px;
 }
 
-#message404{
+#message404 {
   margin: 50px;
 }
 
-.createGroupDiv > a > img, .showGroupsDiv img {
+.createGroupDiv > a > img,
+.showGroupsDiv img {
   margin: 10px 250px 0px 50px;
   max-width: 20px;
 }
@@ -585,3 +614,86 @@ ul#showAllTasksList .labelId3 {list-style-image: url(./images/assignment.png);}
 ul#showAllHomework .labelId1 {list-style-image: url(./images/homework.png);}
 ul#showAllProjects .labelId2 {list-style-image: url(./images/project.png);}
 ul#showAllAssignments .labelId3 {list-style-image: url(./images/assignment.png);}
+
+/* Styling for create a task */
+#defineTask {
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+}
+
+#defineTask > input {
+  border: none;
+}
+
+#defineTask > input.btn {
+  background-color: var(--green);
+  color: var(--blue);
+}
+
+#defineTask > input.btn:hover {
+  cursor: pointer;
+  color: var(--blue);
+  background-color: var(--white);
+  border: 3px solid var(--green);
+}
+
+#defineTask > input[type=date] {
+  width: 50%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-bottom: 2px solid var(--lightBlue);
+}
+
+#defineTask > label {
+  margin-top: 15px;
+}
+
+#defineTask > input[type=text] {
+  box-sizing: border-box;
+  padding: 12px 10px;
+  border: 2px solid var(--white);
+  transition: 0.5s;
+  -webkit-transition: 0.5s;
+  -moz-transition: 0.5s;
+  -ms-transition: 0.5s;
+  -o-transition: 0.5s;
+  outline: none;
+}
+#defineTask > input[type=text]:focus {
+  border: 2px solid var(--lightBlue);
+}
+
+select {
+  appearance: none;
+  background-color: transparent;
+  border: none;
+  padding: 0 1em 0 0;
+  margin: 0;
+  width: 50%;
+  font-size: inherit;
+  cursor: pointer;
+  outline: none;
+
+}
+
+ul#showAllTasksList .labelId1 {
+  list-style-image: url(./images/homework.png);
+}
+ul#showAllTasksList .labelId2 {
+  list-style-image: url(./images/project.png);
+}
+ul#showAllTasksList .labelId3 {
+  list-style-image: url(./images/assignment.png);
+}
+ul#showAllHomework .labelId1 {
+  list-style-image: url(./images/homework.png);
+}
+ul#showAllProjects .labelId2 {
+  list-style-image: url(./images/project.png);
+}
+ul#showAllAssignments .labelId3 {
+  list-style-image: url(./images/assignment.png);
+}
+

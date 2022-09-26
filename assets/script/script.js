@@ -51,7 +51,9 @@ loadLogInPage = () => {
   logInSect.appendChild(signInBtn);
 
   signInBtn.addEventListener("click", (e) => {
-    errMes.innerText = "";
+    const errorMes = document.createElement("p");
+    errorMes.innerHTML = "";
+    e.preventDefault();
     const payload = {
       email: userNameInp.value,
       password: passwordInp.value,
@@ -67,12 +69,39 @@ loadLogInPage = () => {
 
     fetch(`${fetchUrl}/api/accounts/login`, fetchOpt)
       .then((res) => {
-        if (res.status == 200) {
-          const token = res.headers.get("x-authToken");
-          ls.setItem("token", token);
-          console.log(`this is token: ${ls.getItem("token")}`);
+        switch (res.status) {
+          case 200:
+            console.log("status 200");
+            const token = res.headers.get("x-authToken");
+            ls.setItem("token", token);
+            console.log(`this is token: ${ls.getItem("token")}`);
+            return res.json();
+          case 400:
+            console.log("status 400");
+            errorMes.innerText = "Incorrect email or password";
+            logInSect.appendChild(errorMes);
+            break;
+          case 401:
+            console.log("status 401");
+            errorMes.innerText = "Incorrect email or password";
+            logInSect.appendChild(errorMes);
+            break;
+          case 404:
+            console.log("status 404");
+            errorMes.innerText = "Incorrect email or password";
+            logInSect.appendChild(errorMes);
+            break;
+          case 500:
+            console.log("status 500");
+            errorMes.innerText = "Incorrect email or password";
+            logInSect.appendChild(errorMes);
+            break;
+
+          default:
+            errorMes.innerText = "Incorrect email or password";
+            logInSect.appendChild(errorMes);
+            break;
         }
-        return res.json();
       })
 
       .then((data) => {
@@ -163,7 +192,8 @@ loadSignUpPage = () => {
   mainSignUp.appendChild(creatUserBtn);
 
   creatUserBtn.addEventListener("click", (e) => {
-    // errMes.innerText = "";
+    const errorMes = document.createElement("p");
+    errorMes.innerHTML = "";
     e.preventDefault();
     const payload = {
       email: emailInput.value,
@@ -180,8 +210,35 @@ loadSignUpPage = () => {
 
     fetch(`${fetchUrl}/api/users`, fetchOpt)
       .then((res) => {
-        if (res.status == 200) {
-          return res.json();
+        switch (res.status) {
+          case 200:
+            console.log("status 200");
+            return res.json();
+          case 400:
+            console.log("status 400");
+            errorMes.innerText = "Badly formatted request payload";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 401:
+            console.log("status 401");
+            errorMes.innerText = "cannot use this email";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 404:
+            console.log("status 404");
+            errorMes.innerText = "action failed";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 500:
+            console.log("status 500");
+            errorMes.innerText = "Incorrect data";
+            mainSignUp.appendChild(errorMes);
+            break;
+
+          default:
+            errorMes.innerText = "Incorrect data";
+            mainSignUp.appendChild(errorMes);
+            break;
         }
       })
 
@@ -189,10 +246,10 @@ loadSignUpPage = () => {
         if (!data.statusCode && Object.keys(data).length != 0) {
           ls.setItem("userObj", JSON.stringify(data));
           console.log(`this is the account ${ls.getItem("userObj")}`);
-          //   window.location.href = `${baseUrl}?page=crateAccount`;
+          window.location.href = `${baseUrl}?page=createAccount`;
         } else {
           const errorMes = document.createElement("p");
-          errorMes.innerText = "Invalid username or password";
+          errorMes.innerText = "Invalid username or email format";
           mainSignUp.appendChild(errorMes);
         }
       });
@@ -252,7 +309,8 @@ loadCreateAccountPage = () => {
   console.log(user);
 
   creatAccountBtn.addEventListener("click", (e) => {
-    errMes.innerText = "";
+    const errorMes = document.createElement("p");
+    errorMes.innerHTML = "";
     e.preventDefault();
 
     if (passwordInput.value == repeatInput.value) {
@@ -261,6 +319,8 @@ loadCreateAccountPage = () => {
         userId: user.userId,
         userName: user.userName,
       };
+
+      console.log(payload);
 
       const fetchOpt = {
         method: "POST",
@@ -272,8 +332,36 @@ loadCreateAccountPage = () => {
 
       fetch(`${fetchUrl}/api/accounts`, fetchOpt)
         .then((res) => {
-          if (res.status == 200) {
-            return res.json();
+          switch (res.status) {
+            case 200:
+              console.log("status 200");
+              return res.json();
+
+            case 400:
+              console.log("status 400");
+              errorMes.innerText = "Badly formatted request payload";
+              mainSignUp.appendChild(errorMes);
+              break;
+            case 401:
+              console.log("status 401");
+              errorMes.innerText = "cannot use this email";
+              mainSignUp.appendChild(errorMes);
+              break;
+            case 404:
+              console.log("status 404");
+              errorMes.innerText = "action failed";
+              mainSignUp.appendChild(errorMes);
+              break;
+            case 500:
+              console.log("status 500");
+              errorMes.innerText = "Incorrect data";
+              mainSignUp.appendChild(errorMes);
+              break;
+
+            default:
+              errorMes.innerText = "Incorrect data";
+              mainSignUp.appendChild(errorMes);
+              break;
           }
         })
 
@@ -281,15 +369,13 @@ loadCreateAccountPage = () => {
           if (!data.statusCode && Object.keys(data).length != 0) {
             console.log(`account created`);
             ls.removeItem("userObj");
-            window.location.href = `${baseUrl}`;
+            window.location.href = `${baseUrl}?page=signIn`;
           } else {
             const errorMes = document.createElement("p");
             errorMes.innerText = "Invalid username or password";
             mainSignUp.appendChild(errorMes);
           }
         });
-
-      console.log(`account in the ls: ${ls.getItem("userObj")}`);
     }
   });
 };
@@ -370,8 +456,121 @@ loadProfilePage = () => {
     pDivAccSet.appendChild(emailp);
 
     const descriptionp = document.createElement("p");
-    descriptionp.innerText = `bio: ${account.accountDescription}`;
-    pDivAccSet.appendChild(descriptionp);
+    if (account.accountDescription && account.accountDescription != null) {
+      descriptionp.innerText = `bio: ${account.accountDescription}`;
+      pDivAccSet.appendChild(descriptionp);
+    } else {
+      const changeAccountDescription = document.createElement("button");
+      changeAccountDescription.innerText = `Add Bio`;
+      changeAccountDescription.classList.add("btn");
+      pDivAccSet.appendChild(changeAccountDescription);
+
+      changeAccountDescription.addEventListener("click", () => {
+        accSideBar.innerHTML = "";
+        const changeAccountDescriptionDiv = document.createElement("div");
+        changeAccountDescriptionDiv.id = "changeUserNameDiv";
+        accSideBar.appendChild(changeAccountDescriptionDiv);
+
+        const changeDescriptionInpDiv = document.createElement("div");
+        changeDescriptionInpDiv.id = "changeUserNameCur";
+        changeAccountDescriptionDiv.appendChild(changeDescriptionInpDiv);
+
+        const changeDescriptionCur = document.createElement("p");
+        changeDescriptionCur.id = "changeUserNameCur";
+        if (account.accountDescription && account.accountDescription != null) {
+          changeDescriptionCur.innerText = `current bio: ${account.accountDescription}`;
+        } else {
+          changeDescriptionCur.innerText = `no bio`;
+        }
+
+        changeDescriptionInpDiv.appendChild(changeDescriptionCur);
+
+        const changeDescriptionInp = document.createElement("input");
+        changeDescriptionInp.id = "changeUserNameInp";
+        changeDescriptionInp.type = "text";
+        changeDescriptionInp.placeholder = "new bio";
+        changeDescriptionInpDiv.appendChild(changeDescriptionInp);
+
+        const changeUserCancel = document.createElement("button");
+        changeUserCancel.id = "changeUserCancel";
+        changeUserCancel.innerText = "cancel";
+        changeUserCancel.classList.add("btn");
+        changeAccountDescriptionDiv.appendChild(changeUserCancel);
+
+        changeUserCancel.addEventListener("click", () => {
+          window.location.reload();
+        });
+
+        const changeBioSubmit = document.createElement("button");
+        changeBioSubmit.id = "changeUserSubmit";
+        changeBioSubmit.innerText = "submit";
+        changeBioSubmit.classList.add("btn");
+        changeAccountDescriptionDiv.appendChild(changeBioSubmit);
+
+        changeBioSubmit.addEventListener("click", () => {
+          const errorMes = document.createElement("p");
+          errorMes.innerHTML = "";
+          const payload = {
+            newDescription: changeDescriptionInp.value,
+          };
+
+          const fetchOpt = {
+            method: "PUT",
+            headers: {
+              "Content-type": "application/json",
+              "x-authToken": mainToken,
+            },
+            body: JSON.stringify(payload),
+          };
+
+          fetch(`${fetchUrl}/api/accounts/own/description`, fetchOpt)
+            .then((res) => {
+              switch (res.status) {
+                case 200:
+                  console.log("status 200");
+                  return res.json();
+                case 400:
+                  console.log("status 400");
+                  errorMes.innerText = "Badly formatted request payload";
+                  pDivAccSet.appendChild(errorMes);
+                  break;
+                case 404:
+                  console.log("status 404");
+                  errorMes.innerText = "action failed";
+                  pDivAccSet.appendChild(errorMes);
+                  break;
+                case 500:
+                  console.log("status 500");
+                  errorMes.innerText = "Incorrect data";
+                  pDivAccSet.appendChild(errorMes);
+                  break;
+
+                default:
+                  errorMes.innerText = "Incorrect data";
+                  pDivAccSet.appendChild(errorMes);
+                  break;
+              }
+            })
+
+            .then((data) => {
+              if (!data.statusCode && Object.keys(data).length != 0) {
+                ls.setItem("account", JSON.stringify(data));
+                console.log(ls.getItem("account"));
+                console.log(`this is the account ${ls.getItem("account")}`);
+              }
+
+              changeUserNameDiv.innerHTML = "";
+              changeUserNameDiv.innerText = `Your bio has been updated`;
+
+              reloadWINDOW = () => {
+                window.location.reload();
+              };
+
+              setTimeout(reloadWINDOW, 1500);
+            });
+        });
+      });
+    }
 
     // buttons
 
@@ -422,8 +621,10 @@ loadProfilePage = () => {
       changeUserNameDiv.appendChild(changeUserSubmit);
 
       changeUserSubmit.addEventListener("click", () => {
+        const errorMes = document.createElement("p");
+        errorMes.innerHTML = "";
         const payload = {
-          displayName: changeUserNameInp.value,
+          newDisplayName: changeUserNameInp.value,
         };
 
         const fetchOpt = {
@@ -435,14 +636,33 @@ loadProfilePage = () => {
           body: JSON.stringify(payload),
         };
 
-        fetch(`${fetchUrl}/api/accounts/own`, fetchOpt)
+        fetch(`${fetchUrl}/api/accounts/own/name`, fetchOpt)
           .then((res) => {
-            if (res.status == 200) {
-              console.log("succes");
-            } else {
-              console.log("not a succes");
+            switch (res.status) {
+              case 200:
+                console.log("status 200");
+                return res.json();
+              case 400:
+                console.log("status 400");
+                errorMes.innerText = "Badly formatted request payload";
+                changeUserNameDiv.appendChild(errorMes);
+                break;
+              case 404:
+                console.log("status 404");
+                errorMes.innerText = "action failed";
+                changeUserNameDiv.appendChild(errorMes);
+                break;
+              case 500:
+                console.log("status 500");
+                errorMes.innerText = "Incorrect data";
+                changeUserNameDiv.appendChild(errorMes);
+                break;
+
+              default:
+                errorMes.innerText = "Incorrect data";
+                changeUserNameDiv.appendChild(errorMes);
+                break;
             }
-            return res.json();
           })
 
           .then((data) => {
@@ -463,6 +683,121 @@ loadProfilePage = () => {
           });
       });
     });
+
+    if (!account.accountDescription && account.accountDescription == null) {
+      console.log("no bio");
+    } else {
+      const changeAccountDescription = document.createElement("button");
+      changeAccountDescription.innerText = `Change Bio`;
+      changeAccountDescription.classList.add("btn");
+      btnAccSet.appendChild(changeAccountDescription);
+
+      changeAccountDescription.addEventListener("click", () => {
+        accSideBar.innerHTML = "";
+        const changeAccountDescriptionDiv = document.createElement("div");
+        changeAccountDescriptionDiv.id = "changeUserNameDiv";
+        accSideBar.appendChild(changeAccountDescriptionDiv);
+
+        const changeDescriptionInpDiv = document.createElement("div");
+        changeDescriptionInpDiv.id = "changeUserNameCur";
+        changeAccountDescriptionDiv.appendChild(changeDescriptionInpDiv);
+
+        const changeDescriptionCur = document.createElement("p");
+        changeDescriptionCur.id = "changeUserNameCur";
+        if (account.accountDescription && account.accountDescription != null) {
+          changeDescriptionCur.innerText = `current bio: ${account.accountDescription}`;
+        } else {
+          changeDescriptionCur.innerText = `no bio`;
+        }
+
+        changeDescriptionInpDiv.appendChild(changeDescriptionCur);
+
+        const changeDescriptionInp = document.createElement("input");
+        changeDescriptionInp.id = "changeUserNameInp";
+        changeDescriptionInp.type = "text";
+        changeDescriptionInp.placeholder = "new bio";
+        changeDescriptionInpDiv.appendChild(changeDescriptionInp);
+
+        const changeUserCancel = document.createElement("button");
+        changeUserCancel.id = "changeUserCancel";
+        changeUserCancel.innerText = "cancel";
+        changeUserCancel.classList.add("btn");
+        changeAccountDescriptionDiv.appendChild(changeUserCancel);
+
+        changeUserCancel.addEventListener("click", () => {
+          window.location.reload();
+        });
+
+        const changeBioSubmit = document.createElement("button");
+        changeBioSubmit.id = "changeUserSubmit";
+        changeBioSubmit.innerText = "submit";
+        changeBioSubmit.classList.add("btn");
+        changeAccountDescriptionDiv.appendChild(changeBioSubmit);
+
+        changeBioSubmit.addEventListener("click", () => {
+          const errorMes = document.createElement("p");
+
+          const payload = {
+            newDescription: changeDescriptionInp.value,
+          };
+
+          const fetchOpt = {
+            method: "PUT",
+            headers: {
+              "Content-type": "application/json",
+              "x-authToken": mainToken,
+            },
+            body: JSON.stringify(payload),
+          };
+
+          fetch(`${fetchUrl}/api/accounts/own/description`, fetchOpt)
+            .then((res) => {
+              switch (res.status) {
+                case 200:
+                  console.log("status 200");
+                  return res.json();
+                case 400:
+                  console.log("status 400");
+                  errorMes.innerText = "Badly formatted request payload";
+                  changeAccountDescriptionDiv.appendChild(errorMes);
+                  break;
+                case 404:
+                  console.log("status 404");
+                  errorMes.innerText = "action failed";
+                  changeAccountDescriptionDiv.appendChild(errorMes);
+                  break;
+                case 500:
+                  console.log("status 500");
+                  errorMes.innerText = "Incorrect data";
+                  changeAccountDescriptionDiv.appendChild(errorMes);
+                  break;
+
+                default:
+                  errorMes.innerText = "Incorrect data";
+                  changeAccountDescriptionDiv.appendChild(errorMes);
+                  break;
+              }
+            })
+
+            .then((data) => {
+              if (!data.statusCode && Object.keys(data).length != 0) {
+                ls.setItem("account", JSON.stringify(data));
+                console.log(ls.getItem("account"));
+                console.log(`this is the account ${ls.getItem("account")}`);
+              }
+
+              changeUserNameDiv.innerHTML = "";
+              changeUserNameDiv.innerText = `Your bio has been updated`;
+
+              reloadWINDOW = () => {
+                window.location.reload();
+              };
+
+              setTimeout(reloadWINDOW, 1500);
+            });
+        });
+      });
+    }
 
     const logOff = document.createElement("button");
     logOff.innerText = `Log Off`;
@@ -512,6 +847,8 @@ loadProfilePage = () => {
       deleteConfirmBtn.classList.add("btn");
       deleteConfirmBtnDiv.appendChild(deleteConfirmBtn);
       deleteConfirmBtn.addEventListener("click", () => {
+        const errorMes = document.createElement("p");
+        errorMes.innerHTML = "";
         const fetchOpt = {
           method: "DELETE",
           headers: {
@@ -522,12 +859,25 @@ loadProfilePage = () => {
 
         fetch(`${fetchUrl}/api/accounts/${account.accountId}`, fetchOpt).then(
           (res) => {
-            if (res.status == 200) {
-              console.log("success");
-            } else {
-              console.log("not a succes");
+            switch (res.status) {
+              case 200:
+                return res.json();
+              case 404:
+                console.log("status 404");
+                errorMes.innerText = "action [DELETE] failed";
+                deleteConfirm.appendChild(errorMes);
+                break;
+              case 500:
+                console.log("status 500");
+                errorMes.innerText = "Incorrect data";
+                deleteConfirm.appendChild(errorMes);
+                break;
+
+              default:
+                errorMes.innerText = "Incorrect data";
+                deleteConfirm.appendChild(errorMes);
+                break;
             }
-            return res.json();
           }
         );
 
@@ -670,6 +1020,7 @@ loadProfilePage = () => {
 
   const recentGroupsShow = document.createElement("section");
   recentGroupsShow.id = "recentGroupsShow";
+  recentGroupsShow.classList.add("flex_column");
   recentGroups.appendChild(recentGroupsShow);
 
   const fetchOpt = {
@@ -678,32 +1029,60 @@ loadProfilePage = () => {
       "x-authToken": mainToken,
     },
   };
+  console.log(mainToken);
+  const errorMes = document.createElement("p");
+  window.addEventListener("load", (e) => {
+    errorMes.innerHTML = "";
+  });
 
-  // fetch(`${fetchUrl}/api/groupmembers/membership`, fetchOpt)
-  //   .then((res) => {
-  //     if (res.status == 200) {
-  //       return res.json();
-  //     }
-  //   })
-  //   .then((data) => {
-  //     console.log(data);
-  //     data.forEach((group) => {
-  //       if (group.FK_userId != account.userId) {
-  //         console.log("group");
-  //         console.log(group);
-  //         const groupMembershipLink = document.createElement("a");
-  //         groupMembershipLink.id = "groupMembershipLink";
-  //         groupMembershipLink.innerText = group.groupName;
-  //         recentGroupsShow.appendChild(groupMembershipLink);
-  //         groupMembershipLink.addEventListener("click", () => {
-  //           ls.setItem("currentOwnGroup", JSON.stringify(group));
-  //           console.log("currentOwnGroup");
-  //           console.log(ls.getItem("currentOwnGroup"));
-  //           window.location.href = `${baseUrl}?page=group`;
-  //         });
-  //       }
-  //     });
-  //   });
+  fetch(`${fetchUrl}/api/groupmembers/membership`, fetchOpt)
+    .then((res) => {
+      switch (res.status) {
+        case 200:
+          console.log("status 200 on membership");
+          return res.json();
+        case 404:
+          console.log("status 404");
+          errorMes.innerText = "you are not a member of any group ";
+          recentGroupsShow.appendChild(errorMes);
+          break;
+        case 500:
+          console.log("status 500");
+          errorMes.innerText = "Incorrect data";
+          recentGroupsShow.appendChild(errorMes);
+          break;
+
+        default:
+          errorMes.innerText = "Incorrect data";
+          recentGroupsShow.appendChild(errorMes);
+          break;
+      }
+    })
+    .then((data) => {
+      if (!data.statusCode && Object.keys(data).length != 0) {
+        console.log(data);
+        data.forEach((group) => {
+          if (group.FK_userId != account.userId) {
+            console.log("group");
+            console.log(group);
+            const groupMembershipLink = document.createElement("a");
+            groupMembershipLink.id = "groupMembershipLink";
+            groupMembershipLink.innerText = group.groupName;
+            recentGroupsShow.appendChild(groupMembershipLink);
+            groupMembershipLink.addEventListener("click", () => {
+              ls.setItem("currentOwnGroup", JSON.stringify(group));
+              console.log("currentOwnGroup");
+              console.log(ls.getItem("currentOwnGroup"));
+              window.location.href = `${baseUrl}?page=group`;
+            });
+          }
+        });
+      } else {
+        console.log("error on membership");
+        errorMes.innerText = "Invalid response from server";
+        recentGroupsShow.appendChild(errorMes);
+      }
+    });
 
   const borderRecGroupBottom = document.createElement("div");
   borderRecGroupBottom.id = "borderRecGroupBottom";
@@ -719,6 +1098,138 @@ loadProfilePage = () => {
   createTask.innerText = "create task";
   createTask.classList.add("btn");
   createBtns.appendChild(createTask);
+
+  //create task here
+  createTask.addEventListener("click", (e) => {
+    myBoardDiv.innerHTML = "";
+    myBoardHeadline.innerText = `Hello ${account.displayName}. You can create a task here`;
+
+    const defineTask = document.createElement("form");
+    defineTask.id = "defineTask";
+    myBoardDiv.appendChild(defineTask);
+
+    const defineTaskSubj = document.createElement("input");
+    defineTaskSubj.id = "defineTaskSubj";
+    defineTaskSubj.type = "text";
+    defineTaskSubj.placeholder = "Describe your task";
+    defineTask.appendChild(defineTaskSubj);
+
+    const defineTaskDropdownLabel = document.createElement("label");
+    defineTaskDropdownLabel.id = "defineTaskDropdownLabel";
+    defineTaskDropdownLabel.for = "defineTaskDropdown";
+    defineTaskDropdownLabel.innerText = "Choose task category:";
+    defineTask.appendChild(defineTaskDropdownLabel);
+
+    const defineTaskDropdown = document.createElement("select");
+    defineTaskDropdown.id = "defineTaskDropdown";
+    defineTaskDropdown.name = "Task label";
+    defineTask.appendChild(defineTaskDropdown);
+    let taskLabel = 1;
+
+    defineTaskDropdown.addEventListener("change", (e) => {
+      switch (defineTaskDropdown.value) {
+        case "Homework":
+          taskLabel = 1;
+          break;
+        case "Project":
+          taskLabel = 2;
+          break;
+        case "Assignment":
+          taskLabel = 3;
+          break;
+
+        default:
+          taskLabel = 1;
+          break;
+      }
+
+      console.log(taskLabel);
+    });
+
+    const defineTaskHw = document.createElement("option");
+    defineTaskHw.id = "defineTaskHw";
+    defineTaskHw.value = "Homework";
+    defineTaskHw.innerText = "Homework";
+    defineTaskDropdown.appendChild(defineTaskHw);
+
+    const defineTaskProj = document.createElement("option");
+    defineTaskProj.id = "defineTaskProj";
+    defineTaskProj.value = "Project";
+    defineTaskProj.innerText = "Project";
+    defineTaskDropdown.appendChild(defineTaskProj);
+
+    const defineTaskAs = document.createElement("option");
+    defineTaskAs.id = "defineTaskAs";
+    defineTaskAs.value = "Assignment";
+    defineTaskAs.innerText = "Assignment";
+    defineTaskDropdown.appendChild(defineTaskAs);
+
+    const defineTaskDateLab = document.createElement("label");
+    defineTaskDateLab.id = "defineTaskDateLabel";
+    defineTaskDateLab.for = "TaskDueDate";
+    defineTaskDateLab.innerText = "Task due date:";
+    defineTask.appendChild(defineTaskDateLab);
+
+    let taskDate;
+    const defineTaskDate = document.createElement("input");
+    defineTaskDate.id = "defineTaskDate";
+    defineTaskDate.type = "date";
+    defineTaskDate.name = "TaskDueDate";
+    defineTask.appendChild(defineTaskDate);
+    defineTask.addEventListener("change", (e) => {
+      taskDate = Date.parse(defineTaskDate.value);
+      console.log(`taskDate`);
+      console.log(taskDate);
+    });
+
+    const defineTaskBtn = document.createElement("input");
+    defineTaskBtn.id = "defineTaskBtn";
+    defineTaskBtn.type = "submit";
+    defineTaskBtn.value = "Add task";
+    defineTaskBtn.classList.add("btn");
+    defineTask.appendChild(defineTaskBtn);
+
+    //create the new task
+    defineTaskBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      // myBoardDiv.classList.add("hideMyBoardDiv");
+      const payload = {
+        labelId: taskLabel,
+        taskdueDate: taskDate,
+        tasksubject: defineTaskSubj.value,
+      };
+
+      console.log(payload);
+
+      const fetchOpt = {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          "x-authToken": mainToken,
+        },
+        body: JSON.stringify(payload),
+      };
+
+      fetch(`${fetchUrl}/api/tasks`, fetchOpt)
+        .then((res) => {
+          if (res.status == 200) {
+            console.log("status 200");
+            return res.json();
+          }
+        })
+        .then((data) => {
+          myBoardDiv.innerHTML = "";
+          const sucessMes = document.createElement("p");
+          sucessMes.innerText = "task created succesfuly";
+          myBoardDiv.appendChild(sucessMes);
+
+          reload = () => {
+            window.location.reload();
+          };
+          setTimeout(reload, 1500);
+        });
+    });
+  });
 
   const createGroup = document.createElement("button");
   createGroup.id = "createGroupBtn";
@@ -743,7 +1254,8 @@ loadProfilePage = () => {
 
   // Generate all own tasks here
   showAllTasks.addEventListener("click", (e) => {
-    myBoardDiv.classList.add("hideMyBoardDiv");
+    const errorMes = document.createElement("p");
+    myBoardDiv.innerHTML = "";
     myBoardHeadline.innerText = `Hello ${account.displayName}. These are all your tasks`;
     const fetchOpt = {
       headers: {
@@ -754,38 +1266,117 @@ loadProfilePage = () => {
 
     fetch(`${fetchUrl}/api/tasks/own`, fetchOpt)
       .then((res) => {
-        if (res.status == 200) {
-          return res.json();
+        switch (res.status) {
+          case 200:
+            console.log("status 200");
+            return res.json();
+          case 404:
+            console.log("status 404");
+            errorMes.innerText = "you do not have any tasks in the database";
+            myBoardDiv.appendChild(errorMes);
+            break;
+          case 500:
+            console.log("status 500");
+            errorMes.innerText = "Incorrect data";
+            myBoardDiv.appendChild(errorMes);
+            break;
+
+          default:
+            errorMes.innerText = "Incorrect data";
+            myBoardDiv.appendChild(errorMes);
+            break;
         }
       })
       .then((data) => {
-        console.log(data);
-        myBoardDiv.classList.remove("hideMyBoardDiv");
-        myBoardDiv.innerHTML = "";
+        if (!data.statusCode && Object.keys(data).length != 0) {
+          console.log(data);
+          myBoardDiv.innerHTML = "";
 
-        const showAllTasksList = document.createElement("ul");
-        showAllTasksList.id = "showAllTasksList";
-        myBoardDiv.appendChild(showAllTasksList);
+          const showAllTasksList = document.createElement("ul");
+          showAllTasksList.id = "showAllTasksList";
+          myBoardDiv.appendChild(showAllTasksList);
 
-        data.forEach((task) => {
-          const showAllTasksListItem = document.createElement("li");
-          showAllTasksListItem.id = "showAllTasksList";
-          showAllTasksListItem.innerText = task.tasksubject;
-          switch (task.FK_labelId) {
-            case 1:
-              showAllTasksListItem.classList.add("labelId1");
-              break;
-            case 2:
-              showAllTasksListItem.classList.add("labelId2");
-              break;
-            case 3:
-              showAllTasksListItem.classList.add("labelId3");
-              break;
-            default:
-              break;
-          }
-          showAllTasksList.appendChild(showAllTasksListItem);
-        });
+          data.forEach((task) => {
+            const showAllTasksListItem = document.createElement("li");
+            showAllTasksListItem.id = "showAllTasksList";
+            showAllTasksListItem.innerText = task.tasksubject;
+            switch (task.FK_labelId) {
+              case 1:
+                showAllTasksListItem.classList.add("labelId1");
+                break;
+              case 2:
+                showAllTasksListItem.classList.add("labelId2");
+                break;
+              case 3:
+                showAllTasksListItem.classList.add("labelId3");
+                break;
+              default:
+                break;
+            }
+            showAllTasksList.appendChild(showAllTasksListItem);
+
+            const deleteTask = document.createElement("button");
+            deleteTask.id = "deleteTask";
+            deleteTask.innerText = "Delete task";
+            deleteTask.classList.add("btn");
+            deleteTask.classList.add("deleteTaskBtn");
+            showAllTasksListItem.appendChild(deleteTask);
+
+            deleteTask.addEventListener("click", () => {
+              myBoardDiv.innerHTML = "";
+              const confirmDeleteTask = document.createElement("p");
+              confirmDeleteTask.id = "confirmDeleteTask";
+              confirmDeleteTask.innerText = `Are you sure you want to delete the task: "${task.tasksubject}"?`;
+
+              myBoardDiv.appendChild(confirmDeleteTask);
+
+              const annulDelTask = document.createElement("button");
+              annulDelTask.id = "annulDelTask";
+              annulDelTask.innerText = "Cancel";
+              annulDelTask.classList.add("btn");
+              myBoardDiv.appendChild(annulDelTask);
+              annulDelTask.addEventListener("click", () => {
+                window.location.reload();
+              });
+
+              const yesDelTask = document.createElement("button");
+              yesDelTask.id = "yesDelTask";
+              yesDelTask.innerText = "Continue";
+              yesDelTask.classList.add("btn");
+              myBoardDiv.appendChild(yesDelTask);
+
+              yesDelTask.addEventListener("click", () => {
+                const fetchOpt = {
+                  method: "DELETE",
+                  headers: {
+                      "Content-type": "application/json",
+                      "x-authtoken": mainToken,
+                  },
+                };
+                fetch(`${fetchUrl}/api/tasks/${task.taskId}`, fetchOpt)
+                .then((res) => {
+                  if (res.status == 200) {
+                    console.log("status: 200");
+                    return res.json();
+                  }
+                })
+                .then((data) => {
+                  myBoardDiv.innerHTML = "";
+                  const removedTask = document.createElement("p");
+                  removedTask.id = "removedTask";
+                  removedTask.innerText = `Removed the task: "${task.tasksubject}".`;
+                  myBoardDiv.appendChild(removedTask);
+
+                  reloadWINDOW = () => {
+                    window.location.reload();
+                  };
+
+                  setTimeout(reloadWINDOW, 3000);
+                });
+              });
+            });
+          });
+        }
       });
   });
 
@@ -826,6 +1417,118 @@ loadProfilePage = () => {
   const upComTasks = document.createElement("section");
   upComTasks.id = "upComTasks";
   upcomTaskSect.appendChild(upComTasks);
+  fetch(`${fetchUrl}/api/tasks/own`, fetchOpt)
+    .then((res) => {
+      switch (res.status) {
+        case 200:
+          console.log("status 200");
+          return res.json();
+        case 404:
+          console.log("status 404");
+          errorMes.innerText = "you do not have any tasks in the database";
+          upComTasks.appendChild(errorMes);
+          break;
+        case 500:
+          console.log("status 500");
+          errorMes.innerText = "Incorrect data";
+          upComTasks.appendChild(errorMes);
+          break;
+
+        default:
+          errorMes.innerText = "Incorrect data";
+          upComTasks.appendChild(errorMes);
+          break;
+      }
+    })
+    .then((data) => {
+      if (!data.statusCode && Object.keys(data).length != 0) {
+        console.log(data);
+        upComTasks.innerHTML = "";
+
+        const showAllTasksList = document.createElement("ul");
+        showAllTasksList.id = "showAllTasksList";
+        upComTasks.appendChild(showAllTasksList);
+
+        sortDates = (a, b) => {
+          if (a.taskdueDate < b.taskdueDate) {
+            return 1;
+          }
+          if (a.taskdueDate > b.taskdueDate) {
+            return -1;
+          }
+          return 0;
+        };
+
+        let sorted = data.sort(sortDates);
+        console.log("sorted");
+        console.log(sorted);
+
+        for (let i = 0; i < 3; i++) {
+          const showAllTasksListItem = document.createElement("li");
+          showAllTasksListItem.id = "showAllTasksList";
+          //   showAllTasksListItem.classList.add("flex");
+          const showAllTasksListItemp = document.createElement("p");
+          showAllTasksListItemp.id = "showAllTasksListp";
+          showAllTasksListItemp.innerText = sorted[i].tasksubject;
+
+          const showAllTasksListItemDate = document.createElement("p");
+          showAllTasksListItemDate.id = "showAllTasksListp";
+          const dueDate = sorted[i].taskdueDate;
+          const curentDate = new Date();
+          const curent = curentDate.getTime();
+          let timeDiffrence;
+          let dayDifference;
+          let daysUntil;
+          switch (true) {
+            case dueDate - curent < 86400000:
+              timeDiffrence = curent - dueDate;
+              dayDifference = timeDiffrence / (1000 * 3600);
+              daysUntil = Math.round(dayDifference);
+              PdaysUntil = Math.abs(daysUntil);
+               showAllTasksListItemDate.innerText = `${PdaysUntil} hours left`;
+              break;
+            case dueDate > curent:
+              timeDiffrence = dueDate - curent;
+              dayDifference = timeDiffrence / (1000 * 3600 * 24);
+              daysUntil = Math.round(dayDifference);
+              showAllTasksListItemDate.innerText = `${daysUntil} days`;
+              break;
+            case dueDate == null:
+              showAllTasksListItemDate.innerText = `no due date defined`;
+              break;
+            case dueDate < curent:
+              timeDiffrence = curent - dueDate;
+              dayDifference = timeDiffrence / (1000 * 3600 * 24);
+              daysUntil = Math.round(dayDifference);
+              PdaysUntil = Math.abs(daysUntil);
+              console.log(PdaysUntil);
+              showAllTasksListItemDate.innerText = `${PdaysUntil} days past duedate`;
+              break;
+
+            default:
+              break;
+          }
+
+          switch (sorted[i].FK_labelId) {
+            case 1:
+              showAllTasksListItem.classList.add("labelId1");
+              break;
+            case 2:
+              showAllTasksListItem.classList.add("labelId2");
+              break;
+            case 3:
+              showAllTasksListItem.classList.add("labelId3");
+              break;
+            default:
+              break;
+          }
+
+          showAllTasksListItem.appendChild(showAllTasksListItemp);
+          showAllTasksListItem.appendChild(showAllTasksListItemDate);
+          showAllTasksList.appendChild(showAllTasksListItem);
+        }
+      }
+    });
 
   const borderUpComBottom = document.createElement("div");
   borderUpComBottom.id = "borderUpComBottom";
@@ -845,7 +1548,53 @@ loadProfilePage = () => {
 
   //  Generate all own tasks with labelId = 1 (homework) here
   homeworkBtn.addEventListener("click", (e) => {
-    window.location.replace(`${baseUrl}?page=homework`);
+    // myBoardDiv.classList.add("hideMyBoardDiv");
+    const errorMes = document.createElement("p");
+    myBoardDiv.innerHTML = "";
+    myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your homework`;
+    const fetchOpt = {
+      headers: {
+        "Content-type": "application/json",
+        "x-authToken": ls.getItem("token"),
+      },
+    };
+    fetch(`${fetchUrl}/api/tasks/own/1`, fetchOpt)
+      .then((res) => {
+        switch (res.status) {
+          case 200:
+            console.log("status 200");
+            return res.json();
+          case 404:
+            console.log("status 404");
+            errorMes.innerText = "you do not have any tasks in Homework";
+            myBoardDiv.appendChild(errorMes);
+            break;
+          case 500:
+            console.log("status 500");
+            errorMes.innerText = "Incorrect data";
+            myBoardDiv.appendChild(errorMes);
+            break;
+
+          default:
+            errorMes.innerText = "Incorrect data";
+            myBoardDiv.appendChild(errorMes);
+            break;
+        }
+      })
+      .then((data) => {
+        myBoardDiv.classList.remove("hideMyBoardDiv");
+        myBoardDiv.innerHTML = "";
+        const showAllHomework = document.createElement("ul");
+        showAllHomework.id = "showAllHomework";
+        myBoardDiv.appendChild(showAllHomework);
+        data.forEach((task) => {
+          const showAllHomeworkListItem = document.createElement("li");
+          showAllHomeworkListItem.id = "showAllHomeworkListItem";
+          showAllHomeworkListItem.innerText = task.tasksubject;
+          showAllHomeworkListItem.classList.add("labelId1");
+          showAllHomework.appendChild(showAllHomeworkListItem);
+        });
+      });
   });
 
   const projectsBtn = document.createElement("a");
@@ -856,7 +1605,58 @@ loadProfilePage = () => {
 
   //  Generate all own tasks with labelId = 2 (projects) here
   projectsBtn.addEventListener("click", (e) => {
-    window.location.replace(`${baseUrl}?page=projects`);
+    const errorMes = document.createElement("p");
+    myBoardDiv.innerHTML = "";
+    // myBoardDiv.classList.add("hideMyBoardDiv");
+
+    myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your project tasks`;
+    const fetchOpt = {
+      headers: {
+        "Content-type": "application/json",
+        "x-authToken": ls.getItem("token"),
+      },
+    };
+    fetch(`${fetchUrl}/api/tasks/own/2`, fetchOpt)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        }
+
+        switch (res.status) {
+          case 200:
+            console.log("status 200");
+            return res.json();
+          case 404:
+            console.log("status 404");
+            errorMes.innerText = "you do not have any tasks in Projects";
+            myBoardDiv.appendChild(errorMes);
+            break;
+          case 500:
+            console.log("status 500");
+            errorMes.innerText = "Incorrect data";
+            myBoardDiv.appendChild(errorMes);
+            break;
+
+          default:
+            errorMes.innerText = "Incorrect data";
+            myBoardDiv.appendChild(errorMes);
+            break;
+        }
+      })
+      .then((data) => {
+        myBoardDiv.classList.remove("hideMyBoardDiv");
+        myBoardDiv.innerHTML = "";
+        const showAllProjects = document.createElement("ul");
+        showAllProjects.id = "showAllProjects";
+        myBoardDiv.appendChild(showAllProjects);
+        data.forEach((task) => {
+          const showAllProjectsListItem = document.createElement("li");
+          showAllProjectsListItem.id = "showAllProjectsListItem";
+          showAllProjectsListItem.innerText = task.tasksubject;
+          showAllProjectsListItem.classList.add("labelId2");
+          showAllProjects.appendChild(showAllProjectsListItem);
+        });
+      });
   });
 
   const assigmentsBtn = document.createElement("a");
@@ -867,7 +1667,60 @@ loadProfilePage = () => {
 
   //  Generate all own tasks with labelId = 3 (assignments) here
   assigmentsBtn.addEventListener("click", (e) => {
-    window.location.replace(`${baseUrl}?page=assigments`);
+    myBoardDiv.classList.add("hideMyBoardDiv");
+
+    const errorMes = document.createElement("p");
+    myBoardDiv.innerHTML = "";
+    // myBoardDiv.classList.add("hideMyBoardDiv");
+
+    myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your assignment tasks`;
+    const fetchOpt = {
+      headers: {
+        "Content-type": "application/json",
+        "x-authToken": ls.getItem("token"),
+      },
+    };
+    fetch(`${fetchUrl}/api/tasks/own/3`, fetchOpt)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        }
+
+        switch (res.status) {
+          case 200:
+            console.log("status 200");
+            return res.json();
+          case 404:
+            console.log("status 404");
+            errorMes.innerText = "you do not have any tasks in Assigments";
+            myBoardDiv.appendChild(errorMes);
+            break;
+          case 500:
+            console.log("status 500");
+            errorMes.innerText = "Incorrect data";
+            myBoardDiv.appendChild(errorMes);
+            break;
+
+          default:
+            errorMes.innerText = "Incorrect data";
+            myBoardDiv.appendChild(errorMes);
+            break;
+        }
+      })
+      .then((data) => {
+        myBoardDiv.classList.remove("hideMyBoardDiv");
+        myBoardDiv.innerHTML = "";
+        const showAllAssignments = document.createElement("ul");
+        showAllAssignments.id = "showAllAssignments";
+        myBoardDiv.appendChild(showAllAssignments);
+        data.forEach((task) => {
+          const showAllAssignmentsListItem = document.createElement("li");
+          showAllAssignmentsListItem.id = "showAllAssignmentsListItem";
+          showAllAssignmentsListItem.innerText = task.tasksubject;
+          showAllAssignmentsListItem.classList.add("labelId3");
+          showAllAssignments.appendChild(showAllAssignmentsListItem);
+        });
+      });
   });
 
   const showAllDone = document.createElement("a");
@@ -900,7 +1753,7 @@ loadSinglelogPage = () => {
 
   const userNameInp = document.createElement("input");
   userNameInp.type = "text";
-  userNameInp.placeholder = "username";
+  userNameInp.placeholder = "email";
   userNameInp.id = "userNameInp";
   logInSect.appendChild(userNameInp);
 
@@ -917,7 +1770,9 @@ loadSinglelogPage = () => {
   logInSect.appendChild(signInBtn);
 
   signInBtn.addEventListener("click", (e) => {
-    errMes.innerText = "";
+    const errorMes = document.createElement("p");
+    errorMes.innerHTML = "";
+    e.preventDefault();
     const payload = {
       email: userNameInp.value,
       password: passwordInp.value,
@@ -933,12 +1788,39 @@ loadSinglelogPage = () => {
 
     fetch(`${fetchUrl}/api/accounts/login`, fetchOpt)
       .then((res) => {
-        if (res.status == 200) {
-          const token = res.headers.get("x-authToken");
-          ls.setItem("token", token);
-          console.log(`this is token: ${ls.getItem("token")}`);
+        switch (res.status) {
+          case 200:
+            console.log("status 200");
+            const token = res.headers.get("x-authToken");
+            ls.setItem("token", token);
+            console.log(`this is token: ${ls.getItem("token")}`);
+            return res.json();
+          case 400:
+            console.log("status 400");
+            errorMes.innerText = "Badly formatted request payload";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 401:
+            console.log("status 401");
+            errorMes.innerText = "cannot use this email";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 404:
+            console.log("status 404");
+            errorMes.innerText = "action failed";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 500:
+            console.log("status 500");
+            errorMes.innerText = "Incorrect data";
+            mainSignUp.appendChild(errorMes);
+            break;
+
+          default:
+            errorMes.innerText = "Incorrect data";
+            mainSignUp.appendChild(errorMes);
+            break;
         }
-        return res.json();
       })
 
       .then((data) => {
@@ -981,7 +1863,8 @@ createGroupFunction = () => {
   createBtns.appendChild(groupCreateBtn);
 
   groupCreateBtn.addEventListener("click", (e) => {
-    errMes.innerText = "";
+    const errorMes = document.createElement("p");
+    errorMes.innerHTML = "";
     createBtns.innerHTML = "";
 
     const payload = {
@@ -1000,14 +1883,41 @@ createGroupFunction = () => {
 
     fetch(`${fetchUrl}/api/groups`, fetchOpt)
       .then((res) => {
-        if (res.status == 200) {
-          return res.json();
+        switch (res.status) {
+          case 200:
+            console.log("status 200");
+            return res.json();
+          case 400:
+            console.log("status 400");
+            errorMes.innerText = "Badly formatted request payload";
+            createBtns.appendChild(errorMes);
+            break;
+          case 401:
+            console.log("status 401");
+            errorMes.innerText = "this group already exists in the database";
+            createBtns.appendChild(errorMes);
+            break;
+          case 404:
+            console.log("status 404");
+            errorMes.innerText = "action failed";
+            createBtns.appendChild(errorMes);
+            break;
+          case 500:
+            console.log("status 500");
+            errorMes.innerText = "Incorrect data";
+            createBtns.appendChild(errorMes);
+            break;
+
+          default:
+            errorMes.innerText = "Incorrect data";
+            createBtns.appendChild(errorMes);
+            break;
         }
       })
 
       .then((data) => {
         if (!data.statusCode && Object.keys(data).length != 0) {
-          addGroupMembers(createBtns, data.groupName);
+          addGroupMembers(createBtns, data);
         } else {
           errorMes.innerText = "Invalid input";
           logInSect.appendChild(errorMes);
@@ -1020,7 +1930,19 @@ getAllGroupsFunction = (div) => {
   div.innerHTML = "";
   div.id = "";
   div.classList.add("showGroupsDiv");
+  const errorMes = document.createElement("p");
+  errorMes.innerHTML = "";
 
+  const exitIconLink = document.createElement("a");
+  exitIconLink.id = "exitIconSet";
+  const exitIcon = document.createElement("img");
+  exitIcon.src = "./assets/svg/exitIcon.svg";
+  div.appendChild(exitIconLink);
+  exitIconLink.appendChild(exitIcon);
+
+  exitIconLink.addEventListener("click", (e) => {
+    window.location.reload();
+  });
   const fetchOpt = {
     headers: {
       "Content-type": "application/json",
@@ -1030,11 +1952,26 @@ getAllGroupsFunction = (div) => {
 
   fetch(`${fetchUrl}/api/groups/own`, fetchOpt)
     .then((res) => {
-      if (res.status == 200) {
-        console.log("status: 200");
-      }
+      switch (res.status) {
+        case 200:
+          console.log("status 200");
+          return res.json();
+        case 404:
+          console.log("status 404");
+          errorMes.innerText = "no group found for this user id";
+          div.appendChild(errorMes);
+          break;
+        case 500:
+          console.log("status 500");
+          errorMes.innerText = "Incorrect data";
+          div.appendChild(errorMes);
+          break;
 
-      return res.json();
+        default:
+          errorMes.innerText = "Incorrect data";
+          div.appendChild(errorMes);
+          break;
+      }
     })
 
     .then((data) => {
@@ -1111,6 +2048,12 @@ getAllGroupsFunction = (div) => {
                     window.location.reload();
                   });
 
+                  
+                  const groupTitle = document.createElement("a");
+                  groupTitle.href = `${baseUrl}?page=group`;
+                  groupTitle.innerText = group.groupName;
+                  div.appendChild(groupTitle);
+
                   const message404 = document.createElement("p");
                   message404.id = "message404";
                   message404.innerText = "this group has no members";
@@ -1122,7 +2065,7 @@ getAllGroupsFunction = (div) => {
                   div.appendChild(addmemberBtn);
                   addmemberBtn.addEventListener("click", (e) => {
                     div.innerHTML = "";
-                    addGroupMembers(div, group.groupName);
+                    addGroupMembers(div, group);
                   });
                 }
               });
@@ -1135,7 +2078,7 @@ getAllGroupsFunction = (div) => {
     });
 };
 
-addGroupMembers = (div, name) => {
+addGroupMembers = (div, group) => {
   const exitIconLink = document.createElement("a");
   const exitIcon = document.createElement("img");
 
@@ -1149,7 +2092,7 @@ addGroupMembers = (div, name) => {
   });
 
   const groupTitle = document.createElement("h4");
-  groupTitle.innerText = name;
+  groupTitle.innerText = group.groupName;
   div.appendChild(groupTitle);
 
   const addMembersInp = document.createElement("input");
@@ -1165,7 +2108,8 @@ addGroupMembers = (div, name) => {
   div.appendChild(addMembersBtn);
 
   addMembersBtn.addEventListener("click", () => {
-    errMes.innerText = "";
+    const errorMes = document.createElement("p");
+    errorMes.innerHTML = "";
     const memberEmail = addMembersInp.value;
     const fetchOpt = {
       headers: {
@@ -1176,17 +2120,91 @@ addGroupMembers = (div, name) => {
 
     fetch(`${fetchUrl}/api/users/email/${memberEmail}`, fetchOpt)
       .then((res) => {
-        if (res.status == 200) {
-          return res.json();
+        switch (res.status) {
+          case 200:
+            console.log("status 200");
+            return res.json();
+          case 400:
+            console.log("status 400");
+            errorMes.innerText = "Badly formatted request payload";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 401:
+            console.log("status 401");
+            errorMes.innerText = "cannot use this email";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 404:
+            console.log("status 404");
+            errorMes.innerText = "action failed";
+            mainSignUp.appendChild(errorMes);
+            break;
+          case 500:
+            console.log("status 500");
+            errorMes.innerText = "Incorrect data";
+            mainSignUp.appendChild(errorMes);
+            break;
+
+          default:
+            errorMes.innerText = "Incorrect data";
+            mainSignUp.appendChild(errorMes);
+            break;
         }
       })
 
       .then((data) => {
         if (!data.statusCode && Object.keys(data).length != 0) {
-          const memberName = data.userName;
-          const memberPName = document.createElement("p");
-          memberPName.innerText = memberName;
-          div.appendChild(memberPName);
+          const payload = {
+            newMember: data.userId,
+          };
+
+          const fetchOpt = {
+            method: "POST",
+            headers: {
+              "Content-type": "application/json",
+              "x-authtoken": mainToken,
+            },
+            body: JSON.stringify(payload),
+          };
+          fetch(`${fetchUrl}/api/groupmembers/${group.groupId}`, fetchOpt)
+            .then((res) => {
+              switch (res.status) {
+                case 200:
+                  console.log("status 200");
+                  return res.json();
+                case 400:
+                  console.log("status 400");
+                  errorMes.innerText = "Badly formatted request payload";
+                  mainSignUp.appendChild(errorMes);
+                  break;
+                case 401:
+                  console.log("status 401");
+                  errorMes.innerText = "user already exists in the group";
+                  mainSignUp.appendChild(errorMes);
+                  break;
+                case 404:
+                  console.log("status 404");
+                  errorMes.innerText = "action failed";
+                  mainSignUp.appendChild(errorMes);
+                  break;
+                case 500:
+                  console.log("status 500");
+                  errorMes.innerText = "Incorrect data";
+                  mainSignUp.appendChild(errorMes);
+                  break;
+
+                default:
+                  errorMes.innerText = "Incorrect data";
+                  mainSignUp.appendChild(errorMes);
+                  break;
+              }
+            })
+            .then((data) => {
+              const memberName = data.userName;
+              const memberPName = document.createElement("p");
+              memberPName.innerText = memberName;
+              div.appendChild(memberPName);
+            });
         } else {
           errorMes.innerText = "Invalid input";
           logInSect.appendChild(errorMes);
@@ -1200,230 +2218,523 @@ addGroupMembers = (div, name) => {
 //    GroupPage setup - based on loadProfilePage()
 loadGroupPage = () => {
   body.innerHTML = "";
-  body.classList.add("profileBody");//intentional to add profileBody class here.
+  body.classList.add("profileBody"); //intentional to add profileBody class here.
 
-  //   header on the Group page
-  const header = document.createElement("header");
-  header.id = "header";
-  body.appendChild(header);
+  const OwnGroup = JSON.parse(ls.getItem("currentOwnGroup"));
+  console.log("currentOwnGroup");
+  console.log(OwnGroup);
+  console.log(OwnGroup.FK_userId);
 
-  const nav = document.createElement("nav");
-  header.appendChild(nav);
+  const account = JSON.parse(ls.getItem("account"));
+  console.log("account");
+  console.log(account);
 
-  const AbTheApp = document.createElement("a");
-  AbTheApp.innerText = "about the app";
-  AbTheApp.classList.add("navLink");
-  nav.appendChild(AbTheApp);
+  const fetchOpt = {
+    headers: {
+      "Content-type": "application/json",
+      "x-authtoken": mainToken,
+    },
+  };
 
-  const userGuide = document.createElement("a");
-  userGuide.innerText = "user guide";
-  userGuide.classList.add("navLink");
-  nav.appendChild(userGuide);
+  const errorMes = document.createElement("p");
+  errorMes.innerHTML = "";
 
-  const help = document.createElement("a");
-  help.innerText = "help";
-  help.classList.add("navLink");
-  nav.appendChild(help);
+  fetch(`${fetchUrl}/api/groups/${OwnGroup.groupId}`, fetchOpt)
+    .then((res) => {
+      switch (res.status) {
+        case 200:
+          console.log("status 200");
+          return res.json();
+        case 401:
+          console.log("status 401");
+          errorMes.innerText = "conflicting data";
+          main.appendChild(errorMes);
+          break;
+        case 404:
+          console.log("status 404");
+          errorMes.innerText = "action failed";
+          main.appendChild(errorMes);
+          break;
+        case 500:
+          console.log("status 500");
+          errorMes.innerText = "Incorrect data";
+          main.appendChild(errorMes);
+          break;
 
-  const userAccountIcon = document.createElement("img");
-  userAccountIcon.id = "userAccountIcon";
-  userAccountIcon.src = "./web_API-dev_examProject-FrontEnd/assets/svg/logIn.svg"
-  nav.appendChild(userAccountIcon);
+        default:
+          errorMes.innerText = "Incorrect data";
+          main.appendChild(errorMes);
+          break;
+      }
+    })
 
-  //    Grouppage main
-  body.appendChild(main);
+    .then((data) => {
+      console.log(data);
 
-  //    GroupDescription section
-  const myGroup = document.createElement("section");
-  myGroup.id = "myGroup";
-  main.appendChild(myGroup);
+      //   header on the Group page
+      const header = document.createElement("header");
+      header.id = "header";
+      body.appendChild(header);
 
-  const myGroupHeadline = document.createElement("h3");
-  myGroupHeadline.id = "myGroupHeadline";
-  myGroupHeadline.innerText = "My Group";
-  myGroup.appendChild(myGroupHeadline);
+      const nav = document.createElement("nav");
+      header.appendChild(nav);
 
-  const myGroupDiv = document.createElement("div");
-  myGroupDiv.id = "myGroupDiv";
-  myGroup.appendChild(myGroupDiv);
+      const AbTheApp = document.createElement("a");
+      AbTheApp.innerText = "about the app";
+      AbTheApp.classList.add("navLink");
+      nav.appendChild(AbTheApp);
 
-  const myGroupDivDescription = document.createElement("input");
-  myGroupDivDescription.id = "myGroupDivDescription";
-  myGroupDivDescription.type = "text";
-  myGroupDivDescription.placeholder = "Describe your group";
-  myGroupDiv.appendChild(myGroupDivDescription);
+      const userGuide = document.createElement("a");
+      userGuide.innerText = "user guide";
+      userGuide.classList.add("navLink");
+      nav.appendChild(userGuide);
 
-  const myGroupDivAdmin = document.createElement("input");
-  myGroupDivAdmin.id = "myGroupDivAdmin";
-  myGroupDivAdmin.type = "text";
-  myGroupDivAdmin.placeholder = "Group Admin:";
-  myGroupDiv.appendChild(myGroupDivAdmin);
+      const help = document.createElement("a");
+      help.innerText = "help";
+      help.classList.add("navLink");
+      nav.appendChild(help);
 
-  const myGroupDivMembers = document.createElement("ul");
-  myGroupDivMembers.id = "myGroupDivMembers";
-  myGroupDiv.appendChild(myGroupDivMembers);
+      const userAccountIcon = document.createElement("img");
+      userAccountIcon.id = "userAccountIcon";
+      userAccountIcon.src = "./assets/svg/logIn.svg";
+      nav.appendChild(userAccountIcon);
 
-  const myGroupDivMember = document.createElement("li");
-  myGroupDivMember.id = "myGroupDivMember";
-  myGroupDivMember.innerText = "Group Member";
-  myGroupDivMembers.appendChild(myGroupDivMember);
+      //    Grouppage main
+      body.appendChild(main);
 
-  //    GroupTasks section (on the right side of the screen)
-  const groupTasks = document.createElement("section");
-  groupTasks.id = "groupTasks";
-  main.appendChild(groupTasks);
+      //    GroupDescription section
+      const myGroup = document.createElement("section");
+      myGroup.id = "myGroup";
+      main.appendChild(myGroup);
 
-  //    Group tasks - Create a task button
-  const groupTasksCreateTaskBtn = document.createElement("button");
-  groupTasksCreateTaskBtn.id = "groupTasksCreateTaskBtn";
-  groupTasksCreateTaskBtn.innerText = "Create A Task";
-  groupTasksCreateTaskBtn.classList.add("btn");
-  groupTasks.appendChild(groupTasksCreateTaskBtn);
+      const goBack = document.createElement("a");
+      goBack.id = "goBack";
+      goBack.innerText = "goBack";
+      myGroup.appendChild(goBack);
+      goBack.addEventListener("click", () => {
+        ls.removeItem("currentOwnGroup");
+        window.location.href = `${baseUrl}?page=profile`;
+      });
 
-  //    Group tasks - upcoming tasks 
-  const groupTasksUpcoming = document.createElement("div");
-  groupTasksUpcoming.id = "groupTasksUpcoming";
-  groupTasks.appendChild(groupTasksUpcoming);
+      const myGroupHeadline = document.createElement("h3");
+      myGroupHeadline.id = "myGroupHeadline";
+      myGroupHeadline.innerText = OwnGroup.groupName;
+      myGroup.appendChild(myGroupHeadline);
 
-  const groupTasksUpcomingHeadline = document.createElement("h4");
-  groupTasksUpcomingHeadline.id = "groupTasksUpcomingHeadline";
-  groupTasksUpcomingHeadline.innerText = "Upcoming Group Tasks";
-  groupTasksUpcoming.appendChild(groupTasksUpcomingHeadline);
+      const myGroupDiv = document.createElement("div");
+      myGroupDiv.id = "myGroupDiv";
+      myGroup.appendChild(myGroupDiv);
 
-  const borderGroupTasksUpcTop = document.createElement("div");
-  borderGroupTasksUpcTop.id = "borderGroupTasksUpcTop";
-  borderGroupTasksUpcTop.classList.add("borderHorizontal");
-  groupTasksUpcoming.appendChild(borderGroupTasksUpcTop);
+      const myGroupDivDescription = document.createElement("p");
+      myGroupDivDescription.id = "myGroupDivDescription";
+      myGroupDivDescription.innerText = data.groupDescription;
+      myGroupDiv.appendChild(myGroupDivDescription);
 
-  //   Table to store upcoming tasks
-  const groupTasksUpcShow = document.createElement("table");
-  groupTasksUpcShow.id = "groupTasksUpcShow";
-  groupTasksUpcoming.appendChild(groupTasksUpcShow);
+      const myGroupDivAdmin = document.createElement("p");
+      myGroupDivAdmin.id = "myGroupDivAdmin";
+      myGroupDivAdmin.innerText = `admin: ${data.userName}`;
+      myGroupDiv.appendChild(myGroupDivAdmin);
 
-  const groupTasksUpcShowTr = document.createElement("tr");
-  groupTasksUpcShowTr.id = "groupTasksUpcShowTr";
-  groupTasksUpcShow.appendChild(groupTasksUpcShowTr);
+      const myGroupDivMembers = document.createElement("ul");
+      myGroupDivMembers.id = "myGroupDivMembers";
+      myGroupDiv.appendChild(myGroupDivMembers);
 
-  const groupTasksUpcShowTaskName = document.createElement("td");
-  groupTasksUpcShowTaskName.id = "groupTasksUpcShowTaskName";
-  groupTasksUpcShowTaskName.innerText = "Task Name";
-  groupTasksUpcShowTr.appendChild(groupTasksUpcShowTaskName);
+      if (data.userId == account.userId) {
+        const fetchOpt = {
+          headers: {
+            "Content-type": "application/json",
+            "x-authtoken": mainToken,
+          },
+        };
+        fetch(`${fetchUrl}/api/groupmembers/${OwnGroup.groupId}`, fetchOpt)
+          .then((res) => {
+            if (res.status == 200) {
+              console.log("status: 200");
+              return res.json();
+            }
+          })
+          .then((data) => {
+            if (data.groupMembers) {
+              data.groupMembers.forEach((member) => {
+                const myGroupDivMember = document.createElement("li");
+                myGroupDivMember.id = "myGroupDivMember";
+                myGroupDivMembers.appendChild(myGroupDivMember);
+                const myGroupDivMemberLink = document.createElement("a");
+                myGroupDivMemberLink.id = "myGroupDivMemberLink";
+                myGroupDivMemberLink.innerText = member.userName;
+                myGroupDivMember.appendChild(myGroupDivMemberLink);
 
-  const groupTasksUpcShowTaskColor = document.createElement("td");
-  groupTasksUpcShowTaskColor.id = "groupTasksUpcShowTaskColor";
-  groupTasksUpcShowTaskColor.innerText = "Task Type";
-  groupTasksUpcShowTr.appendChild(groupTasksUpcShowTaskColor);
+                myGroupDivMemberLink.addEventListener("click", () => {
+                  myGroupDivMembers.innerHTML = "";
+                  const groupMemberElm = document.createElement("div");
+                  groupMemberElm.id = "groupMemberElm";
+                  myGroupDivMembers.appendChild(groupMemberElm);
 
-  const borderGroupTasksUpcBottom = document.createElement("div");
-  borderGroupTasksUpcBottom.id = "borderGroupTasksUpcBottom";
-  borderGroupTasksUpcBottom.classList.add("borderHorizontal");
-  groupTasksUpcoming.appendChild(borderGroupTasksUpcBottom);
+                  const groupMemberElmUsername = document.createElement("p");
+                  groupMemberElmUsername.id = "groupMemberElmUsername";
+                  groupMemberElmUsername.innerText = member.userName;
+                  groupMemberElm.appendChild(groupMemberElmUsername);
 
-  //    Section to store all the group's tasks
-  const allGroupTasks = document.createElement("section");
-  allGroupTasks.id = "allGroupTasks";
-  main.appendChild(allGroupTasks);
+                  const groupMemberEmail = document.createElement("p");
+                  groupMemberEmail.id = "groupMemberEmail";
+                  groupMemberEmail.innerText = member.email;
+                  groupMemberElm.appendChild(groupMemberEmail);
 
-  const allGroupTasksHeadline = document.createElement("h3");
-  allGroupTasksHeadline.id = "allGroupTasksHeadline";
-  allGroupTasks.appendChild(allGroupTasksHeadline);
+                  const removeMemberBtn = document.createElement("button");
+                  removeMemberBtn.id = "groupMemberEmail";
+                  removeMemberBtn.innerText = "remove member";
+                  removeMemberBtn.classList.add("btn");
+                  groupMemberElm.appendChild(removeMemberBtn);
 
-  const allGroupTasksTable = document.createElement("table");
-  allGroupTasksTable.id = "allGroupTasksTable";
-  allGroupTasks.appendChild(allGroupTasksTable);
+                  removeMemberBtn.addEventListener("click", () => {
+                    groupMemberElm.innerHTML = "";
 
-  const allGroupTasksTableTr = document.createElement("tr");
-  allGroupTasksTableTr.id = "allGroupTasksTableTr";
-  allGroupTasksTable.appendChild(allGroupTasksTableTr);
+                    const areYouSure = document.createElement("p");
+                    areYouSure.id = "areYouSure";
+                    areYouSure.innerText = `are you sured you want to remove ${member.userName} from the group ?`;
+                    groupMemberElm.appendChild(areYouSure);
 
-  const allGroupTasksTableTaskName = document.createElement("th");
-  allGroupTasksTableTaskName.id = "allGroupTasksTableTaskName";
-  allGroupTasksTableTaskName.innerText = "Task Name";
-  allGroupTasksTableTr.appendChild(allGroupTasksTableTaskName);
+                    const cancelBtn = document.createElement("button");
+                    cancelBtn.id = "cancelBtn";
+                    cancelBtn.innerText = "cancel";
+                    cancelBtn.classList.add("btn");
+                    groupMemberElm.appendChild(cancelBtn);
+                    cancelBtn.addEventListener("click", () => {
+                      window.location.reload();
+                    });
 
-  const allGroupTasksTableTaskAssignedTo = document.createElement("th");
-  allGroupTasksTableTaskAssignedTo.id = "allGroupTasksTableTaskAssignedTo";
-  allGroupTasksTableTaskAssignedTo.innerText = "Assigned To";
-  allGroupTasksTableTr.appendChild(allGroupTasksTableTaskAssignedTo);
+                    const removeBtn = document.createElement("button");
+                    removeBtn.id = "removeBtn";
+                    removeBtn.innerText = "confirm";
+                    removeBtn.classList.add("btn");
+                    groupMemberElm.appendChild(removeBtn);
+                    removeBtn.addEventListener("click", () => {
+                      const fetchOpt = {
+                        method: "DELETE",
+                        headers: {
+                          "Content-type": "application/json",
+                          "x-authtoken": mainToken,
+                        },
+                      };
+                      fetch(
+                        `${fetchUrl}/api/groupmembers/${OwnGroup.groupId}/${member.email}`,
+                        fetchOpt
+                      )
+                        .then((res) => {
+                          if (res.status == 200) {
+                            console.log("status: 200");
+                            return res.json();
+                          }
+                        })
+                        .then((data) => {
+                          groupMemberElm.innerHTML = "";
+                          const removedMemberCOn = document.createElement("p");
+                          removedMemberCOn.id = "removedMember";
+                          removedMemberCOn.innerText = `removed ${member.userName} from the group`;
+                          groupMemberElm.appendChild(removedMemberCOn);
 
-  const allGroupTasksTableTaskDueDate = document.createElement("th");
-  allGroupTasksTableTaskDueDate.id = "allGroupTasksTableTaskDueDate";
-  allGroupTasksTableTaskDueDate.innerText = "Due Date";
-  allGroupTasksTableTr.appendChild(allGroupTasksTableTaskDueDate);
+                          reloadWINDOW = () => {
+                            window.location.reload();
+                          };
 
-  const allGroupTasksTableTaskStatus = document.createElement("th");
-  allGroupTasksTableTaskStatus.id = "allGroupTasksTableTaskStatus";
-  allGroupTasksTableTaskStatus.innerText = "Status";
-  allGroupTasksTableTr.appendChild(allGroupTasksTableTaskStatus);
+                          setTimeout(reloadWINDOW, 3000);
+                        });
+                    });
+                  });
+                });
+              });
+            }
+          });
 
-  const allGroupTasksTableTaskLabel = document.createElement("th");
-  allGroupTasksTableTaskLabel.id = "allGroupTasksTableTaskLabel";
-  allGroupTasksTableTaskLabel.innerText = "Task Label";
-  allGroupTasksTableTr.appendChild(allGroupTasksTableTaskLabel);
+        const deleteGroupBtn = document.createElement("button");
+        deleteGroupBtn.id = "leaveBtn";
+        deleteGroupBtn.classList.add("btn");
+        deleteGroupBtn.innerText = "delete the group";
+        myGroupDiv.appendChild(deleteGroupBtn);
 
+        deleteGroupBtn.addEventListener("click", () => {
+          const confirmLeaveDiv = document.createElement("div");
+          confirmLeaveDiv.id = "confirmLeaveDiv";
+          myGroupDiv.appendChild(confirmLeaveDiv);
 
-  //  aside on the group page
-  const aside = document.createElement("aside");
-  aside.id = "aside";
-  body.appendChild(aside);
+          const confirmLeaveP = document.createElement("p");
+          confirmLeaveP.id = "confirmLeaveP";
+          confirmLeaveP.innerText =
+            "Are you sure you want to delete this group?";
+          confirmLeaveDiv.appendChild(confirmLeaveP);
 
-  const headlineAside = document.createElement("h2");
-  headlineAside.id = "operatingBtnsSect";
-  headlineAside.innerText = "My Tasks";
-  aside.appendChild(headlineAside);
+          const cancelBtn = document.createElement("button");
+          cancelBtn.id = "cancelBtn";
+          cancelBtn.innerText = "cancel";
+          cancelBtn.classList.add("btn");
+          confirmLeaveDiv.appendChild(cancelBtn);
+          cancelBtn.addEventListener("click", () => {
+            window.location.reload();
+          });
 
-  const upcomTaskSect = document.createElement("section");
-  upcomTaskSect.id = "upcomTaskSect";
-  aside.appendChild(upcomTaskSect);
+          const confirmBtn = document.createElement("button");
+          confirmBtn.id = "confirmBtn";
+          confirmBtn.innerText = "confirm";
+          confirmBtn.classList.add("btn");
+          confirmLeaveDiv.appendChild(confirmBtn);
+          goBackProfile = () => {
+            window.location.href = `${baseUrl}?page=profile`;
+          };
+          confirmBtn.addEventListener("click", () => {
+            const fetchOpt = {
+              method: "DELETE",
+              headers: {
+                "Content-type": "application/json",
+                "x-authtoken": mainToken,
+              },
+            };
 
-  const upComHeadline = document.createElement("h4");
-  upComHeadline.id = "upComHeadline";
-  upComHeadline.innerText = "Upcoming";
-  upcomTaskSect.appendChild(upComHeadline);
+            fetch(`${fetchUrl}/api/groups/${OwnGroup.groupId}`, fetchOpt)
+              .then((res) => {
+                if (res.status == 200) {
+                  console.log("status: 200");
+                  return res.json();
+                }
+              })
 
-  const borderUpComTop = document.createElement("div");
-  borderUpComTop.id = "borderUpComTop";
-  borderUpComTop.classList.add("borderHorizontal");
-  upcomTaskSect.appendChild(borderUpComTop);
+              .then((data) => {
+                const confirmLeaveP = document.createElement("p");
+                confirmLeaveP.id = "confirmLeaveP";
+                confirmLeaveP.innerText = `deleted ${data.groupName}`;
+                confirmLeaveDiv.appendChild(confirmLeaveP);
 
-  const upComTasks = document.createElement("section");
-  upComTasks.id = "upComTasks";
-  upcomTaskSect.appendChild(upComTasks);
+                ls.removeItem("currentOwnGroup");
+                setTimeout(goBackProfile(), 1000);
+              });
+          });
+        });
+      }
 
-  const borderUpComBottom = document.createElement("div");
-  borderUpComBottom.id = "borderUpComBottom";
-  borderUpComBottom.classList.add("borderHorizontal");
-  upcomTaskSect.appendChild(borderUpComBottom);
+      if (data.userId != account.userId) {
+        console.log(data.FK_userId);
+        console.log("not an admin");
+        const leaveBtn = document.createElement("button");
+        leaveBtn.id = "leaveBtn";
+        leaveBtn.classList.add("btn");
+        leaveBtn.innerText = "leave the group";
+        myGroupDiv.appendChild(leaveBtn);
 
-  const operatingBtnsSect = document.createElement("section");
-  operatingBtnsSect.id = "operatingBtnsSect";
-  operatingBtnsSect.classList.add("flex_column");
-  aside.appendChild(operatingBtnsSect);
+        leaveBtn.addEventListener("click", () => {
+          const confirmLeaveDiv = document.createElement("div");
+          confirmLeaveDiv.id = "confirmLeaveDiv";
+          myGroupDiv.appendChild(confirmLeaveDiv);
 
-  const homeworkBtn = document.createElement("a");
-  homeworkBtn.id = "homeworkBtn";
-  homeworkBtn.innerText = "My Homework";
-  homeworkBtn.classList.add("operBtns");
-  homeworkBtn.href = `${baseUrl}?page=HomeworkPage`
-  operatingBtnsSect.appendChild(homeworkBtn);
+          const confirmLeaveP = document.createElement("p");
+          confirmLeaveP.id = "confirmLeaveP";
+          confirmLeaveP.innerText =
+            "Are you sure you want to leave this group?";
+          confirmLeaveDiv.appendChild(confirmLeaveP);
 
-  const projectsBtn = document.createElement("a");
-  projectsBtn.id = "projectsBtn";
-  projectsBtn.innerText = "My Projects";
-  projectsBtn.classList.add("operBtns");
-  operatingBtnsSect.appendChild(projectsBtn);
+          const cancelBtn = document.createElement("button");
+          cancelBtn.id = "cancelBtn";
+          cancelBtn.innerText = "cancel";
+          cancelBtn.classList.add("btn");
+          confirmLeaveDiv.appendChild(cancelBtn);
+          cancelBtn.addEventListener("click", () => {
+            window.location.reload();
+          });
 
-  const assigmentsBtn = document.createElement("a");
-  assigmentsBtn.id = "assigmentsBtn";
-  assigmentsBtn.innerText = "My Assigments";
-  assigmentsBtn.classList.add("operBtns");
-  operatingBtnsSect.appendChild(assigmentsBtn);
+          const confirmBtn = document.createElement("button");
+          confirmBtn.id = "confirmBtn";
+          confirmBtn.innerText = "confirm";
+          confirmBtn.classList.add("btn");
+          confirmLeaveDiv.appendChild(confirmBtn);
+          goBackProfile = () => {
+            window.location.href = `${baseUrl}?page=profile`;
+          };
+          confirmBtn.addEventListener("click", () => {
+            const fetchOpt = {
+              method: "DELETE",
+              headers: {
+                "Content-type": "application/json",
+                "x-authtoken": mainToken,
+              },
+            };
 
-  const showAllDone = document.createElement("a");
-  showAllDone.id = "showAllDone";
-  showAllDone.innerText = "Show All Finished Tasks";
-  showAllDone.classList.add("operBtns");
-  operatingBtnsSect.appendChild(showAllDone);
+            fetch(
+              `${fetchUrl}/api/groupmembers/${OwnGroup.groupId}/${account.userId}`,
+              fetchOpt
+            )
+              .then((res) => {
+                if (res.status == 200) {
+                  console.log("status: 200");
+                  return res.json();
+                }
+              })
+
+              .then((data) => {
+                const confirmLeaveP = document.createElement("p");
+                confirmLeaveP.id = "confirmLeaveP";
+                confirmLeaveP.innerText = `Left ${data.groupName}`;
+                confirmLeaveDiv.appendChild(confirmLeaveP);
+
+                ls.removeItem("currentOwnGroup");
+                setTimeout(goBackProfile(), 1000);
+              });
+          });
+        });
+      }
+
+      //    GroupTasks section (on the right side of the screen)
+      const groupTasks = document.createElement("section");
+      groupTasks.id = "groupTasks";
+      main.appendChild(groupTasks);
+
+      //    Group tasks - Create a task button
+      const groupTasksCreateTaskBtn = document.createElement("button");
+      groupTasksCreateTaskBtn.id = "groupTasksCreateTaskBtn";
+      groupTasksCreateTaskBtn.innerText = "Create A Task";
+      groupTasksCreateTaskBtn.classList.add("btn");
+      groupTasks.appendChild(groupTasksCreateTaskBtn);
+
+      //    Group tasks - upcoming tasks
+      const groupTasksUpcoming = document.createElement("div");
+      groupTasksUpcoming.id = "groupTasksUpcoming";
+      groupTasks.appendChild(groupTasksUpcoming);
+
+      const groupTasksUpcomingHeadline = document.createElement("h4");
+      groupTasksUpcomingHeadline.id = "groupTasksUpcomingHeadline";
+      groupTasksUpcomingHeadline.innerText = "Upcoming Group Tasks";
+      groupTasksUpcoming.appendChild(groupTasksUpcomingHeadline);
+
+      const borderGroupTasksUpcTop = document.createElement("div");
+      borderGroupTasksUpcTop.id = "borderGroupTasksUpcTop";
+      borderGroupTasksUpcTop.classList.add("borderHorizontal");
+      groupTasksUpcoming.appendChild(borderGroupTasksUpcTop);
+
+      //   Table to store upcoming tasks
+      const groupTasksUpcShow = document.createElement("table");
+      groupTasksUpcShow.id = "groupTasksUpcShow";
+      groupTasksUpcoming.appendChild(groupTasksUpcShow);
+
+      const groupTasksUpcShowTr = document.createElement("tr");
+      groupTasksUpcShowTr.id = "groupTasksUpcShowTr";
+      groupTasksUpcShow.appendChild(groupTasksUpcShowTr);
+
+      const groupTasksUpcShowTaskName = document.createElement("td");
+      groupTasksUpcShowTaskName.id = "groupTasksUpcShowTaskName";
+      groupTasksUpcShowTaskName.innerText = "Task Name";
+      groupTasksUpcShowTr.appendChild(groupTasksUpcShowTaskName);
+
+      const groupTasksUpcShowTaskColor = document.createElement("td");
+      groupTasksUpcShowTaskColor.id = "groupTasksUpcShowTaskColor";
+      groupTasksUpcShowTaskColor.innerText = "Task Type";
+      groupTasksUpcShowTr.appendChild(groupTasksUpcShowTaskColor);
+
+      const borderGroupTasksUpcBottom = document.createElement("div");
+      borderGroupTasksUpcBottom.id = "borderGroupTasksUpcBottom";
+      borderGroupTasksUpcBottom.classList.add("borderHorizontal");
+      groupTasksUpcoming.appendChild(borderGroupTasksUpcBottom);
+
+      //    Section to store all the group's tasks
+      const allGroupTasks = document.createElement("section");
+      allGroupTasks.id = "allGroupTasks";
+      main.appendChild(allGroupTasks);
+
+      const allGroupTasksHeadline = document.createElement("h3");
+      allGroupTasksHeadline.id = "allGroupTasksHeadline";
+      allGroupTasks.appendChild(allGroupTasksHeadline);
+
+      const allGroupTasksTable = document.createElement("table");
+      allGroupTasksTable.id = "allGroupTasksTable";
+      allGroupTasks.appendChild(allGroupTasksTable);
+
+      const allGroupTasksTableTr = document.createElement("tr");
+      allGroupTasksTableTr.id = "allGroupTasksTableTr";
+      allGroupTasksTable.appendChild(allGroupTasksTableTr);
+
+      const allGroupTasksTableTaskName = document.createElement("th");
+      allGroupTasksTableTaskName.id = "allGroupTasksTableTaskName";
+      allGroupTasksTableTaskName.innerText = "Task Name";
+      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskName);
+
+      const allGroupTasksTableTaskAssignedTo = document.createElement("th");
+      allGroupTasksTableTaskAssignedTo.id = "allGroupTasksTableTaskAssignedTo";
+      allGroupTasksTableTaskAssignedTo.innerText = "Assigned To";
+      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskAssignedTo);
+
+      const allGroupTasksTableTaskDueDate = document.createElement("th");
+      allGroupTasksTableTaskDueDate.id = "allGroupTasksTableTaskDueDate";
+      allGroupTasksTableTaskDueDate.innerText = "Due Date";
+      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskDueDate);
+
+      const allGroupTasksTableTaskStatus = document.createElement("th");
+      allGroupTasksTableTaskStatus.id = "allGroupTasksTableTaskStatus";
+      allGroupTasksTableTaskStatus.innerText = "Status";
+      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskStatus);
+
+      const allGroupTasksTableTaskLabel = document.createElement("th");
+      allGroupTasksTableTaskLabel.id = "allGroupTasksTableTaskLabel";
+      allGroupTasksTableTaskLabel.innerText = "Task Label";
+      allGroupTasksTableTr.appendChild(allGroupTasksTableTaskLabel);
+
+      //  aside on the group page
+      const aside = document.createElement("aside");
+      aside.id = "aside";
+      body.appendChild(aside);
+
+      const headlineAside = document.createElement("h2");
+      headlineAside.id = "operatingBtnsSect";
+      headlineAside.innerText = "My Tasks";
+      aside.appendChild(headlineAside);
+
+      const upcomTaskSect = document.createElement("section");
+      upcomTaskSect.id = "upcomTaskSect";
+      aside.appendChild(upcomTaskSect);
+
+      const upComHeadline = document.createElement("h4");
+      upComHeadline.id = "upComHeadline";
+      upComHeadline.innerText = "Upcoming";
+      upcomTaskSect.appendChild(upComHeadline);
+
+      const borderUpComTop = document.createElement("div");
+      borderUpComTop.id = "borderUpComTop";
+      borderUpComTop.classList.add("borderHorizontal");
+      upcomTaskSect.appendChild(borderUpComTop);
+
+      const upComTasks = document.createElement("section");
+      upComTasks.id = "upComTasks";
+      upcomTaskSect.appendChild(upComTasks);
+
+      const borderUpComBottom = document.createElement("div");
+      borderUpComBottom.id = "borderUpComBottom";
+      borderUpComBottom.classList.add("borderHorizontal");
+      upcomTaskSect.appendChild(borderUpComBottom);
+
+      const operatingBtnsSect = document.createElement("section");
+      operatingBtnsSect.id = "operatingBtnsSect";
+      operatingBtnsSect.classList.add("flex_column");
+      aside.appendChild(operatingBtnsSect);
+
+      const homeworkBtn = document.createElement("a");
+      homeworkBtn.id = "homeworkBtn";
+      homeworkBtn.innerText = "My Homework";
+      homeworkBtn.classList.add("operBtns");
+      operatingBtnsSect.appendChild(homeworkBtn);
+
+      const projectsBtn = document.createElement("a");
+      projectsBtn.id = "projectsBtn";
+      projectsBtn.innerText = "My Projects";
+      projectsBtn.classList.add("operBtns");
+      operatingBtnsSect.appendChild(projectsBtn);
+
+      const assigmentsBtn = document.createElement("a");
+      assigmentsBtn.id = "assigmentsBtn";
+      assigmentsBtn.innerText = "My Assigments";
+      assigmentsBtn.classList.add("operBtns");
+      operatingBtnsSect.appendChild(assigmentsBtn);
+
+      const showAllDone = document.createElement("a");
+      showAllDone.id = "showAllDone";
+      showAllDone.innerText = "Show All Finished Tasks";
+      showAllDone.classList.add("operBtns");
+      operatingBtnsSect.appendChild(showAllDone);
+    });
 };
 
 //getUrl();
@@ -2181,6 +3492,10 @@ window.addEventListener("DOMContentLoaded", (e) => {
         case "createAccount":
           console.log("you are on create account page");
           loadCreateAccountPage();
+          break;
+
+        case "signIn":
+          loadSinglelogPage();
           break;
 
         case "profile":
