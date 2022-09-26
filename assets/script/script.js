@@ -78,28 +78,28 @@ loadLogInPage = () => {
             return res.json();
           case 400:
             console.log("status 400");
-            errorMes.innerText = "Badly formatted request payload";
-            mainSignUp.appendChild(errorMes);
+            errorMes.innerText = "Incorrect email or password";
+            logInSect.appendChild(errorMes);
             break;
           case 401:
             console.log("status 401");
-            errorMes.innerText = "cannot use this email";
-            mainSignUp.appendChild(errorMes);
+            errorMes.innerText = "Incorrect email or password";
+            logInSect.appendChild(errorMes);
             break;
           case 404:
             console.log("status 404");
-            errorMes.innerText = "action failed";
-            mainSignUp.appendChild(errorMes);
+            errorMes.innerText = "Incorrect email or password";
+            logInSect.appendChild(errorMes);
             break;
           case 500:
             console.log("status 500");
-            errorMes.innerText = "Incorrect data";
-            mainSignUp.appendChild(errorMes);
+            errorMes.innerText = "Incorrect email or password";
+            logInSect.appendChild(errorMes);
             break;
 
           default:
-            errorMes.innerText = "Incorrect data";
-            mainSignUp.appendChild(errorMes);
+            errorMes.innerText = "Incorrect email or password";
+            logInSect.appendChild(errorMes);
             break;
         }
       })
@@ -320,6 +320,8 @@ loadCreateAccountPage = () => {
         userName: user.userName,
       };
 
+      console.log(payload);
+
       const fetchOpt = {
         method: "POST",
         headers: {
@@ -454,8 +456,121 @@ loadProfilePage = () => {
     pDivAccSet.appendChild(emailp);
 
     const descriptionp = document.createElement("p");
-    descriptionp.innerText = `bio: ${account.accountDescription}`;
-    pDivAccSet.appendChild(descriptionp);
+    if (account.accountDescription && account.accountDescription != null) {
+      descriptionp.innerText = `bio: ${account.accountDescription}`;
+      pDivAccSet.appendChild(descriptionp);
+    } else {
+      const changeAccountDescription = document.createElement("button");
+      changeAccountDescription.innerText = `Add Bio`;
+      changeAccountDescription.classList.add("btn");
+      pDivAccSet.appendChild(changeAccountDescription);
+
+      changeAccountDescription.addEventListener("click", () => {
+        accSideBar.innerHTML = "";
+        const changeAccountDescriptionDiv = document.createElement("div");
+        changeAccountDescriptionDiv.id = "changeUserNameDiv";
+        accSideBar.appendChild(changeAccountDescriptionDiv);
+
+        const changeDescriptionInpDiv = document.createElement("div");
+        changeDescriptionInpDiv.id = "changeUserNameCur";
+        changeAccountDescriptionDiv.appendChild(changeDescriptionInpDiv);
+
+        const changeDescriptionCur = document.createElement("p");
+        changeDescriptionCur.id = "changeUserNameCur";
+        if (account.accountDescription && account.accountDescription != null) {
+          changeDescriptionCur.innerText = `current bio: ${account.accountDescription}`;
+        } else {
+          changeDescriptionCur.innerText = `no bio`;
+        }
+
+        changeDescriptionInpDiv.appendChild(changeDescriptionCur);
+
+        const changeDescriptionInp = document.createElement("input");
+        changeDescriptionInp.id = "changeUserNameInp";
+        changeDescriptionInp.type = "text";
+        changeDescriptionInp.placeholder = "new bio";
+        changeDescriptionInpDiv.appendChild(changeDescriptionInp);
+
+        const changeUserCancel = document.createElement("button");
+        changeUserCancel.id = "changeUserCancel";
+        changeUserCancel.innerText = "cancel";
+        changeUserCancel.classList.add("btn");
+        changeAccountDescriptionDiv.appendChild(changeUserCancel);
+
+        changeUserCancel.addEventListener("click", () => {
+          window.location.reload();
+        });
+
+        const changeBioSubmit = document.createElement("button");
+        changeBioSubmit.id = "changeUserSubmit";
+        changeBioSubmit.innerText = "submit";
+        changeBioSubmit.classList.add("btn");
+        changeAccountDescriptionDiv.appendChild(changeBioSubmit);
+
+        changeBioSubmit.addEventListener("click", () => {
+          const errorMes = document.createElement("p");
+          errorMes.innerHTML = "";
+          const payload = {
+            newDescription: changeDescriptionInp.value,
+          };
+
+          const fetchOpt = {
+            method: "PUT",
+            headers: {
+              "Content-type": "application/json",
+              "x-authToken": mainToken,
+            },
+            body: JSON.stringify(payload),
+          };
+
+          fetch(`${fetchUrl}/api/accounts/own/description`, fetchOpt)
+            .then((res) => {
+              switch (res.status) {
+                case 200:
+                  console.log("status 200");
+                  return res.json();
+                case 400:
+                  console.log("status 400");
+                  errorMes.innerText = "Badly formatted request payload";
+                  pDivAccSet.appendChild(errorMes);
+                  break;
+                case 404:
+                  console.log("status 404");
+                  errorMes.innerText = "action failed";
+                  pDivAccSet.appendChild(errorMes);
+                  break;
+                case 500:
+                  console.log("status 500");
+                  errorMes.innerText = "Incorrect data";
+                  pDivAccSet.appendChild(errorMes);
+                  break;
+
+                default:
+                  errorMes.innerText = "Incorrect data";
+                  pDivAccSet.appendChild(errorMes);
+                  break;
+              }
+            })
+
+            .then((data) => {
+              if (!data.statusCode && Object.keys(data).length != 0) {
+                ls.setItem("account", JSON.stringify(data));
+                console.log(ls.getItem("account"));
+                console.log(`this is the account ${ls.getItem("account")}`);
+              }
+
+              changeUserNameDiv.innerHTML = "";
+              changeUserNameDiv.innerText = `Your bio has been updated`;
+
+              reloadWINDOW = () => {
+                window.location.reload();
+              };
+
+              setTimeout(reloadWINDOW, 1500);
+            });
+        });
+      });
+    }
 
     // buttons
 
@@ -509,7 +624,7 @@ loadProfilePage = () => {
         const errorMes = document.createElement("p");
         errorMes.innerHTML = "";
         const payload = {
-          displayName: changeUserNameInp.value,
+          newDisplayName: changeUserNameInp.value,
         };
 
         const fetchOpt = {
@@ -521,7 +636,7 @@ loadProfilePage = () => {
           body: JSON.stringify(payload),
         };
 
-        fetch(`${fetchUrl}/api/accounts/own`, fetchOpt)
+        fetch(`${fetchUrl}/api/accounts/own/name`, fetchOpt)
           .then((res) => {
             switch (res.status) {
               case 200:
@@ -530,22 +645,22 @@ loadProfilePage = () => {
               case 400:
                 console.log("status 400");
                 errorMes.innerText = "Badly formatted request payload";
-                mainSignUp.appendChild(errorMes);
+                changeUserNameDiv.appendChild(errorMes);
                 break;
               case 404:
                 console.log("status 404");
                 errorMes.innerText = "action failed";
-                mainSignUp.appendChild(errorMes);
+                changeUserNameDiv.appendChild(errorMes);
                 break;
               case 500:
                 console.log("status 500");
                 errorMes.innerText = "Incorrect data";
-                mainSignUp.appendChild(errorMes);
+                changeUserNameDiv.appendChild(errorMes);
                 break;
 
               default:
                 errorMes.innerText = "Incorrect data";
-                mainSignUp.appendChild(errorMes);
+                changeUserNameDiv.appendChild(errorMes);
                 break;
             }
           })
@@ -568,6 +683,121 @@ loadProfilePage = () => {
           });
       });
     });
+
+    if (!account.accountDescription && account.accountDescription == null) {
+      console.log("no bio");
+    } else {
+      const changeAccountDescription = document.createElement("button");
+      changeAccountDescription.innerText = `Change Bio`;
+      changeAccountDescription.classList.add("btn");
+      btnAccSet.appendChild(changeAccountDescription);
+
+      changeAccountDescription.addEventListener("click", () => {
+        accSideBar.innerHTML = "";
+        const changeAccountDescriptionDiv = document.createElement("div");
+        changeAccountDescriptionDiv.id = "changeUserNameDiv";
+        accSideBar.appendChild(changeAccountDescriptionDiv);
+
+        const changeDescriptionInpDiv = document.createElement("div");
+        changeDescriptionInpDiv.id = "changeUserNameCur";
+        changeAccountDescriptionDiv.appendChild(changeDescriptionInpDiv);
+
+        const changeDescriptionCur = document.createElement("p");
+        changeDescriptionCur.id = "changeUserNameCur";
+        if (account.accountDescription && account.accountDescription != null) {
+          changeDescriptionCur.innerText = `current bio: ${account.accountDescription}`;
+        } else {
+          changeDescriptionCur.innerText = `no bio`;
+        }
+
+        changeDescriptionInpDiv.appendChild(changeDescriptionCur);
+
+        const changeDescriptionInp = document.createElement("input");
+        changeDescriptionInp.id = "changeUserNameInp";
+        changeDescriptionInp.type = "text";
+        changeDescriptionInp.placeholder = "new bio";
+        changeDescriptionInpDiv.appendChild(changeDescriptionInp);
+
+        const changeUserCancel = document.createElement("button");
+        changeUserCancel.id = "changeUserCancel";
+        changeUserCancel.innerText = "cancel";
+        changeUserCancel.classList.add("btn");
+        changeAccountDescriptionDiv.appendChild(changeUserCancel);
+
+        changeUserCancel.addEventListener("click", () => {
+          window.location.reload();
+        });
+
+        const changeBioSubmit = document.createElement("button");
+        changeBioSubmit.id = "changeUserSubmit";
+        changeBioSubmit.innerText = "submit";
+        changeBioSubmit.classList.add("btn");
+        changeAccountDescriptionDiv.appendChild(changeBioSubmit);
+
+        changeBioSubmit.addEventListener("click", () => {
+          const errorMes = document.createElement("p");
+
+          const payload = {
+            newDescription: changeDescriptionInp.value,
+          };
+
+          const fetchOpt = {
+            method: "PUT",
+            headers: {
+              "Content-type": "application/json",
+              "x-authToken": mainToken,
+            },
+            body: JSON.stringify(payload),
+          };
+
+          fetch(`${fetchUrl}/api/accounts/own/description`, fetchOpt)
+            .then((res) => {
+              switch (res.status) {
+                case 200:
+                  console.log("status 200");
+                  return res.json();
+                case 400:
+                  console.log("status 400");
+                  errorMes.innerText = "Badly formatted request payload";
+                  changeAccountDescriptionDiv.appendChild(errorMes);
+                  break;
+                case 404:
+                  console.log("status 404");
+                  errorMes.innerText = "action failed";
+                  changeAccountDescriptionDiv.appendChild(errorMes);
+                  break;
+                case 500:
+                  console.log("status 500");
+                  errorMes.innerText = "Incorrect data";
+                  changeAccountDescriptionDiv.appendChild(errorMes);
+                  break;
+
+                default:
+                  errorMes.innerText = "Incorrect data";
+                  changeAccountDescriptionDiv.appendChild(errorMes);
+                  break;
+              }
+            })
+
+            .then((data) => {
+              if (!data.statusCode && Object.keys(data).length != 0) {
+                ls.setItem("account", JSON.stringify(data));
+                console.log(ls.getItem("account"));
+                console.log(`this is the account ${ls.getItem("account")}`);
+              }
+
+              changeUserNameDiv.innerHTML = "";
+              changeUserNameDiv.innerText = `Your bio has been updated`;
+
+              reloadWINDOW = () => {
+                window.location.reload();
+              };
+
+              setTimeout(reloadWINDOW, 1500);
+            });
+        });
+      });
+    }
 
     const logOff = document.createElement("button");
     logOff.innerText = `Log Off`;
@@ -697,6 +927,7 @@ loadProfilePage = () => {
 
   const recentGroupsShow = document.createElement("section");
   recentGroupsShow.id = "recentGroupsShow";
+  recentGroupsShow.classList.add("flex_column");
   recentGroups.appendChild(recentGroupsShow);
 
   const fetchOpt = {
@@ -707,7 +938,9 @@ loadProfilePage = () => {
   };
   console.log(mainToken);
   const errorMes = document.createElement("p");
-  errorMes.innerHTML = "";
+  window.addEventListener("load", (e) => {
+    errorMes.innerHTML = "";
+  });
 
   fetch(`${fetchUrl}/api/groupmembers/membership`, fetchOpt)
     .then((res) => {
@@ -962,33 +1195,6 @@ loadProfilePage = () => {
         }
       })
       .then((data) => {
-        // console.log(data);
-        // myBoardDiv.innerHTML = "";
-
-        // const showAllTasksList = document.createElement("ul");
-        // showAllTasksList.id = "showAllTasksList";
-        // myBoardDiv.appendChild(showAllTasksList);
-
-        // data.forEach((task) => {
-        //   const showAllTasksListItem = document.createElement("li");
-        //   showAllTasksListItem.id = "showAllTasksList";
-        //   showAllTasksListItem.innerText = task.tasksubject;
-        //   switch (task.FK_labelId) {
-        //     case 1:
-        //       showAllTasksListItem.classList.add("labelId1");
-        //       break;
-        //     case 2:
-        //       showAllTasksListItem.classList.add("labelId2");
-        //       break;
-        //     case 3:
-        //       showAllTasksListItem.classList.add("labelId3");
-        //       break;
-        //     default:
-        //       break;
-        //   }
-        //   showAllTasksList.appendChild(showAllTasksListItem);
-        // });
-
         if (!data.statusCode && Object.keys(data).length != 0) {
           console.log(data);
           myBoardDiv.innerHTML = "";
@@ -1120,17 +1326,16 @@ loadProfilePage = () => {
           let dayDifference;
           let daysUntil;
           switch (true) {
+            case dueDate - curent < 86400000:
+              timeDiffrence = curent - dueDate;
+              dayDifference = timeDiffrence / (1000 * 3600);
+              daysUntil = Math.round(dayDifference);
+              PdaysUntil = Math.abs(daysUntil);
+               showAllTasksListItemDate.innerText = `${PdaysUntil} hours left`;
+              break;
             case dueDate > curent:
               timeDiffrence = dueDate - curent;
               dayDifference = timeDiffrence / (1000 * 3600 * 24);
-              console.log("timeDiffrence");
-              console.log(timeDiffrence);
-              console.log("dayDifference");
-              console.log(dayDifference);
-              console.log("dueDate");
-              console.log(dueDate);
-              console.log("curent");
-              console.log(curent);
               daysUntil = Math.round(dayDifference);
               showAllTasksListItemDate.innerText = `${daysUntil} days`;
               break;
@@ -1558,7 +1763,7 @@ createGroupFunction = () => {
 
       .then((data) => {
         if (!data.statusCode && Object.keys(data).length != 0) {
-          addGroupMembers(createBtns, data.groupName);
+          addGroupMembers(createBtns, data);
         } else {
           errorMes.innerText = "Invalid input";
           logInSect.appendChild(errorMes);
@@ -1700,7 +1905,7 @@ getAllGroupsFunction = (div) => {
                   div.appendChild(addmemberBtn);
                   addmemberBtn.addEventListener("click", (e) => {
                     div.innerHTML = "";
-                    addGroupMembers(div, group.groupName);
+                    addGroupMembers(div, group);
                   });
                 }
               });
@@ -1713,7 +1918,7 @@ getAllGroupsFunction = (div) => {
     });
 };
 
-addGroupMembers = (div, name) => {
+addGroupMembers = (div, group) => {
   const exitIconLink = document.createElement("a");
   const exitIcon = document.createElement("img");
 
@@ -1727,7 +1932,7 @@ addGroupMembers = (div, name) => {
   });
 
   const groupTitle = document.createElement("h4");
-  groupTitle.innerText = name;
+  groupTitle.innerText = group.groupName;
   div.appendChild(groupTitle);
 
   const addMembersInp = document.createElement("input");
@@ -1758,9 +1963,6 @@ addGroupMembers = (div, name) => {
         switch (res.status) {
           case 200:
             console.log("status 200");
-            const token = res.headers.get("x-authToken");
-            ls.setItem("token", token);
-            console.log(`this is token: ${ls.getItem("token")}`);
             return res.json();
           case 400:
             console.log("status 400");
@@ -1792,10 +1994,57 @@ addGroupMembers = (div, name) => {
 
       .then((data) => {
         if (!data.statusCode && Object.keys(data).length != 0) {
-          const memberName = data.userName;
-          const memberPName = document.createElement("p");
-          memberPName.innerText = memberName;
-          div.appendChild(memberPName);
+          const payload = {
+            newMember: data.userId,
+          };
+
+          const fetchOpt = {
+            method: "POST",
+            headers: {
+              "Content-type": "application/json",
+              "x-authtoken": mainToken,
+            },
+            body: JSON.stringify(payload),
+          };
+          fetch(`${fetchUrl}/api/groupmembers/${group.groupId}`, fetchOpt)
+            .then((res) => {
+              switch (res.status) {
+                case 200:
+                  console.log("status 200");
+                  return res.json();
+                case 400:
+                  console.log("status 400");
+                  errorMes.innerText = "Badly formatted request payload";
+                  mainSignUp.appendChild(errorMes);
+                  break;
+                case 401:
+                  console.log("status 401");
+                  errorMes.innerText = "user already exists in the group";
+                  mainSignUp.appendChild(errorMes);
+                  break;
+                case 404:
+                  console.log("status 404");
+                  errorMes.innerText = "action failed";
+                  mainSignUp.appendChild(errorMes);
+                  break;
+                case 500:
+                  console.log("status 500");
+                  errorMes.innerText = "Incorrect data";
+                  mainSignUp.appendChild(errorMes);
+                  break;
+
+                default:
+                  errorMes.innerText = "Incorrect data";
+                  mainSignUp.appendChild(errorMes);
+                  break;
+              }
+            })
+            .then((data) => {
+              const memberName = data.userName;
+              const memberPName = document.createElement("p");
+              memberPName.innerText = memberName;
+              div.appendChild(memberPName);
+            });
         } else {
           errorMes.innerText = "Invalid input";
           logInSect.appendChild(errorMes);
@@ -1832,9 +2081,6 @@ loadGroupPage = () => {
       switch (res.status) {
         case 200:
           console.log("status 200");
-          const token = res.headers.get("x-authToken");
-          ls.setItem("token", token);
-          console.log(`this is token: ${ls.getItem("token")}`);
           return res.json();
         case 401:
           console.log("status 401");
@@ -2036,6 +2282,69 @@ loadGroupPage = () => {
               });
             }
           });
+
+        const deleteGroupBtn = document.createElement("button");
+        deleteGroupBtn.id = "leaveBtn";
+        deleteGroupBtn.classList.add("btn");
+        deleteGroupBtn.innerText = "delete the group";
+        myGroupDiv.appendChild(deleteGroupBtn);
+
+        deleteGroupBtn.addEventListener("click", () => {
+          const confirmLeaveDiv = document.createElement("div");
+          confirmLeaveDiv.id = "confirmLeaveDiv";
+          myGroupDiv.appendChild(confirmLeaveDiv);
+
+          const confirmLeaveP = document.createElement("p");
+          confirmLeaveP.id = "confirmLeaveP";
+          confirmLeaveP.innerText =
+            "Are you sure you want to delete this group?";
+          confirmLeaveDiv.appendChild(confirmLeaveP);
+
+          const cancelBtn = document.createElement("button");
+          cancelBtn.id = "cancelBtn";
+          cancelBtn.innerText = "cancel";
+          cancelBtn.classList.add("btn");
+          confirmLeaveDiv.appendChild(cancelBtn);
+          cancelBtn.addEventListener("click", () => {
+            window.location.reload();
+          });
+
+          const confirmBtn = document.createElement("button");
+          confirmBtn.id = "confirmBtn";
+          confirmBtn.innerText = "confirm";
+          confirmBtn.classList.add("btn");
+          confirmLeaveDiv.appendChild(confirmBtn);
+          goBackProfile = () => {
+            window.location.href = `${baseUrl}?page=profile`;
+          };
+          confirmBtn.addEventListener("click", () => {
+            const fetchOpt = {
+              method: "DELETE",
+              headers: {
+                "Content-type": "application/json",
+                "x-authtoken": mainToken,
+              },
+            };
+
+            fetch(`${fetchUrl}/api/groups/${OwnGroup.groupId}`, fetchOpt)
+              .then((res) => {
+                if (res.status == 200) {
+                  console.log("status: 200");
+                  return res.json();
+                }
+              })
+
+              .then((data) => {
+                const confirmLeaveP = document.createElement("p");
+                confirmLeaveP.id = "confirmLeaveP";
+                confirmLeaveP.innerText = `deleted ${data.groupName}`;
+                confirmLeaveDiv.appendChild(confirmLeaveP);
+
+                ls.removeItem("currentOwnGroup");
+                setTimeout(goBackProfile(), 1000);
+              });
+          });
+        });
       }
 
       if (data.userId != account.userId) {
