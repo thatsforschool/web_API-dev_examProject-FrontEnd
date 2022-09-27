@@ -885,6 +885,80 @@ loadProfilePage = () => {
         window.location.href = baseUrl;
       });
     });
+
+    if (account.role.roleId == 1) {
+      const adminButton = document.createElement("button");
+      adminButton.innerText = `Admin`;
+      adminButton.classList.add("btn");
+      btnAccSet.appendChild(adminButton);
+
+      adminButton.addEventListener("click", (e) => {
+        accSideBar.innerHTML = "";
+        const adminChange = document.createElement("div");
+        adminChange.id = "adminChange";
+        adminChange.classList.add("adminChange");
+        accSideBar.appendChild(adminChange);
+
+        const adminChangeText = document.createElement("p");
+        adminChange.id = "adminChangeText";
+        adminChangeText.innerText = "Who do you want to have admin role?";
+        adminChange.appendChild(adminChangeText);
+
+        const adminChangeEmail = document.createElement("input");
+        adminChange.type = "text";
+        adminChangeEmail.placeholder = "Email";
+        adminChangeEmail.id = "adminChangeEmail";
+        adminChange.appendChild(adminChangeEmail);
+
+        const adminChangeConfirm = document.createElement("button");
+        adminChangeConfirm.id = "adminChangeConfirm";
+        adminChangeConfirm.innerText = "Submit";
+        adminChangeConfirm.classList.add("btn");
+        adminChange.appendChild(adminChangeConfirm);
+        adminChangeConfirm.addEventListener("click", () => {
+          const email = adminChangeEmail.value;
+
+          const payload = {
+            role: {
+              roleId: 1,
+            },
+          };
+          console.log(payload);
+          const fetchOpt = {
+            method: "PUT",
+            headers: {
+              "Content-type": "application/json",
+              "x-authToken": mainToken,
+            },
+            body: JSON.stringify(payload),
+          };
+          console.log(fetchOpt);
+
+          fetch(`${fetchUrl}/api/accounts/email/${email}`, fetchOpt)
+            .then((res) => {
+              if (res.status == 200) {
+                console.log("GREAT success");
+              } else {
+                console.log("he can afford clock radio now");
+              }
+              return res.json();
+            })
+
+            .then((data) => {
+              adminChange.innerHTML = "";
+              adminChange.innerText = "The Role has been changed";
+
+              reloadWINDOW = () => {
+                window.location.reload();
+              };
+
+              setTimeout(reloadWINDOW, 1500);
+            });
+          console.log(`${fetchUrl}/api/accounts/email/${email}`);
+        });
+      });
+    } else {
+    }
   });
 
   //   main
@@ -1206,19 +1280,25 @@ loadProfilePage = () => {
             const showAllTasksListItem = document.createElement("li");
             showAllTasksListItem.id = "showAllTasksList";
             showAllTasksListItem.innerText = task.tasksubject;
-            switch (task.FK_labelId) {
-              case 1:
-                showAllTasksListItem.classList.add("labelId1");
-                break;
-              case 2:
-                showAllTasksListItem.classList.add("labelId2");
-                break;
-              case 3:
-                showAllTasksListItem.classList.add("labelId3");
-                break;
-              default:
-                break;
+
+            if (task.completed) {
+              showAllTasksListItem.classList.add("labelId4");
+            } else {
+              switch (task.FK_labelId) {
+                case 1:
+                  showAllTasksListItem.classList.add("labelId1");
+                  break;
+                case 2:
+                  showAllTasksListItem.classList.add("labelId2");
+                  break;
+                case 3:
+                  showAllTasksListItem.classList.add("labelId3");
+                  break;
+                default:
+                  break;
+              }
             }
+
             showAllTasksList.appendChild(showAllTasksListItem);
 
             const deleteTask = document.createElement("button");
@@ -1261,9 +1341,25 @@ loadProfilePage = () => {
                 };
                 fetch(`${fetchUrl}/api/tasks/${task.taskId}`, fetchOpt)
                   .then((res) => {
-                    if (res.status == 200) {
-                      console.log("status: 200");
-                      return res.json();
+                    switch (res.status) {
+                      case 200:
+                        console.log("status 200");
+                        return res.json();
+                      case 404:
+                        console.log("status 404");
+                        errorMes.innerText = "action failed";
+                        myBoardDiv.appendChild(errorMes);
+                        break;
+                      case 500:
+                        console.log("status 500");
+                        errorMes.innerText = "Incorrect data";
+                        myBoardDiv.appendChild(errorMes);
+                        break;
+
+                      default:
+                        errorMes.innerText = "Incorrect data";
+                        myBoardDiv.appendChild(errorMes);
+                        break;
                     }
                   })
                   .then((data) => {
@@ -1273,6 +1369,64 @@ loadProfilePage = () => {
                     removedTask.innerText = `Removed the task: "${task.tasksubject}".`;
                     myBoardDiv.appendChild(removedTask);
 
+                    // reloadWINDOW = () => {
+                    //   window.location.reload();
+                    // };
+
+                    // setTimeout(reloadWINDOW, 3000);
+                  });
+              });
+            });
+
+            if (!task.completed) {
+              const doneBtn = document.createElement("button");
+              doneBtn.id = "doneBtn";
+              doneBtn.innerText = "Done";
+              doneBtn.classList.add("btn");
+              doneBtn.classList.add("deleteTaskBtn");
+              showAllTasksListItem.appendChild(doneBtn);
+
+              doneBtn.addEventListener("click", (e) => {
+                const fetchOpt = {
+                  method: "PUT",
+                  headers: {
+                    "Content-type": "application/json",
+                    "x-authtoken": mainToken,
+                  },
+                };
+                fetch(
+                  `${fetchUrl}/api/tasks/completed/${task.taskId}`,
+                  fetchOpt
+                )
+                  .then((res) => {
+                    switch (res.status) {
+                      case 200:
+                        console.log("status 200");
+                        return res.json();
+                      case 404:
+                        console.log("status 404");
+                        errorMes.innerText = "action failed";
+                        myBoardDiv.appendChild(errorMes);
+                        break;
+                      case 500:
+                        console.log("status 500");
+                        errorMes.innerText = "Incorrect data";
+                        myBoardDiv.appendChild(errorMes);
+                        break;
+
+                      default:
+                        errorMes.innerText = "Incorrect data";
+                        myBoardDiv.appendChild(errorMes);
+                        break;
+                    }
+                  })
+                  .then((data) => {
+                    myBoardDiv.innerHTML = "";
+                    const removedTask = document.createElement("p");
+                    removedTask.id = "removedTask";
+                    removedTask.innerText = `finished the task: "${task.tasksubject}".`;
+                    myBoardDiv.appendChild(removedTask);
+
                     reloadWINDOW = () => {
                       window.location.reload();
                     };
@@ -1280,7 +1434,7 @@ loadProfilePage = () => {
                     setTimeout(reloadWINDOW, 3000);
                   });
               });
-            });
+            }
           });
         }
       });
@@ -1370,68 +1524,73 @@ loadProfilePage = () => {
         console.log(sorted);
 
         for (let i = 0; i < 3; i++) {
-          const showAllTasksListItem = document.createElement("li");
-          showAllTasksListItem.id = "showAllTasksList";
-          //   showAllTasksListItem.classList.add("flex");
-          const showAllTasksListItemp = document.createElement("p");
-          showAllTasksListItemp.id = "showAllTasksListp";
-          showAllTasksListItemp.innerText = sorted[i].tasksubject;
+          if (!sorted[i].completed) {
+            const showAllTasksListItem = document.createElement("li");
+            showAllTasksListItem.id = "showAllTasksList";
+            //   showAllTasksListItem.classList.add("flex");
+            const showAllTasksListItemp = document.createElement("p");
+            showAllTasksListItemp.id = "showAllTasksListp";
+            showAllTasksListItemp.innerText = sorted[i].tasksubject;
 
-          const showAllTasksListItemDate = document.createElement("p");
-          showAllTasksListItemDate.id = "showAllTasksListp";
-          const dueDate = sorted[i].taskdueDate;
-          const curentDate = new Date();
-          const curent = curentDate.getTime();
-          let timeDiffrence;
-          let dayDifference;
-          let daysUntil;
-          switch (true) {
-            case dueDate - curent < 86400000:
-              timeDiffrence = curent - dueDate;
-              dayDifference = timeDiffrence / (1000 * 3600);
-              daysUntil = Math.round(dayDifference);
-              PdaysUntil = Math.abs(daysUntil);
-              showAllTasksListItemDate.innerText = `${PdaysUntil} hours left`;
-              break;
-            case dueDate > curent:
-              timeDiffrence = dueDate - curent;
-              dayDifference = timeDiffrence / (1000 * 3600 * 24);
-              daysUntil = Math.round(dayDifference);
-              showAllTasksListItemDate.innerText = `${daysUntil} days`;
-              break;
-            case dueDate == null:
-              showAllTasksListItemDate.innerText = `no due date defined`;
-              break;
-            case dueDate < curent:
-              timeDiffrence = curent - dueDate;
-              dayDifference = timeDiffrence / (1000 * 3600 * 24);
-              daysUntil = Math.round(dayDifference);
-              PdaysUntil = Math.abs(daysUntil);
-              console.log(PdaysUntil);
-              showAllTasksListItemDate.innerText = `${PdaysUntil} days past duedate`;
-              break;
+            const showAllTasksListItemDate = document.createElement("p");
+            showAllTasksListItemDate.id = "showAllTasksListp";
+            const dueDate = sorted[i].taskdueDate;
+            const curentDate = new Date();
+            const curent = curentDate.getTime();
+            let timeDiffrence;
+            let dayDifference;
+            let daysUntil;
+            switch (true) {
+              case dueDate > curent && dueDate - curent < 86400000:
+                timeDiffrence = curent - dueDate;
+                dayDifference = timeDiffrence / (1000 * 3600);
+                daysUntil = Math.round(dayDifference);
+                PdaysUntil = Math.abs(daysUntil);
+                showAllTasksListItemDate.innerText = `${PdaysUntil} hours left`;
+                break;
+              case dueDate > curent:
+                timeDiffrence = dueDate - curent;
+                dayDifference = timeDiffrence / (1000 * 3600 * 24);
+                daysUntil = Math.round(dayDifference);
+                showAllTasksListItemDate.innerText = `${daysUntil} days`;
+                break;
+              case dueDate == null:
+                showAllTasksListItemDate.innerText = `no due date defined`;
+                break;
+              case dueDate < curent:
+                timeDiffrence = curent - dueDate;
+                dayDifference = timeDiffrence / (1000 * 3600 * 24);
+                daysUntil = Math.round(dayDifference);
+                PdaysUntil = Math.abs(daysUntil);
+                console.log(PdaysUntil);
+                showAllTasksListItemDate.innerText = `${PdaysUntil} days past duedate`;
+                break;
 
-            default:
-              break;
+              default:
+                break;
+            }
+            if (sorted[i].completed) {
+              showAllTasksListItem.classList.add("labelId4");
+            } else {
+              switch (sorted[i].FK_labelId) {
+                case 1:
+                  showAllTasksListItem.classList.add("labelId1");
+                  break;
+                case 2:
+                  showAllTasksListItem.classList.add("labelId2");
+                  break;
+                case 3:
+                  showAllTasksListItem.classList.add("labelId3");
+                  break;
+                default:
+                  break;
+              }
+            }
+
+            showAllTasksListItem.appendChild(showAllTasksListItemp);
+            showAllTasksListItem.appendChild(showAllTasksListItemDate);
+            showAllTasksList.appendChild(showAllTasksListItem);
           }
-
-          switch (sorted[i].FK_labelId) {
-            case 1:
-              showAllTasksListItem.classList.add("labelId1");
-              break;
-            case 2:
-              showAllTasksListItem.classList.add("labelId2");
-              break;
-            case 3:
-              showAllTasksListItem.classList.add("labelId3");
-              break;
-            default:
-              break;
-          }
-
-          showAllTasksListItem.appendChild(showAllTasksListItemp);
-          showAllTasksListItem.appendChild(showAllTasksListItemDate);
-          showAllTasksList.appendChild(showAllTasksListItem);
         }
       }
     });
@@ -1524,10 +1683,6 @@ loadProfilePage = () => {
     };
     fetch(`${fetchUrl}/api/tasks/own/2`, fetchOpt)
       .then((res) => {
-        if (res.status == 200) {
-          return res.json();
-        }
-
         switch (res.status) {
           case 200:
             console.log("status 200");
@@ -1577,7 +1732,6 @@ loadProfilePage = () => {
 
     const errorMes = document.createElement("p");
     myBoardDiv.innerHTML = "";
-    // myBoardDiv.classList.add("hideMyBoardDiv");
 
     myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your assignment tasks`;
     const fetchOpt = {
@@ -1614,7 +1768,6 @@ loadProfilePage = () => {
         }
       })
       .then((data) => {
-        myBoardDiv.classList.remove("hideMyBoardDiv");
         myBoardDiv.innerHTML = "";
         const showAllAssignments = document.createElement("ul");
         showAllAssignments.id = "showAllAssignments";
@@ -1629,11 +1782,123 @@ loadProfilePage = () => {
       });
   });
 
-  const showAllDone = document.createElement("a");
-  showAllDone.id = "showAllDone";
-  showAllDone.innerText = "Show All Finished Tasks";
-  showAllDone.classList.add("operBtns");
-  operatingBtnsSect.appendChild(showAllDone);
+  const showAllFinished = document.createElement("a");
+  showAllFinished.id = "showAllDone";
+  showAllFinished.innerText = "Show All Finished Tasks";
+  showAllFinished.classList.add("operBtns");
+  operatingBtnsSect.appendChild(showAllFinished);
+
+  showAllFinished.addEventListener("click", (e) => {
+    const errorMes = document.createElement("p");
+    myBoardDiv.innerHTML = "";
+    myBoardHeadline.innerText = `Hello ${account.displayName}. This is all your finished tasks`;
+    const fetchOpt = {
+      headers: {
+        "Content-type": "application/json",
+        "x-authToken": mainToken,
+      },
+    };
+    fetch(`${fetchUrl}/api/tasks/own`, fetchOpt)
+      .then((res) => {
+        switch (res.status) {
+          case 200:
+            console.log("status 200");
+            return res.json();
+          case 404:
+            console.log("status 404");
+            errorMes.innerText = "you do not have any tasks finished";
+            myBoardDiv.appendChild(errorMes);
+            break;
+          case 500:
+            console.log("status 500");
+            errorMes.innerText = "Incorrect data";
+            myBoardDiv.appendChild(errorMes);
+            break;
+
+          default:
+            errorMes.innerText = "Incorrect data";
+            myBoardDiv.appendChild(errorMes);
+            break;
+        }
+      })
+      .then((data) => {
+        myBoardDiv.innerHTML = "";
+        const showAllAssignments = document.createElement("ul");
+        showAllAssignments.id = "showAllTasksList";
+        myBoardDiv.appendChild(showAllAssignments);
+        data.forEach((task) => {
+          if (task.completed) {
+            const showAllAssignmentsListItem = document.createElement("li");
+            showAllAssignmentsListItem.id = "showAllTasksList";
+            showAllAssignmentsListItem.innerText = task.tasksubject;
+            showAllAssignmentsListItem.classList.add("labelId4");
+            showAllAssignments.appendChild(showAllAssignmentsListItem);
+
+            const deleteTask = document.createElement("button");
+            deleteTask.id = "deleteTask";
+            deleteTask.innerText = "Delete task";
+            deleteTask.classList.add("btn");
+            deleteTask.classList.add("deleteTaskBtn");
+            showAllAssignmentsListItem.appendChild(deleteTask);
+            
+
+            deleteTask.addEventListener("click", () => {
+              myBoardDiv.innerHTML = "";
+              const confirmDeleteTask = document.createElement("p");
+              confirmDeleteTask.id = "confirmDeleteTask";
+              confirmDeleteTask.innerText = `Are you sure you want to delete the task: "${task.tasksubject}"?`;
+
+              myBoardDiv.appendChild(confirmDeleteTask);
+
+              const annulDelTask = document.createElement("button");
+              annulDelTask.id = "annulDelTask";
+              annulDelTask.innerText = "Cancel";
+              annulDelTask.classList.add("btn");
+              myBoardDiv.appendChild(annulDelTask);
+              annulDelTask.addEventListener("click", () => {
+                window.location.reload();
+              });
+
+              const yesDelTask = document.createElement("button");
+              yesDelTask.id = "yesDelTask";
+              yesDelTask.innerText = "Continue";
+              yesDelTask.classList.add("btn");
+              myBoardDiv.appendChild(yesDelTask);
+
+              yesDelTask.addEventListener("click", () => {
+                const fetchOpt = {
+                    method: "DELETE",
+                    headers: {
+                      "Content-type": "application/json",
+                      "x-authtoken": mainToken,
+                    },
+                  };
+                  fetch(`${fetchUrl}/api/tasks/${task.taskId}`, fetchOpt)
+                    .then((res) => {
+                      if (res.status == 200) {
+                        console.log("status: 200");
+                        return res.json();
+                      }
+                    })
+                    .then((data) => {
+                      myBoardDiv.innerHTML = "";
+                      const removedTask = document.createElement("p");
+                      removedTask.id = "removedTask";
+                      removedTask.innerText = `Removed the task: "${task.tasksubject}".`;
+                      myBoardDiv.appendChild(removedTask);
+  
+                      reloadWINDOW = () => {
+                        window.location.reload();
+                      };
+  
+                      setTimeout(reloadWINDOW, 3000);
+                    });
+                });
+              });
+          }
+        });
+      });
+  });
 };
 
 loadSinglelogPage = () => {
@@ -2123,7 +2388,7 @@ addGroupMembers = (div, group) => {
 
 loadGroupPage = () => {
   body.innerHTML = "";
-  body.classList.add("profileBody"); 
+  body.classList.add("profileBody");
 
   const OwnGroup = JSON.parse(ls.getItem("currentOwnGroup"));
   console.log("currentOwnGroup");
@@ -2206,7 +2471,7 @@ loadGroupPage = () => {
 
       //    Grouppage main
       body.appendChild(main);
-      main.id = "myGroup"; 
+      main.id = "myGroup";
 
       const myGroup = document.createElement("section");
       main.appendChild(myGroup);
@@ -2557,11 +2822,17 @@ loadGroupPage = () => {
       assigmentsBtn.classList.add("operBtns");
       operatingBtnsSect.appendChild(assigmentsBtn);
 
-      const showAllDone = document.createElement("a");
-      showAllDone.id = "showAllDone";
-      showAllDone.innerText = "Show All Finished Tasks";
-      showAllDone.classList.add("operBtns");
-      operatingBtnsSect.appendChild(showAllDone);
+      //   const showAllDone = document.createElement("a");
+      //   showAllDone.id = "showAllDone";
+      //   showAllDone.innerText = "Show All Finished Tasks";
+      //   showAllDone.classList.add("operBtns");
+      //   operatingBtnsSect.appendChild(showAllDone);
+
+      const showAllFinished = document.createElement("a");
+      showAllFinished.id = "showAllFinished";
+      showAllFinished.innerText = "Show All Finished Tasks";
+      showAllFinished.classList.add("operBtns");
+      operatingBtnsSect.appendChild(showAllFinished);
     });
 };
 
