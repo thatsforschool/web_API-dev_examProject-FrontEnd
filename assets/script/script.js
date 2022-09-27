@@ -6,7 +6,7 @@ const borderLogIn = document.createElement("div");
 const signUpBtn = document.createElement("a");
 const ls = window.localStorage;
 let baseUrl;
-const fetchUrl = `http://127.0.0.1:8746`;
+const fetchUrl = `https://wadmmdcsds21zzirsk.azurewebsites.net`;
 const errMes = document.createElement("div");
 const mainToken = ls.getItem("token");
 const createBtns = document.createElement("section");
